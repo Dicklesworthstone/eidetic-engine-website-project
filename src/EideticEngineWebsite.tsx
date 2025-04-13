@@ -706,7 +706,7 @@ const EideticEngineWebsite = () => {
                       <div className="w-full overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800/50 rounded-lg">
                         {/* Inner container: Keeps desktop dimensions but allows mobile scroll */}
                         {/* Added min-width to prevent collapse on very small screens */}
-                        <div className="relative w-full min-w-[340px] sm:min-w-[400px] md:w-96 h-64 md:h-96 bg-gray-900 rounded-2xl p-4 md:p-8 shadow-xl mx-auto">
+                        <div className="relative w-full md:w-96 h-64 md:h-96 bg-gray-900 rounded-2xl p-4 md:p-8 shadow-xl mx-auto">
                           {/* Central node - Fact */}
                           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
                           w-16 md:w-20 h-16 md:h-20 rounded-full bg-blue-600 border-2 md:border-4 border-blue-300 shadow-2xl
