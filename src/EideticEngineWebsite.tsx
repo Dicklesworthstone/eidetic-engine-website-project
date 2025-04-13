@@ -41,19 +41,19 @@ const EideticEngineWebsite = () => {
 
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 bg-gray-900 z-40 shadow-xl border-b border-gray-800">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
           <div className="flex items-center">
-            <Brain className="w-8 h-8 text-blue-500 mr-3" />
-            <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+            <Brain className="w-7 md:w-8 h-7 md:h-8 text-blue-500 mr-2 md:mr-3" />
+            <h1 className="text-lg md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
               EideticEngine
             </h1>
           </div>
-          <div className="hidden md:block">
+          <div className="flex">
             <button
               onClick={() => setShowNavigation(!showNavigation)}
-              className="px-4 py-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors flex items-center"
+              className="px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors flex items-center"
             >
-              {showNavigation ? 'Hide' : 'Show'} Navigation <Map className="ml-2 w-4 h-4" />
+              {showNavigation ? 'Hide' : 'Show'} <span className="hidden sm:inline ml-1">Navigation</span> <Map className="ml-2 w-4 h-4" />
             </button>
           </div>
         </div>
@@ -62,7 +62,19 @@ const EideticEngineWebsite = () => {
       {/* Main Content */}
       <div className="flex pt-16">
         {/* Side Navigation */}
-        <aside className={`fixed h-screen overflow-auto bg-gray-900 border-r border-gray-800 w-64 transition-all duration-300 ease-in-out z-30 ${showNavigation ? 'left-0' : '-left-64'} md:left-0`}>
+        <aside className={`fixed h-screen overflow-auto bg-gray-900 border-r border-gray-800 w-72 md:w-64 transition-all duration-300 ease-in-out z-30 ${showNavigation ? 'left-0' : '-left-72 md:-left-64'} md:left-0`}>
+          {/* Mobile close button */}
+          <div className="absolute top-4 right-4 md:hidden">
+            <button 
+              onClick={() => setShowNavigation(false)}
+              className="p-1.5 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
+              aria-label="Close navigation menu"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
           <nav className="p-4">
             <div className="mb-8">
               <h2 className="text-gray-400 text-xs uppercase tracking-wider mb-4">Navigation</h2>
@@ -82,10 +94,16 @@ const EideticEngineWebsite = () => {
               ].map(item => (
                 <button
                   key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`flex items-center space-x-2 w-full text-left px-4 py-3 rounded-lg mb-1 hover:bg-gray-800 transition-colors ${activeSection === item.id ? 'bg-blue-900 bg-opacity-40 text-blue-300' : 'text-gray-300'}`}
+                  onClick={() => {
+                    scrollToSection(item.id);
+                    // Close navigation on mobile after clicking
+                    if (window.innerWidth < 768) {
+                      setShowNavigation(false);
+                    }
+                  }}
+                  className={`flex items-center space-x-2 w-full text-left px-4 py-3.5 md:py-3 rounded-lg mb-2 md:mb-1 hover:bg-gray-800 transition-colors ${activeSection === item.id ? 'bg-blue-900 bg-opacity-40 text-blue-300' : 'text-gray-300'}`}
                 >
-                  {item.icon}
+                  <span className="flex-shrink-0">{item.icon}</span>
                   <span>{item.name}</span>
                 </button>
               ))}
@@ -93,41 +111,52 @@ const EideticEngineWebsite = () => {
           </nav>
         </aside>
 
+        {/* Mobile Navigation Toggle Button (Fixed at bottom) */}
+        <div className="fixed bottom-6 left-4 z-40 md:hidden">
+          <button
+            onClick={() => setShowNavigation(!showNavigation)}
+            className={`p-3.5 rounded-full shadow-xl ${showNavigation ? 'bg-blue-600' : 'bg-gray-800'} transition-colors border border-gray-700`}
+            aria-label="Toggle navigation menu"
+          >
+            <Map className="w-5 h-5 text-white" />
+          </button>
+        </div>
+
         {/* Main content */}
         <main className={`flex-1 transition-all duration-300 ${showNavigation ? 'md:ml-64' : 'ml-0'}`}>
           <div className="container mx-auto px-4 py-8">
             {/* Hero Section */}
-            <section className="py-16 md:py-24 mb-16">
+            <section className="py-10 md:py-24 mb-16">
               <div className="max-w-4xl mx-auto text-center">
                 <div className="flex justify-center mb-6">
                   <div className="relative">
-                    <Brain className="w-24 h-24 text-blue-500" />
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-500 rounded-full animate-pulse"></div>
-                    <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-blue-500 rounded-full animate-pulse delay-100"></div>
+                    <Brain className="w-16 md:w-24 h-16 md:h-24 text-blue-500" />
+                    <div className="absolute -top-2 -right-2 w-4 md:w-6 h-4 md:h-6 bg-purple-500 rounded-full animate-pulse"></div>
+                    <div className="absolute -bottom-2 -left-2 w-4 md:w-6 h-4 md:h-6 bg-blue-500 rounded-full animate-pulse delay-100"></div>
                   </div>
                 </div>
-                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                <h1 className="text-3xl md:text-6xl font-bold mb-6 leading-tight">
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
                     EideticEngine
                   </span>
                 </h1>
-                <p className="text-xl md:text-2xl text-gray-300 mb-8">
-                  An Adaptive Cognitive Architecture Integrating Multi-Level Memory,<br />
+                <p className="text-lg md:text-2xl text-gray-300 mb-8">
+                  An Adaptive Cognitive Architecture Integrating Multi-Level Memory,<br className="hidden md:block" />
                   Structured Orchestration, and Meta-Cognition for Advanced LLM Agents
                 </p>
                 <p className="text-gray-400 italic">By Jeffrey Emanuel, 4/13/2025</p>
 
-                <div className="mt-12 flex flex-wrap justify-center gap-4">
+                <div className="mt-8 md:mt-12 flex flex-wrap justify-center gap-4">
                   <button
                     onClick={() => window.open('https://github.com/Dicklesworthstone/ultimate_mcp_client/blob/main/eidetic_engine_paper.md', '_blank')}
-                    className="px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors text-white font-medium flex items-center"
+                    className="px-4 md:px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors text-white font-medium flex items-center"
                   >
                     <FileText className="w-5 h-5 mr-2" />
                     Read Paper
                   </button>
                   <button
                     onClick={() => scrollToSection('architecture-visual')}
-                    className="px-6 py-3 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors text-white font-medium flex items-center"
+                    className="px-4 md:px-6 py-3 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors text-white font-medium flex items-center"
                   >
                     <Eye className="w-5 h-5 mr-2" />
                     View Architecture
@@ -137,14 +166,14 @@ const EideticEngineWebsite = () => {
             </section>
 
             {/* Architecture Visual */}
-            <section id="architecture-visual" className="mb-20 py-12 bg-gray-800 bg-opacity-30 rounded-xl">
-              <div className="max-w-5xl mx-auto">
-                <h2 className="text-3xl font-bold mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+            <section id="architecture-visual" className="mb-16 md:mb-20 py-8 md:py-12 bg-gray-800 bg-opacity-30 rounded-xl mx-4 md:mx-auto">
+              <div className="max-w-5xl mx-auto px-3 md:px-0">
+                <h2 className="text-2xl md:text-3xl font-bold mb-8 md:mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
                   EideticEngine Architecture Overview
                 </h2>
 
-                <div className="flex flex-col md:flex-row gap-8 justify-center items-center md:items-stretch mb-12">
-                  <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex-1 max-w-md">
+                <div className="flex flex-col md:flex-row gap-6 md:gap-8 justify-center items-center md:items-stretch mb-10 md:mb-12">
+                  <div className="bg-gray-800 p-4 md:p-6 rounded-xl shadow-lg border border-gray-700 flex-1 max-w-full md:max-w-md">
                     <div className="mb-4 flex justify-center">
                       <div className="p-3 bg-blue-900 bg-opacity-40 rounded-full">
                         <Database className="w-8 h-8 text-blue-400" />
@@ -183,7 +212,7 @@ const EideticEngineWebsite = () => {
                     </div>
                   </div>
 
-                  <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 flex-1 max-w-md">
+                  <div className="bg-gray-800 p-4 md:p-6 rounded-xl shadow-lg border border-gray-700 flex-1 max-w-full md:max-w-md">
                     <div className="mb-4 flex justify-center">
                       <div className="p-3 bg-purple-900 bg-opacity-40 rounded-full">
                         <RefreshCw className="w-8 h-8 text-purple-400" />
@@ -223,54 +252,54 @@ const EideticEngineWebsite = () => {
                   </div>
                 </div>
 
-                <div className="relative mt-16 mb-8">
+                <div className="relative mt-12 md:mt-16 mb-8">
                   <div className="hidden md:block absolute w-3/4 h-1 bg-gradient-to-r from-blue-600 to-purple-600 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
 
-                  <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-32 relative z-10">
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-32 relative z-10">
                     <div className="flex flex-col items-center">
-                      <div className="p-4 bg-blue-900 bg-opacity-40 rounded-full mb-4">
-                        <Cpu className="w-10 h-10 text-blue-400" />
+                      <div className="p-3 md:p-4 bg-blue-900 bg-opacity-40 rounded-full mb-4">
+                        <Cpu className="w-8 h-8 md:w-10 md:h-10 text-blue-400" />
                       </div>
                       <p className="font-bold text-blue-300">LLM Core</p>
                     </div>
 
                     <div className="flex flex-col items-center">
-                      <div className="p-4 bg-purple-900 bg-opacity-40 rounded-full mb-4">
-                        <Server className="w-10 h-10 text-purple-400" />
+                      <div className="p-3 md:p-4 bg-purple-900 bg-opacity-40 rounded-full mb-4">
+                        <Server className="w-8 h-8 md:w-10 md:h-10 text-purple-400" />
                       </div>
                       <p className="font-bold text-purple-300">Tool Ecosystem</p>
                     </div>
 
                     <div className="flex flex-col items-center">
-                      <div className="p-4 bg-blue-900 bg-opacity-40 rounded-full mb-4">
-                        <UserPlus className="w-10 h-10 text-blue-400" />
+                      <div className="p-3 md:p-4 bg-blue-900 bg-opacity-40 rounded-full mb-4">
+                        <UserPlus className="w-8 h-8 md:w-10 md:h-10 text-blue-400" />
                       </div>
                       <p className="font-bold text-blue-300">MCP Client</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 max-w-3xl mx-auto mt-12">
-                  <h3 className="text-xl font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                <div className="bg-gray-800 p-4 md:p-6 rounded-xl shadow-lg border border-gray-700 max-w-3xl mx-auto mt-8 md:mt-12">
+                  <h3 className="text-lg md:text-xl font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
                     Key Innovation: Meta-Cognitive Cycle
                   </h3>
                   <div className="flex flex-col items-center">
-                    <div className="w-full max-w-md h-32 relative">
+                    <div className="w-full max-w-xs md:max-w-md h-28 md:h-32 relative">
                       {/* Meta-cognitive cycle visualization */}
-                      <div className="absolute w-32 h-32 rounded-full border-4 border-dashed border-blue-500 top-0 left-1/2 transform -translate-x-1/2 animate-spin" style={{ animationDuration: '20s' }}></div>
-                      <div className="absolute w-24 h-24 rounded-full border-4 border-purple-500 top-4 left-1/2 transform -translate-x-1/2 animate-pulse"></div>
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900 rounded-full p-3">
-                        <Brain className="w-10 h-10 text-white" />
+                      <div className="absolute w-24 md:w-32 h-24 md:h-32 rounded-full border-3 md:border-4 border-dashed border-blue-500 top-0 left-1/2 transform -translate-x-1/2 animate-spin" style={{ animationDuration: '20s' }}></div>
+                      <div className="absolute w-16 md:w-24 h-16 md:h-24 rounded-full border-3 md:border-4 border-purple-500 top-4 left-1/2 transform -translate-x-1/2 animate-pulse"></div>
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-900 rounded-full p-2 md:p-3">
+                        <Brain className="w-6 h-6 md:w-10 md:h-10 text-white" />
                       </div>
 
-                      {/* Labels */}
-                      <div className="absolute top-0 left-1/4 bg-gray-900 px-2 py-1 rounded text-xs text-blue-300">Reflection</div>
-                      <div className="absolute bottom-0 left-1/4 bg-gray-900 px-2 py-1 rounded text-xs text-purple-300">Consolidation</div>
-                      <div className="absolute top-0 right-1/4 bg-gray-900 px-2 py-1 rounded text-xs text-blue-300">Promotion</div>
-                      <div className="absolute bottom-0 right-1/4 bg-gray-900 px-2 py-1 rounded text-xs text-purple-300">Adaptation</div>
+                      {/* Labels with better visibility for mobile */}
+                      <div className="absolute top-0 left-1/4 -translate-x-6 md:-translate-x-4 bg-gray-900 px-1 md:px-2 py-0.5 md:py-1 rounded text-xs text-blue-300">Reflection</div>
+                      <div className="absolute bottom-0 left-1/4 -translate-x-6 md:-translate-x-4 bg-gray-900 px-1 md:px-2 py-0.5 md:py-1 rounded text-xs text-purple-300">Consolidation</div>
+                      <div className="absolute top-0 right-1/4 translate-x-6 md:translate-x-4 bg-gray-900 px-1 md:px-2 py-0.5 md:py-1 rounded text-xs text-blue-300">Promotion</div>
+                      <div className="absolute bottom-0 right-1/4 translate-x-6 md:translate-x-4 bg-gray-900 px-1 md:px-2 py-0.5 md:py-1 rounded text-xs text-purple-300">Adaptation</div>
                     </div>
                   </div>
-                  <p className="text-gray-300 text-center mt-8">
+                  <p className="text-gray-300 text-center mt-6 md:mt-8 text-sm md:text-base">
                     The agent actively improves its cognitive operation through reflection, knowledge consolidation,
                     memory promotion, and adaptive threshold adjustment based on performance metrics.
                   </p>
@@ -279,12 +308,12 @@ const EideticEngineWebsite = () => {
             </section>
 
             {/* Abstract Section */}
-            <section id="abstract" className="mb-16 scroll-mt-32">
+            <section id="abstract" className="mb-12 md:mb-16 scroll-mt-24 md:scroll-mt-32 px-4 md:px-0">
               <div className="max-w-3xl mx-auto">
-                <h2 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 tracking-tight">
                   Abstract
                 </h2>
-                <div className="prose prose-lg prose-invert max-w-none space-y-6">
+                <div className="prose prose-sm md:prose-lg prose-invert max-w-none space-y-4 md:space-y-6">
                   <p>
                     Large Language Models (LLMs) form the reasoning core of increasingly sophisticated autonomous agents.
                     However, unlocking their full potential for complex, long-horizon tasks requires architectures that
@@ -336,12 +365,12 @@ const EideticEngineWebsite = () => {
             </section>
 
             {/* Introduction Section */}
-            <section id="introduction" className="mb-16 scroll-mt-32">
+            <section id="introduction" className="mb-12 md:mb-16 scroll-mt-24 md:scroll-mt-32 px-4 md:px-0">
               <div className="max-w-3xl mx-auto">
-                <h2 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
                   1. Introduction: Towards Cognitive Autonomy in LLM Agents
                 </h2>
-                <div className="prose prose-lg prose-invert max-w-none space-y-6">
+                <div className="prose prose-sm md:prose-lg prose-invert max-w-none space-y-4 md:space-y-6">
                   <p>
                     The remarkable generative and reasoning abilities of Large Language Models (LLMs) have catalyzed the
                     development of autonomous agents aimed at complex problem-solving. Yet, the transition from impressive
@@ -412,16 +441,16 @@ const EideticEngineWebsite = () => {
             </section>
 
             {/* Related Work Section */}
-            <section id="related-work" className="mb-16 scroll-mt-32">
+            <section id="related-work" className="mb-12 md:mb-16 scroll-mt-24 md:scroll-mt-32 px-4 md:px-0">
               <div className="max-w-3xl mx-auto">
-                <h2 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
                   2. Related Work: Building on and Departing From Existing Paradigms
                 </h2>
-                <div className="prose prose-lg prose-invert max-w-none space-y-6">
+                <div className="prose prose-sm md:prose-lg prose-invert max-w-none space-y-4 md:space-y-6">
                   <p>EideticEngine differentiates itself from several established lines of research:</p>
 
-                  <div className="space-y-6 mt-6">
-                    <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
+                  <div className="space-y-4 md:space-y-6 mt-4 md:mt-6">
+                    <div className="bg-gray-800 rounded-lg p-4 md:p-6 shadow-lg">
                       <h3 className="text-xl font-bold mb-2 text-blue-300">Standard LLM Agent Frameworks</h3>
                       <p className="text-gray-300">
                         While providing valuable abstractions for tool use and basic memory, these frameworks typically lack a deeply integrated,
@@ -433,7 +462,7 @@ const EideticEngineWebsite = () => {
                       </p>
                     </div>
 
-                    <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
+                    <div className="bg-gray-800 rounded-lg p-4 md:p-6 shadow-lg">
                       <h3 className="text-xl font-bold mb-2 text-blue-300">Early Autonomous Agents</h3>
                       <p className="text-gray-300">
                         These pioneering efforts demonstrated the potential of LLM loops but suffered from unreliable planning,
@@ -445,7 +474,7 @@ const EideticEngineWebsite = () => {
                       </p>
                     </div>
 
-                    <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
+                    <div className="bg-gray-800 rounded-lg p-4 md:p-6 shadow-lg">
                       <h3 className="text-xl font-bold mb-2 text-blue-300">Memory-Augmented LLMs</h3>
                       <p className="text-gray-300">
                         These focus on enhancing LLM capabilities by providing access to external or specialized memory during
@@ -457,7 +486,7 @@ const EideticEngineWebsite = () => {
                       </p>
                     </div>
 
-                    <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
+                    <div className="bg-gray-800 rounded-lg p-4 md:p-6 shadow-lg">
                       <h3 className="text-xl font-bold mb-2 text-blue-300">LLM Planning & Reasoning Techniques</h3>
                       <p className="text-gray-300">
                         These enhance the LLM's internal reasoning process, often within a single prompt or short interaction
@@ -469,7 +498,7 @@ const EideticEngineWebsite = () => {
                       </p>
                     </div>
 
-                    <div className="bg-gray-800 rounded-lg p-6 shadow-lg">
+                    <div className="bg-gray-800 rounded-lg p-4 md:p-6 shadow-lg">
                       <h3 className="text-xl font-bold mb-2 text-blue-300">Classical Cognitive Architectures</h3>
                       <p className="text-gray-300">
                         These offer rich, theoretically grounded models of cognition, often based on symbolic rule systems or
@@ -486,18 +515,18 @@ const EideticEngineWebsite = () => {
             </section>
 
             {/* UMS Section */}
-            <section id="ums" className="mb-16 scroll-mt-32">
+            <section id="ums" className="mb-12 md:mb-16 scroll-mt-32">
               <div className="max-w-3xl mx-auto">
-                <h2 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
                   3. The Unified Memory System (UMS): A Cognitive Substrate for Agents
                 </h2>
 
-                <div className="bg-blue-900 bg-opacity-20 rounded-xl p-6 border border-blue-800 shadow-lg mb-8">
-                  <div className="flex items-center mb-4">
-                    <Database className="w-6 h-6 text-blue-400 mr-3" />
-                    <h3 className="text-xl font-bold text-blue-300">Memory System Overview</h3>
+                <div className="bg-blue-900 bg-opacity-20 rounded-xl p-4 md:p-6 border border-blue-800 shadow-lg mb-6 md:mb-8">
+                  <div className="flex items-center mb-3 md:mb-4">
+                    <Database className="w-5 h-5 md:w-6 md:h-6 text-blue-400 mr-2 md:mr-3" />
+                    <h3 className="text-lg md:text-xl font-bold text-blue-300">Memory System Overview</h3>
                   </div>
-                  <p className="text-gray-300">
+                  <p className="text-sm md:text-base text-gray-300">
                     The foundation of the EideticEngine architecture is the Unified Memory System (UMS), a persistent and structured
                     cognitive workspace designed to move beyond the limitations of simple memory buffers or isolated vector
                     stores. It serves not just as a repository of information, but as an active substrate for the agent's
@@ -505,40 +534,40 @@ const EideticEngineWebsite = () => {
                   </p>
                 </div>
 
-                <div className="prose prose-lg prose-invert max-w-none space-y-6">
-                  <h3 className="text-2xl font-bold mb-4 text-blue-300">3.1. Multi-Level Cognitive Memory Hierarchy</h3>
+                <div className="prose prose-sm md:prose-lg prose-invert max-w-none space-y-4 md:space-y-6">
+                  <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-blue-300">3.1. Multi-Level Cognitive Memory Hierarchy</h3>
 
-                  <div className="bg-gray-800 rounded-lg p-6 mb-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="border border-blue-800 rounded-lg p-4 bg-blue-900 bg-opacity-20">
-                        <h4 className="font-bold text-blue-300 mb-2">Working Memory</h4>
-                        <p className="text-sm text-gray-300">Explicitly managed outside the main memories table, capacity-constrained and dynamically optimized to maintain a focused attentional set.</p>
+                  <div className="bg-gray-800 rounded-lg p-4 md:p-6 mb-6 md:mb-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                      <div className="border border-blue-800 rounded-lg p-3 md:p-4 bg-blue-900 bg-opacity-20">
+                        <h4 className="font-bold text-blue-300 mb-1 md:mb-2">Working Memory</h4>
+                        <p className="text-xs md:text-sm text-gray-300">Explicitly managed outside the main memories table, capacity-constrained and dynamically optimized to maintain a focused attentional set.</p>
                       </div>
 
-                      <div className="border border-blue-800 rounded-lg p-4 bg-blue-900 bg-opacity-20">
-                        <h4 className="font-bold text-blue-300 mb-2">Episodic Memory</h4>
-                        <p className="text-sm text-gray-300">Directly captures agent experiences, records associated with specific actions, thoughts, or artifacts, often with shorter default TTL values.</p>
+                      <div className="border border-blue-800 rounded-lg p-3 md:p-4 bg-blue-900 bg-opacity-20">
+                        <h4 className="font-bold text-blue-300 mb-1 md:mb-2">Episodic Memory</h4>
+                        <p className="text-xs md:text-sm text-gray-300">Directly captures agent experiences, records associated with specific actions, thoughts, or artifacts, often with shorter default TTL values.</p>
                       </div>
 
-                      <div className="border border-blue-800 rounded-lg p-4 bg-blue-900 bg-opacity-20">
-                        <h4 className="font-bold text-blue-300 mb-2">Semantic Memory</h4>
-                        <p className="text-sm text-gray-300">Represents generalized knowledge, facts, insights, summaries, or stable profiles, often resulting from consolidation or promotion processes.</p>
+                      <div className="border border-blue-800 rounded-lg p-3 md:p-4 bg-blue-900 bg-opacity-20">
+                        <h4 className="font-bold text-blue-300 mb-1 md:mb-2">Semantic Memory</h4>
+                        <p className="text-xs md:text-sm text-gray-300">Represents generalized knowledge, facts, insights, summaries, or stable profiles, often resulting from consolidation or promotion processes.</p>
                       </div>
 
-                      <div className="border border-blue-800 rounded-lg p-4 bg-blue-900 bg-opacity-20">
-                        <h4 className="font-bold text-blue-300 mb-2">Procedural Memory</h4>
-                        <p className="text-sm text-gray-300">Encodes learned skills or multi-step procedures, primarily populated via promotion from highly accessed, high-confidence semantic memories.</p>
+                      <div className="border border-blue-800 rounded-lg p-3 md:p-4 bg-blue-900 bg-opacity-20">
+                        <h4 className="font-bold text-blue-300 mb-1 md:mb-2">Procedural Memory</h4>
+                        <p className="text-xs md:text-sm text-gray-300">Encodes learned skills or multi-step procedures, primarily populated via promotion from highly accessed, high-confidence semantic memories.</p>
                       </div>
                     </div>
                   </div>
 
-                  <h3 className="text-2xl font-bold mb-4 text-blue-300">3.2. Rich Metadata and Cognitive Attributes</h3>
+                  <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-blue-300">3.2. Rich Metadata and Cognitive Attributes</h3>
 
-                  <p>
+                  <p className="text-sm md:text-base">
                     Each memory entry carries crucial metadata enabling cognitive processing:
                   </p>
 
-                  <ul className="space-y-2">
+                  <ul className="space-y-1 md:space-y-2 text-sm md:text-base">
                     <li>
                       <strong className="text-blue-300">Importance & Confidence:</strong> Explicit fields allow the agent to assign
                       subjective value and certainty to information, critical for prioritization and belief revision.
@@ -557,34 +586,43 @@ const EideticEngineWebsite = () => {
                     </li>
                   </ul>
 
-                  <h3 className="text-2xl font-bold mb-4 mt-8 text-blue-300">3.3. Structured Associative Memory Graph</h3>
+                  <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 mt-6 md:mt-8 text-blue-300">3.3. Structured Associative Memory Graph</h3>
 
-                  <div className="bg-gray-800 rounded-xl p-8 mb-8 mx-auto max-w-3xl">
+                  <div className="bg-gray-800 rounded-xl p-4 md:p-8 mb-6 md:mb-8 mx-auto">
                     <div className="flex flex-col items-center">
-                      {/* Memory graph container */}
-                      <div className="relative w-96 h-96 bg-gray-900 rounded-2xl p-8 mb-8 shadow-xl">
+                      {/* Memory graph container - properly placed in the UMS section */}
+                      <div className="relative w-full h-64 md:h-96 bg-gray-900 rounded-xl p-4 md:p-8 mb-6 shadow-xl">
                         {/* Central node - Fact */}
                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                     w-20 h-20 rounded-full bg-blue-600 border-4 border-blue-300 shadow-2xl
-                     flex items-center justify-center z-20 transition-transform hover:scale-110">
-                          <span className="text-sm font-bold text-blue-50">Fact</span>
+                         w-16 md:w-20 h-16 md:h-20 rounded-full bg-blue-600 border-4 border-blue-300 shadow-2xl
+                         flex items-center justify-center z-20">
+                          <span className="text-xs md:text-sm font-bold text-blue-50">Fact</span>
                         </div>
 
-                        {/* Satellite nodes with improved positioning */}
-                        {[
-                          { name: "Event", position: "top-12 left-1/2 -translate-x-1/2", color: "green", bgClass: "bg-green-600", borderClass: "border-green-300" },
-                          { name: "Insight", position: "top-1/3 right-12", color: "purple", bgClass: "bg-purple-600", borderClass: "border-purple-300" },
-                          { name: "Action", position: "bottom-12 left-1/2 -translate-x-1/2", color: "yellow", bgClass: "bg-yellow-600", borderClass: "border-yellow-300" },
-                          { name: "Profile", position: "top-1/3 left-12", color: "red", bgClass: "bg-red-600", borderClass: "border-red-300" }
-                        ].map((node, index) => (
-                          <div key={index}
-                            className={`absolute ${node.position} w-16 h-16 rounded-full 
-                        ${node.bgClass} border-4 ${node.borderClass} shadow-lg
-                        flex items-center justify-center z-10 transition-all
-                        hover:scale-110 hover:shadow-2xl`}>
-                            <span className="text-xs font-semibold text-white">{node.name}</span>
-                          </div>
-                        ))}
+                        {/* Satellite nodes with improved positioning for mobile */}
+                        <div className="absolute top-8 md:top-12 left-1/2 transform -translate-x-1/2 w-12 md:w-16 h-12 md:h-16 rounded-full 
+                         bg-green-600 border-4 border-green-300 shadow-lg
+                         flex items-center justify-center z-10">
+                          <span className="text-xs font-semibold text-white">Event</span>
+                        </div>
+                        
+                        <div className="absolute top-1/3 right-6 md:right-12 w-12 md:w-16 h-12 md:h-16 rounded-full 
+                         bg-purple-600 border-4 border-purple-300 shadow-lg
+                         flex items-center justify-center z-10">
+                          <span className="text-xs font-semibold text-white">Insight</span>
+                        </div>
+                        
+                        <div className="absolute bottom-8 md:bottom-12 left-1/2 transform -translate-x-1/2 w-12 md:w-16 h-12 md:h-16 rounded-full 
+                         bg-yellow-600 border-4 border-yellow-300 shadow-lg
+                         flex items-center justify-center z-10">
+                          <span className="text-xs font-semibold text-white">Action</span>
+                        </div>
+                        
+                        <div className="absolute top-1/3 left-6 md:left-12 w-12 md:w-16 h-12 md:h-16 rounded-full 
+                         bg-red-600 border-4 border-red-300 shadow-lg
+                         flex items-center justify-center z-10">
+                          <span className="text-xs font-semibold text-white">Profile</span>
+                        </div>
 
                         {/* Connection lines and labels */}
                         <svg className="absolute inset-0 w-full h-full z-0" viewBox="0 0 400 400">
@@ -595,7 +633,7 @@ const EideticEngineWebsite = () => {
                           <path d="M200 200 Q150 150 100 150" stroke="#ef4444" strokeWidth="3" fill="none" />
 
                           {/* Labels with better positioning */}
-                          <g className="font-semibold text-sm">
+                          <g className="font-semibold text-xs md:text-sm">
                             <text x="180" y="40" className="fill-blue-300">CAUSAL</text>
                             <text x="280" y="120" className="fill-purple-300">SUPPORTS</text>
                             <text x="180" y="370" className="fill-yellow-300">SOURCE</text>
@@ -605,25 +643,25 @@ const EideticEngineWebsite = () => {
                       </div>
 
                       {/* Description box */}
-                      <div className="bg-gray-900 p-6 rounded-xl w-full space-y-4 border border-gray-700">
-  <h3 className="text-lg font-bold text-center text-blue-400 mb-2">
-    Memory Graph Structure
-  </h3>
-  <p className="text-gray-300 leading-relaxed text-center">
-    The UMS constructs a strongly-typed knowledge graph through the
-    <code className="mx-1 px-2 py-1 bg-gray-800 rounded-md text-blue-200">memory_links</code>
-    table, supporting multiple relationship types:
-  </p>
-  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4">
-    {['RELATED', 'CAUSAL', 'SUPPORTS', 'CONTRADICTS', 'HIERARCHICAL', 'SEQUENTIAL', 'REFERENCES'].map((type, index) => (
-      <span key={type} 
-            className={`px-3 py-1 bg-gray-800 rounded-full text-sm text-center text-cyan-300
-                       ${index === 6 ? 'md:col-start-2' : ''}`}>
-        {type}
-      </span>
-    ))}
-  </div>
-</div>
+                      <div className="bg-gray-900 p-4 md:p-6 rounded-xl w-full space-y-3 md:space-y-4 border border-gray-700">
+                        <h3 className="text-base md:text-lg font-bold text-center text-blue-400 mb-1 md:mb-2">
+                          Memory Graph Structure
+                        </h3>
+                        <p className="text-xs md:text-sm text-gray-300 leading-relaxed text-center">
+                          The UMS constructs a strongly-typed knowledge graph through the
+                          <code className="mx-1 px-1 md:px-2 py-0.5 md:py-1 bg-gray-800 rounded-md text-blue-200">memory_links</code>
+                          table, supporting multiple relationship types:
+                        </p>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-1 md:gap-2 mt-2 md:mt-4">
+                          {['RELATED', 'CAUSAL', 'SUPPORTS', 'CONTRADICTS', 'HIERARCHICAL', 'SEQUENTIAL', 'REFERENCES'].map((type, index) => (
+                            <span key={type}
+                              className={`px-2 md:px-3 py-1 bg-gray-800 rounded-full text-xs md:text-sm text-center text-cyan-300
+                           ${index === 6 ? 'md:col-start-2' : ''}`}>
+                              {type}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
 
