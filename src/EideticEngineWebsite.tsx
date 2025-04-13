@@ -732,7 +732,7 @@ const EideticEngineWebsite = () => {
                           ))}
 
                           {/* Connection lines and labels - Kept SVG logic identical, relies on container scroll */}
-                          <svg className="absolute inset-0 w-full h-full z-0" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+                          <svg width="100%" height="100%" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet" className="block mx-auto z-0">
                             {/* Adjusted curves slightly for potentially better appearance at scale, but minimal changes */}
                             <path d="M200 190 Q200 130 200 100" stroke="#4da6ff" strokeWidth="3" fill="none" strokeLinecap="round" />
                             <path d="M210 200 Q250 150 290 150" stroke="#9f7aea" strokeWidth="3" fill="none" strokeLinecap="round" />
