@@ -166,7 +166,7 @@ const EideticEngineWebsite = () => {
             </section>
 
             {/* Architecture Visual */}
-            <section id="architecture-visual" className="mb-16 md:mb-20 py-8 md:py-12 bg-gray-800 bg-opacity-30 rounded-xl">
+            <section id="architecture-visual" className="mb-16 md:mb-20 py-8 md:py-12 bg-gray-800 bg-opacity-30 rounded-xl mx-4 md:mx-auto">
               <div className="max-w-5xl mx-auto px-3 md:px-0">
                 <h2 className="text-2xl md:text-3xl font-bold mb-8 md:mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
                   EideticEngine Architecture Overview
@@ -588,7 +588,7 @@ const EideticEngineWebsite = () => {
 
                   <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 mt-6 md:mt-8 text-blue-300">3.3. Structured Associative Memory Graph</h3>
 
-                  <div className="bg-gray-800 rounded-xl p-4 md:p-8 mb-6 md:mb-8 mx-auto">
+                  <div className="bg-gray-800 rounded-xl p-4 md:p-8 mb-6 md:mb-8 ">
                     <div className="flex flex-col items-center">
                       {/* Memory graph container - properly placed in the UMS section */}
                       <div className="relative w-full h-64 md:h-96 bg-gray-900 rounded-xl p-4 md:p-8 mb-6 shadow-xl">
