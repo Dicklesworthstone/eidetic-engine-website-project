@@ -166,7 +166,7 @@ const EideticEngineWebsite = () => {
             </section>
 
             {/* Architecture Visual */}
-            <section id="architecture-visual" className="mb-16 md:mb-20 py-8 md:py-12 bg-gray-800 bg-opacity-30 rounded-xl mx-4 md:mx-auto">
+            <section id="architecture-visual" className="mb-16 md:mb-20 py-8 md:py-12 bg-gray-800 bg-opacity-30 rounded-xl">
               <div className="max-w-5xl mx-auto px-3 md:px-0">
                 <h2 className="text-2xl md:text-3xl font-bold mb-8 md:mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
                   EideticEngine Architecture Overview
