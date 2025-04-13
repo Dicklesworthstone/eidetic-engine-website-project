@@ -179,7 +179,7 @@ const EideticEngineWebsite = () => {
                       </li>
                     </ul>
                     <div className="bg-gray-900 p-4 rounded-lg">
-                      <p className="text-xs text-gray-400">Implemented with optimized SQLite, featuring hybrid search, explicit typing, metadata, and associative linking.</p>
+                      <p className="text-xs text-gray-400"><a href="https://github.com/Dicklesworthstone/llm_gateway_mcp_server/blob/main/llm_gateway/tools/cognitive_and_agent_memory.py" target="_blank" rel="noopener noreferrer">Implemented</a> with optimized SQLite, featuring hybrid search, explicit typing, metadata, and associative linking.</p>
                     </div>
                   </div>
 
@@ -218,7 +218,7 @@ const EideticEngineWebsite = () => {
                       </li>
                     </ul>
                     <div className="bg-gray-900 p-4 rounded-lg">
-                      <p className="text-xs text-gray-400">Directs LLM reasoning, manages dependencies, recovers from errors, and orchestrates self-improvement cycles.</p>
+                      <p className="text-xs text-gray-400">Directs LLM reasoning, manages dependencies, recovers from errors, and orchestrates self-improvement cycles. Find implementation <a href="https://github.com/Dicklesworthstone/ultimate_mcp_client/blob/main/agent_master_loop.py" target="_blank" rel="noopener noreferrer">here</a>.</p>
                     </div>
                   </div>
                 </div>
@@ -865,7 +865,7 @@ const EideticEngineWebsite = () => {
                   <p>
                     The EideticEngine architecture, while powerful conceptually, relies on a robust communication and interaction
                     layer to bridge the Agent Master Loop (AML) with the Unified Memory System (UMS) and other potential
-                    external tools. The <strong className="text-blue-300">Ultimate MCP Client</strong> provides this critical "glue,"
+                    external tools. The <a href="https://github.com/Dicklesworthstone/ultimate_mcp_client" target="_blank" rel="noopener noreferrer"><strong className="text-blue-300">Ultimate MCP Client</strong></a> provides this critical "glue,"
                     offering a feature-rich environment specifically designed to support the complex needs of advanced
                     cognitive agents like EideticEngine.
                   </p>
@@ -955,7 +955,7 @@ const EideticEngineWebsite = () => {
                 <div className="prose prose-lg prose-invert max-w-none space-y-6">
                   <p>
                     The EideticEngine architecture relies not only on its internal logic (AML) and its cognitive substrate (UMS) but also
-                    on a rich ecosystem of external capabilities accessible via the Model Context Protocol (MCP). The <strong className="text-purple-300">LLM Gateway Server</strong>
+                    on a rich ecosystem of external capabilities accessible via the Model Context Protocol (MCP). The <a href="https://github.com/Dicklesworthstone/llm_gateway_mcp_server" target="_blank" rel="noopener noreferrer"><strong className="text-purple-300">LLM Gateway Server</strong></a>
                     hosts the UMS tools alongside a powerful suite of complementary tools, significantly expanding the agent's operational repertoire.
                   </p>
 
