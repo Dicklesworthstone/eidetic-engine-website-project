@@ -65,7 +65,7 @@ const EideticEngineWebsite = () => {
         <aside className={`fixed h-screen overflow-auto bg-gray-900 border-r border-gray-800 w-72 md:w-64 transition-all duration-300 ease-in-out z-30 ${showNavigation ? 'left-0' : '-left-72 md:-left-64'} md:left-0`}>
           {/* Mobile close button */}
           <div className="absolute top-4 right-4 md:hidden">
-            <button 
+            <button
               onClick={() => setShowNavigation(false)}
               className="p-1.5 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
               aria-label="Close navigation menu"
@@ -588,41 +588,32 @@ const EideticEngineWebsite = () => {
 
                   <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 mt-6 md:mt-8 text-blue-300">3.3. Structured Associative Memory Graph</h3>
 
-                  <div className="bg-gray-800 rounded-xl p-4 md:p-8 mb-6 md:mb-8 ">
+                  <div className="bg-gray-800 rounded-xl p-8 mb-8 mx-auto max-w-3xl">
                     <div className="flex flex-col items-center">
-                      {/* Memory graph container - properly placed in the UMS section */}
-                      <div className="relative w-full h-64 md:h-96 bg-gray-900 rounded-xl p-4 md:p-8 mb-6 shadow-xl">
+                      {/* Memory graph container */}
+                      <div className="relative w-full md:w-96 h-64 md:h-96 bg-gray-900 rounded-2xl p-4 md:p-8 mb-6 md:mb-8 shadow-xl">
                         {/* Central node - Fact */}
                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
                          w-16 md:w-20 h-16 md:h-20 rounded-full bg-blue-600 border-4 border-blue-300 shadow-2xl
-                         flex items-center justify-center z-20">
+                         flex items-center justify-center z-20 transition-transform hover:scale-110">
                           <span className="text-xs md:text-sm font-bold text-blue-50">Fact</span>
                         </div>
 
-                        {/* Satellite nodes with improved positioning for mobile */}
-                        <div className="absolute top-8 md:top-12 left-1/2 transform -translate-x-1/2 w-12 md:w-16 h-12 md:h-16 rounded-full 
-                         bg-green-600 border-4 border-green-300 shadow-lg
-                         flex items-center justify-center z-10">
-                          <span className="text-xs font-semibold text-white">Event</span>
-                        </div>
-                        
-                        <div className="absolute top-1/3 right-6 md:right-12 w-12 md:w-16 h-12 md:h-16 rounded-full 
-                         bg-purple-600 border-4 border-purple-300 shadow-lg
-                         flex items-center justify-center z-10">
-                          <span className="text-xs font-semibold text-white">Insight</span>
-                        </div>
-                        
-                        <div className="absolute bottom-8 md:bottom-12 left-1/2 transform -translate-x-1/2 w-12 md:w-16 h-12 md:h-16 rounded-full 
-                         bg-yellow-600 border-4 border-yellow-300 shadow-lg
-                         flex items-center justify-center z-10">
-                          <span className="text-xs font-semibold text-white">Action</span>
-                        </div>
-                        
-                        <div className="absolute top-1/3 left-6 md:left-12 w-12 md:w-16 h-12 md:h-16 rounded-full 
-                         bg-red-600 border-4 border-red-300 shadow-lg
-                         flex items-center justify-center z-10">
-                          <span className="text-xs font-semibold text-white">Profile</span>
-                        </div>
+                        {/* Satellite nodes with improved positioning */}
+                        {[
+                          { name: "Event", position: "top-8 md:top-12 left-1/2 -translate-x-1/2", color: "green", bgClass: "bg-green-600", borderClass: "border-green-300" },
+                          { name: "Insight", position: "top-1/3 right-6 md:right-12", color: "purple", bgClass: "bg-purple-600", borderClass: "border-purple-300" },
+                          { name: "Action", position: "bottom-8 md:bottom-12 left-1/2 -translate-x-1/2", color: "yellow", bgClass: "bg-yellow-600", borderClass: "border-yellow-300" },
+                          { name: "Profile", position: "top-1/3 left-6 md:left-12", color: "red", bgClass: "bg-red-600", borderClass: "border-red-300" }
+                        ].map((node, index) => (
+                          <div key={index}
+                            className={`absolute ${node.position} w-12 md:w-16 h-12 md:h-16 rounded-full 
+                            ${node.bgClass} border-4 ${node.borderClass} shadow-lg
+                            flex items-center justify-center z-10 transition-all
+                            hover:scale-110 hover:shadow-2xl`}>
+                            <span className="text-xs font-semibold text-white">{node.name}</span>
+                          </div>
+                        ))}
 
                         {/* Connection lines and labels */}
                         <svg className="absolute inset-0 w-full h-full z-0" viewBox="0 0 400 400">
