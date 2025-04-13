@@ -116,7 +116,7 @@ const EideticEngineWebsite = () => {
       {/* Header */}
       {/* Reduced py-3 on mobile, keeps md:py-4 */}
       <header className="fixed top-0 left-0 right-0 bg-gray-900/90 backdrop-blur-sm z-40 shadow-xl border-b border-gray-800">
-        <div className="container mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
+        <div className="container mx-auto px-2 md:px-4 py-3 md:py-4 flex justify-between items-center">
           <div className="flex items-center flex-shrink-0"> {/* Added flex-shrink-0 */}
             <Brain className="w-7 md:w-8 h-7 md:h-8 text-blue-500 mr-2 md:mr-3 flex-shrink-0" />
             <h1 className="text-lg md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 whitespace-nowrap">
@@ -205,7 +205,7 @@ const EideticEngineWebsite = () => {
 
         {/* Main content */}
         {/* Adjusted margin logic to be simpler: only apply margin on md+ when nav is shown */}
-        <main className={`flex-1 transition-margin duration-300 ease-in-out ${showNavigation ? 'md:ml-64' : 'ml-0'}`}>
+        <main className={`flex-1 transition-margin duration-300 ease-in-out ${showNavigation ? 'md:ml-64' : 'ml-0'} overflow-x-hidden`}>
           {/* Added container-fluid equivalent for padding, adjust max-width inside sections */}
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
@@ -706,7 +706,7 @@ const EideticEngineWebsite = () => {
                       <div className="w-full overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800/50 rounded-lg">
                         {/* Inner container: Keeps desktop dimensions but allows mobile scroll */}
                         {/* Added min-width to prevent collapse on very small screens */}
-                        <div className="relative w-full md:w-96 h-64 md:h-96 bg-gray-900 rounded-2xl p-4 md:p-8 shadow-xl mx-auto">
+                        <div className="relative w-full min-w-[340px] sm:min-w-[400px] md:w-96 h-64 md:h-96 bg-gray-900 rounded-2xl p-4 md:p-8 shadow-xl mx-auto">
                           {/* Central node - Fact */}
                           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
                           w-16 md:w-20 h-16 md:h-20 rounded-full bg-blue-600 border-2 md:border-4 border-blue-300 shadow-2xl
@@ -732,7 +732,7 @@ const EideticEngineWebsite = () => {
                           ))}
 
                           {/* Connection lines and labels - Kept SVG logic identical, relies on container scroll */}
-                          <svg width="100%" height="100%" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet" className="block mx-auto z-0">
+                          <svg className="absolute inset-0 w-full h-full z-0" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
                             {/* Adjusted curves slightly for potentially better appearance at scale, but minimal changes */}
                             <path d="M200 190 Q200 130 200 100" stroke="#4da6ff" strokeWidth="3" fill="none" strokeLinecap="round" />
                             <path d="M210 200 Q250 150 290 150" stroke="#9f7aea" strokeWidth="3" fill="none" strokeLinecap="round" />
