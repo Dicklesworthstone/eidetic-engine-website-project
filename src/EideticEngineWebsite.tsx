@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Aperture, Brain, Cpu, Database, GitBranch, GitMerge, Layers, MessageCircle, Server, UserPlus, Zap, Clock, FileText, RefreshCw, GitCommit, Eye, Award, Bookmark, BarChart2, Map, Code, X } from 'lucide-react'; // Added X for close icon
+import MemoryGraph from './MemoryGraph';
 
 // Main App Component
 const EideticEngineWebsite = () => {
@@ -731,23 +732,8 @@ const EideticEngineWebsite = () => {
                             </div>
                           ))}
 
-                          {/* Connection lines and labels - Kept SVG logic identical, relies on container scroll */}
-                          <svg className="absolute inset-0 w-full h-full z-0" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
-                            {/* Adjusted curves slightly for potentially better appearance at scale, but minimal changes */}
-                            <path d="M200 190 Q200 130 200 100" stroke="#4da6ff" strokeWidth="3" fill="none" strokeLinecap="round" />
-                            <path d="M210 200 Q250 150 290 150" stroke="#9f7aea" strokeWidth="3" fill="none" strokeLinecap="round" />
-                            <path d="M200 210 Q200 270 200 300" stroke="#eab308" strokeWidth="3" fill="none" strokeLinecap="round" />
-                            <path d="M190 200 Q150 150 110 150" stroke="#ef4444" strokeWidth="3" fill="none" strokeLinecap="round" />
+                          <MemoryGraph />
 
-                            {/* Labels with slightly adjusted position for readability within viewBox */}
-                            {/* Font size controlled by CSS outside SVG if needed */}
-                            <g className="font-semibold text-[10px] sm:text-xs md:text-sm">
-                              <text x="180" y="70" textAnchor="middle" className="fill-blue-300">CAUSAL</text>
-                              <text x="320" y="125" textAnchor="middle" className="fill-purple-300">SUPPORTS</text>
-                              <text x="180" y="340" textAnchor="middle" className="fill-yellow-300">SOURCE</text>
-                              <text x="80" y="125" textAnchor="middle" className="fill-red-300">ABOUT</text>
-                            </g>
-                          </svg>
                         </div>
                       </div>
 
