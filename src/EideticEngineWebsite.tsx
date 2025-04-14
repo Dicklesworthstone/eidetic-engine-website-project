@@ -708,29 +708,6 @@ const EideticEngineWebsite = () => {
                         {/* Inner container: Keeps desktop dimensions but allows mobile scroll */}
                         {/* Added min-width to prevent collapse on very small screens */}
                         <div className="relative w-full min-w-[340px] sm:min-w-[400px] md:w-96 h-64 md:h-96 bg-gray-900 rounded-2xl p-4 md:p-8 shadow-xl mx-auto">
-                          {/* Central node - Fact */}
-                          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
-                          w-16 md:w-20 h-16 md:h-20 rounded-full bg-blue-600 border-2 md:border-4 border-blue-300 shadow-2xl
-                          flex items-center justify-center z-20 transition-transform hover:scale-110">
-                            <span className="text-xs md:text-sm font-bold text-blue-50 text-center leading-tight">Fact</span>
-                          </div>
-
-                          {/* Satellite nodes with potentially minor adjustments if needed, but rely on scroll */}
-                          {[
-                            // Original positioning maintained, size adjusted slightly
-                            { name: "Event", position: "top-8 md:top-12 left-1/2 -translate-x-1/2", color: "green", bgClass: "bg-green-600", borderClass: "border-green-300" },
-                            { name: "Insight", position: "top-1/3 right-4 sm:right-6 md:right-12", color: "purple", bgClass: "bg-purple-600", borderClass: "border-purple-300" },
-                            { name: "Action", position: "bottom-8 md:bottom-12 left-1/2 -translate-x-1/2", color: "yellow", bgClass: "bg-yellow-600", borderClass: "border-yellow-300" },
-                            { name: "Profile", position: "top-1/3 left-4 sm:left-6 md:left-12", color: "red", bgClass: "bg-red-600", borderClass: "border-red-300" }
-                          ].map((node, index) => (
-                            <div key={index}
-                              className={`absolute ${node.position} w-12 h-12 md:w-16 md:h-16 rounded-full
-                              ${node.bgClass} border-2 md:border-4 ${node.borderClass} shadow-lg
-                              flex items-center justify-center z-10 transition-all
-                              hover:scale-110 hover:shadow-2xl`}>
-                              <span className="text-[10px] sm:text-xs font-semibold text-white text-center leading-tight px-1">{node.name}</span>
-                            </div>
-                          ))}
 
                           <MemoryGraph />
 
