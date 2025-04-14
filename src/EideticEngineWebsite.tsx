@@ -239,7 +239,7 @@ const EideticEngineWebsite = () => {
                 {/* Adjusted button padding/text size */}
                 <div className="mt-10 md:mt-12 flex flex-col sm:flex-row justify-center items-center gap-4">
                   <button
-                    onClick={() => window.open('https://github.com/Dicklesworthstone/ultimate_mcp_client/blob/main/eidetic_engine_paper.md', '_blank')}
+                    onClick={() => window.open('https://mozilla.github.io/pdf.js/web/viewer.html?file=https://raw.githubusercontent.com/Dicklesworthstone/ultimate_mcp_client/main/eidetic_engine_paper.pdf', '_blank')}
                     className="px-5 py-2.5 md:px-6 md:py-3 w-full sm:w-auto rounded-full bg-blue-600 hover:bg-blue-700 transition-colors text-white font-medium flex items-center justify-center text-sm md:text-base"
                   >
                     <FileText className="w-4 h-4 md:w-5 md:h-5 mr-2" />
