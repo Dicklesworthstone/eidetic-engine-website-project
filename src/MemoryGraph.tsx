@@ -1,25 +1,29 @@
 import React, { useEffect } from 'react';
-const anime = require('animejs');
 
 const MemoryGraph = () => {
     useEffect(() => {
-        // Animate arcs
-        anime({
-            targets: '.arc',
-            strokeDashoffset: [anime.setDashoffset, 0],
-            easing: 'easeInOutSine',
-            duration: 1500,
-            delay: (el, i) => i * 250,
-        });
-
-        // Animate labels
-        anime({
-            targets: '.label',
-            opacity: [0, 1],
-            translateY: [20, 0],
-            easing: 'easeOutQuad',
-            duration: 800,
-            delay: anime.stagger(200, { start: 1500 }),
+        // Load anime.js dynamically
+        import('animejs').then((animeModule) => {
+            const anime = animeModule as any;
+            
+            // Animate arcs
+            anime({
+                targets: '.arc',
+                strokeDashoffset: [anime.setDashoffset, 0],
+                easing: 'easeInOutSine',
+                duration: 1500,
+                delay: (el, i) => i * 250,
+            });
+    
+            // Animate labels
+            anime({
+                targets: '.label',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                easing: 'easeOutQuad',
+                duration: 800,
+                delay: anime.stagger(200, { start: 1500 }),
+            });
         });
     }, []);
 
