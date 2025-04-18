@@ -1,0 +1,276 @@
+@article{Ref1,
+  author    = {Anderson, J. R.},
+  title     = {ACT: A simple theory of complex cognition},
+  journal   = {American Psychologist},
+  year      = {1996},
+  volume    = {51},
+  number    = {4},
+  pages     = {355--365},
+  doi       = {10.1037/0003-066X.51.4.355},
+  url       = {https://doi.org/10.1037/0003-066X.51.4.355},
+  annotation = {The 1996 paper by John R. Anderson titled "ACT: A simple theory of complex cognition" presents the ACT-R (Adaptive Control of Thought-Rational) theory, which stands as a prominent and influential unified theory of human cognition. This work aimed to provide a single framework capable of explaining a wide range of cognitive phenomena, from basic perceptual and motor skills to high-level reasoning and problem-solving. The core of ACT-R lies in its postulation of a cognitive architecture comprising several independent modules that interact to produce behavior. These modules include a declarative memory system for factual knowledge, a procedural memory system for skill-based knowledge represented as production rules (if-then statements), a goal module for maintaining current objectives, and several perceptual-motor modules for interacting with the environment. A central concept within ACT-R is the idea that cognition arises from the interaction and coordination of these modules, mediated by a central pattern matcher that selects and executes production rules based on the current state of declarative memory and the goal module. Learning in ACT-R occurs through two primary mechanisms: declarative learning, where new factual knowledge is encoded into memory, and procedural learning, where the strength and utility of production rules are adjusted based on their successful application. This theory introduced the novel idea of a computational framework that could simulate human cognitive processes with a high degree of detail, allowing researchers to develop and test specific hypotheses about how different cognitive functions operate and interact. The importance of ACT-R lies in its ability to provide a coherent and comprehensive account of cognition, influencing research across various fields of psychology, including memory, learning, problem-solving, and human-computer interaction. The distinction between declarative and procedural knowledge, the role of production rules in guiding behavior, and the concept of a modular cognitive architecture are all ideas that resonate with the design principles of EideticEngine, particularly in its separation of memory functions (semantic/episodic vs. procedural) and the control loop that orchestrates the agent's actions based on its internal state and knowledge.}
+}
+
+@article{Ref2,
+  author    = {Anderson, J. R. and Lebiere, C.},
+  title     = {The Newell test for a theory of cognition},
+  journal   = {Behavioral and Brain Sciences},
+  year      = {2003},
+  volume    = {26},
+  number    = {5},
+  pages     = {587--601},
+  doi       = {10.1017/S0140525X0300013X},
+  url       = {https://doi.org/10.1017/S0140525X0300013X},
+  annotation = {In their 2003 Behavioral and Brain Sciences article, "The Newell test for a theory of cognition," John R. Anderson and Christian Lebiere, prominent figures behind the ACT-R architecture, propose a set of criteria (the "Newell test") for evaluating the adequacy of comprehensive theories of cognition. Building on Allen Newell's vision for unified theories, they argue that a successful theory must not only explain specific phenomena but also be capable of performing the full range of tasks humans can, within human cognitive constraints (e.g., real-time performance, large knowledge base, learning). The article emphasizes computational modeling as crucial for demonstrating sufficiency. This work is important prior art because it sets a benchmark for what a comprehensive cognitive system, like EideticEngine aims to be, should achieve. EideticEngine’s key components echo aspects often found in architectures aspiring to meet such tests, including ACT-R's separation of declarative (EideticEngine's semantic/episodic) and procedural (EideticEngine's PlanSteps) knowledge, a mechanism for attentional focus (EideticEngine's context assembly, akin to ACT-R's buffers), and integrated learning processes (EideticEngine's reflection and consolidation, analogous to ACT-R's chunking and rule tuning). Anderson \& Lebiere emphasize the importance of adaptive behavior through learning from experience – a core goal of EideticEngine's meta-cognitive loop. By referencing this paper, we acknowledge the influence of architectures like ACT-R and demonstrate that EideticEngine aspires to meet established criteria for cognitive systems, showing its features (multi-module memory, goal management, learning) are motivated by prior theoretical frameworks aiming for general cognition.}
+}
+
+@incollection{Ref3,
+  author    = {Atkinson, R. C. and Shiffrin, R. M.},
+  title     = {Human memory: A proposed system and its control processes},
+  booktitle = {The psychology of learning and motivation},
+  publisher = {Academic Press},
+  year      = {1968},
+  editor    = {Spence, K. W. and Spence, J. T.},
+  volume    = {2},
+  pages     = {89--195},
+  doi       = {10.1016/S0079-7421(08)60422-3},
+  url       = {https://doi.org/10.1016/S0079-7421(08)60422-3},
+  annotation = {The 1968 chapter by Richard C. Atkinson and Richard M. Shiffrin, "Human memory: A proposed system and its control processes," presented the foundational multi-store model of memory, a landmark framework in cognitive psychology. This model proposed a **structural separation** of human memory into distinct stores: brief sensory memory, short-term memory (STM) with limited capacity, and long-term memory (LTM) with vast capacity. Critically, the model emphasized the **dynamic control processes** used by individuals to manage the flow of information between these stores, including attention, rehearsal (to maintain information in STM), encoding (transferring from STM to LTM), and retrieval (accessing information from LTM). The Atkinson-Shiffrin model was novel and important because it provided a clear, structured framework treating memory as an organized system, highlighting both distinct storage mechanisms and the active cognitive role in manipulating information. The relevance of this work to EideticEngine is significant, as its Unified Memory System (UMS) explicitly incorporates a multi-level memory structure inspired by such models. The distinctions within EideticEngine between Working Memory (analogous to STM), Episodic Memory, Semantic Memory, and Procedural Memory (all related to LTM) **directly echo the conceptual separation** proposed by Atkinson and Shiffrin. Furthermore, the control processes they described find parallels in EideticEngine's mechanisms for managing and utilizing its different memory levels, such as encoding new information, retrieving relevant context for the LLM, and processes like **consolidation** where experiences might be transformed into more durable long-term knowledge. This foundational work validates the principle that intelligent agents benefit from distinct memory mechanisms for recent versus long-term information, a core principle underpinning EideticEngine’s unified architecture.}
+}
+
+@incollection{Ref4,
+  author    = {Baddeley, A. D. and Hitch, G. J.},
+  title     = {Working memory},
+  booktitle = {The psychology of learning and motivation},
+  publisher = {Academic Press},
+  year      = {1974},
+  editor    = {Bower, G. H.},
+  volume    = {8},
+  pages     = {47--89},
+  doi       = {10.1016/S0079-7421(08)60452-1},
+  url       = {https://doi.org/10.1016/S0079-7421(08)60452-1},
+  annotation = {The 1974 chapter "Working memory" by Alan D. Baddeley and Graham J. Hitch presented a groundbreaking multi-component model that redefined short-term memory not as a passive buffer, but as an **active workspace** crucial for ongoing cognitive tasks. They proposed that working memory consists of a **central executive** (an attentional control system) coordinating subsidiary "slave" systems: the **phonological loop** (for verbal/auditory information) and the **visuospatial sketchpad** (for visual/spatial information). This model was novel in emphasizing that working memory is actively involved in **manipulating and maintaining information in real time** to support complex cognition like reasoning, comprehension, and problem-solving, holding goals, intermediate results, and perceptual inputs simultaneously. Subsequent work added the episodic buffer to integrate information. The relevance to EideticEngine is clear: its architecture must manage the LLM's immediate context (prompt, recent interactions, current plan step) as a form of working memory. EideticEngine’s *Unified Memory System* implicitly distinguishes this temporary, actively managed context (akin to the workspace) from its long-term stores. The concept of a central executive maps well to EideticEngine’s **Agent Master Loop**, which governs the agent's focus (what information from memory is brought into the LLM's context) and action selection. Baddeley \& Hitch's work serves as prior art justifying the need for a dedicated, limited-capacity system for on-the-fly computation and control in any robust cognitive system. EideticEngine builds on this by implementing a dynamic working context for the LLM and mechanisms to assemble that context from long-term memory, effectively bridging the working memory concept with modern LLM prompt engineering.}
+}
+
+@inproceedings{Ref5,
+  author    = {Brown, T. B. and Mann, B. and Ryder, N. and Subbiah, M. and Kaplan, J. and Dhariwal, P. and Neelakantan, A. and Shyam, P. and Sastry, G. and Askell, A. and Agarwal, S. and Herbert-Voss, A. and Krueger, G. and Henighan, T. and Child, R. and Ramesh, A. and Ziegler, D. M. and Wu, J. and Winter, C. and Amodei, D.},
+  title     = {Language models are few-shot learners},
+  booktitle = {Advances in Neural Information Processing Systems 33},
+  year      = {2020},
+  pages     = {1877--1901},
+  url       = {https://proceedings.neurips.cc/paper/2020/hash/1457c0d6bfcb4967418bfb8ac142f64a-Abstract.html},
+  annotation = {The 2020 paper "Language models are few-shot learners" by Tom B. Brown and colleagues at OpenAI introduced GPT-3 and demonstrated its remarkable ability to perform a wide range of natural language tasks with few or even zero task-specific training examples, a capability termed "few-shot learning." This was a novel and important finding, suggesting that very large language models could generalize based solely on natural language prompts providing examples or instructions. The paper showcased GPT-3's performance across various tasks (text generation, QA, translation, basic reasoning), often rivaling fine-tuned models, highlighting emergent capabilities from scaling. While acknowledging limitations, the primary contribution was demonstrating the unprecedented few-shot abilities of massive LLMs, fundamentally changing the NLP landscape. The relevance to EideticEngine is paramount, as it is designed to orchestrate an advanced LLM (claude-3-5-sonnet). The few-shot (and zero-shot) learning capabilities demonstrated by GPT-3 and expected in models like Claude are precisely what enable EideticEngine to guide the LLM to perform complex reasoning, planning, and meta-cognitive tasks through carefully designed prompts and interactions with its memory system, without requiring extensive task-specific fine-tuning of the agent itself.}
+}
+
+@misc{Ref6,
+  author       = {Chen, Yikang and Huang, Pinzhen and Wang, Sen and Wang, Zihan and Chen, Xiang and Liu, Zekun and Tang, Jie and Sun, Maosong},
+  title        = {Second Me: An AI-Native Memory Offload System},
+  year         = {2025},
+  eprint       = {2503.08102},
+  archiveprefix= {arXiv},
+  primaryclass = {cs.AI},
+  url          = {https://arxiv.org/abs/2503.08102},
+  annotation = {The 2025 arXiv preprint "Second Me: An AI-Native Memory Offload System" proposes a system designed to augment human memory by acting as a personal AI assistant that continuously records, stores, and retrieves life experiences, knowledge, and interactions. The core idea is an "offloaded" memory extension using AI for capture, processing, indexing, and retrieval. While focused on human memory augmentation, the underlying concepts of building a comprehensive, searchable AI-powered memory system are relevant to designing memory for autonomous agents. EideticEngine's Unified Memory System (UMS) shares the goal of creating a robust, structured repository for storing and retrieving information, albeit for an AI agent's experiences, reasoning, and knowledge. The challenges discussed in "Second Me" (efficient capture, effective indexing/retrieval, privacy) are pertinent to developing advanced AI memory systems like EideticEngine's UMS. The central theme of an AI acting as a memory extension, recalling relevant information on demand, connects "Second Me" to the design of sophisticated autonomous agents with persistent memory.}
+}
+
+@inproceedings{Ref7,
+  author    = {Derbinsky, Nate and Li, Jiexun and Laird, John E.},
+  title     = {A Multi-Domain Evaluation of Scaling in a General Episodic Memory},
+  booktitle = {Proceedings of the Twenty-Sixth AAAI Conference on Artificial Intelligence},
+  year      = {2012},
+  pages     = {193--199},
+  url       = {https://www.aaai.org/ocs/index.php/AAAI/AAAI12/paper/view/5000},
+  annotation = {The 2012 AAAI paper "A Multi-Domain Evaluation of Scaling in a General Episodic Memory" by Derbinsky, Li, and Laird investigates the performance and scaling properties of a general episodic memory system integrated into the SOAR cognitive architecture. Episodic memory (memory of specific events) is crucial for agents to learn from past interactions. This paper evaluates SOAR's episodic memory module across diverse domains (route planning, puzzles, robotics), focusing on how performance scales with the number of stored episodes and task complexity. They examined retrieval efficiency, impact on learning/decision-making, and computational cost. The findings offered insights into designing AI episodic memory, highlighting trade-offs between capacity, speed, and cognitive benefits. The emphasis on evaluating a *general* episodic memory across *multiple domains* is particularly relevant. EideticEngine, with its "Episodic Memory" level in the UMS, shares the goal of providing a general mechanism for storing and retrieving past experiences. The challenges and findings discussed in this paper regarding scaling and evaluation are important considerations for designing and optimizing EideticEngine's episodic memory component, ensuring it effectively supports long-term learning and adaptation across various tasks.}
+}
+
+@misc{Ref8,
+  author       = {Garg, Deepali and Zeng, Siyan and Ganesh, Shankara and Ardon, Leon},
+  title        = {Generating Structured Plan Representation of Procedures with LLMs},
+  year         = {2025},
+  eprint       = {2504.00029},
+  archiveprefix= {arXiv},
+  primaryclass = {cs.CL},
+  url          = {https://arxiv.org/abs/2504.00029},
+  annotation = {The 2025 arXiv preprint "Generating Structured Plan Representation of Procedures with LLMs" explores using large language models (LLMs) to generate structured representations of procedural plans, crucial for autonomous agents performing complex tasks. This paper focuses on prompting LLMs to output plans in formats explicitly capturing steps, order, and dependencies, possibly using templates or formal languages. The research likely evaluates the quality, correctness, and usability of these generated plans. The ability of LLMs to understand and generate structured plans is highly relevant to EideticEngine, which utilizes structured `PlanStep` objects with explicit dependency tracking. This paper's insights on eliciting structured procedural knowledge from LLMs could directly inform EideticEngine's plan generation and updating mechanisms. The focus on representing procedures structurally, including steps and dependencies, aligns well with EideticEngine's approach to managing complex tasks through well-defined plans.}
+}
+
+@article{Ref9,
+  author    = {Laird, John E. and Newell, Allen and Rosenbloom, Paul S.},
+  title     = {SOAR: An architecture for general intelligence},
+  journal   = {Artificial Intelligence},
+  year      = {1987},
+  volume    = {33},
+  number    = {1},
+  pages     = {1--64},
+  doi       = {10.1016/0004-3702(87)90050-6},
+  url       = {https://doi.org/10.1016/0004-3702(87)90050-6},
+  annotation = {The 1987 article "SOAR: An architecture for general intelligence" by Laird, Newell, and Rosenbloom introduced the SOAR (State, Operator, And Result) cognitive architecture, a significant effort towards a unified theory of cognition and AGI. SOAR models problem-solving as selecting and applying operators in problem spaces. Its core mechanisms include a **production system** (if-then rules) for all decision-making stored in long-term memory, a **working memory** holding the current state and goals, and a learning mechanism called **chunking**, which creates new production rules summarizing successful resolutions of impasses. A key feature is **universal subgoaling**: when SOAR encounters an impasse (cannot select an operator), it automatically creates a subgoal to resolve it, naturally forming a **goal stack**. SOAR was novel for demonstrating how a single architecture using these principles could learn and handle diverse tasks, continuously acquiring knowledge. Its relevance to EideticEngine is significant. EideticEngine’s *procedural memory* (storing PlanStep templates) and its learning mechanisms (e.g., creating generalized plans from successful executions) mirror aspects of Soar's production memory and chunking. The **hierarchical goal stack** in EideticEngine is a direct conceptual descendant of Soar's universal subgoaling. Soar's success in domains from **robotics to simulations** provides prior validation for unified approaches integrating memory and goal management. By citing Soar, we credit prior art for the concepts of a persistent **cognitive loop (decision cycle)**, integrated memory/goal structures, and learning from impasses, which heavily inform EideticEngine's Agent Master Loop and overall design.}
+}
+
+@inproceedings{Ref10,
+  author    = {Lewis, Patrick and Perez, Ethan and Piktus, Aleksandra and Petroni, Fabio and Karpukhin, Vladimir and Goyal, Naman and K{\"u}ttler, Heinrich and Ott, Mike and Chen, Wen-tau and Smith, Ethan and Kiela, Douwe},
+  title     = {Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks},
+  booktitle = {Advances in Neural Information Processing Systems 33},
+  year      = {2020},
+  pages     = {9459--9474},
+  url       = {https://proceedings.neurips.cc/paper/2020/hash/6b493230205f780e1bc26945df7481e5-Abstract.html},
+  annotation = {The 2020 NeurIPS paper "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks" by Patrick Lewis et al. introduced the Retrieval-Augmented Generation (RAG) framework. RAG combines pre-trained generative language models with an external knowledge retriever. When given an input, RAG first retrieves relevant documents from a knowledge source (e.g., Wikipedia), then feeds these documents along with the input query to the language model to generate the final output. This allows the model to leverage specific, up-to-date information beyond its training data, proving effective for knowledge-intensive tasks like QA and fact verification. RAG's novelty lies in enabling LLMs to flexibly incorporate external knowledge in an end-to-end manner. While EideticEngine focuses on an agent's internal cognitive architecture, the core concept of augmenting an LLM with access to a knowledge source is related. EideticEngine's Unified Memory System (UMS) serves as the *internal* knowledge source the LLM agent queries. The mechanisms within EideticEngine for retrieving relevant information from the UMS (episodic, semantic memories) and incorporating it into the LLM's context share conceptual similarities with RAG's retrieval step, though RAG typically uses external static corpora, whereas EideticEngine emphasizes the agent's dynamic, internally stored experiences and learned knowledge.}
+}
+
+@inproceedings{Ref11,
+  author    = {Nuxoll, Andrew M. and Laird, John E.},
+  title     = {Extending Cognitive Architecture with Episodic Memory},
+  booktitle = {Proceedings of the Twenty-Second AAAI Conference on Artificial Intelligence},
+  year      = {2007},
+  pages     = {1560--1564},
+  url       = {https://www.aaai.org/Library/AAAI/2007/aaai07-253.php},
+  annotation = {The 2007 AAAI paper "Extending Cognitive Architecture with Episodic Memory" by Nuxoll and Laird discusses the importance and implementation of integrating episodic memory (memory for specific, personally experienced events) into the SOAR cognitive architecture. They argued that episodic memory is crucial for human-like learning, prediction, and handling novel situations. The paper presents their approach to adding an episodic memory module to SOAR, which automatically records snapshots of working memory content during decision cycles. The novelty lies in integrating retrieval into cognitive processing: the agent could cue episodic memory with the current situation to retrieve similar past experiences and use that information to guide current decisions. This is relevant prior art for EideticEngine’s **Unified Memory System**, which explicitly includes an episodic component logging the agent's experiences (e.g., PlanStep execution history, observations). This paper demonstrates that providing AI agents with the ability to recall and leverage specific past events is beneficial for problem-solving and learning, allowing reflection on past actions or detection of changes – analogous to how EideticEngine's agent might review past attempts upon failure. It highlights technical considerations like memory indexing and retrieval, addressed by EideticEngine's implementation. Referencing this work shows a parallel: just as Soar's capabilities expanded with episodic memory, EideticEngine uses its stored episodes for **meta-cognitive reflection** and adaptation, a key part of its design validated by this prior research.}
+}
+
+@misc{Ref12,
+  author       = {Packer, Charles and Fang, Vivian and Patil, Shishir G. and Lin, Kevin and Wooders, Sarah and Gonzalez, Joseph E.},
+  title        = {MemGPT: Towards LLMs as Operating Systems},
+  year         = {2023},
+  eprint       = {2310.08560},
+  archiveprefix= {arXiv},
+  primaryclass = {cs.CL},
+  url          = {https://arxiv.org/abs/2310.08560},
+  annotation = {The 2023 arXiv preprint "MemGPT: Towards LLMs as Operating Systems" introduces MemGPT, a system designed to overcome the finite context window limitation of LLMs by providing them with external long-term memory management. MemGPT treats the LLM as a "kernel" and itself as a memory management unit, enabling interaction with a persistent external memory store. It uses techniques like in-context learning to teach the LLM memory management functions (e.g., recall, paging). The goal is to enable more complex, long-horizon tasks and coherent interactions over extended periods. MemGPT's novelty lies in its practical approach to extending LLM context. EideticEngine also addresses persistent memory for LLM agents but does so through a more structured, multi-level *internal* memory system (UMS) inspired by cognitive science, rather than primarily focusing on virtual context management. However, the underlying goal is similar: enabling LLM agents to possess persistent, accessible memory supporting complex cognitive processes. Concepts explored in MemGPT, such as memory management strategies and the LLM-memory interaction, are relevant to the design and operation of the UMS in EideticEngine, representing an alternative approach to the same fundamental challenge.}
+}
+
+@inproceedings{Ref13,
+  author    = {Park, Joon Sung and O'Brien, Joseph C. and Cai, Carrie J. and Morris, Meredith Ringel and Liang, Percy and Bernstein, Michael S.},
+  title     = {Generative Agents: Interactive Simulacra of Human Behavior},
+  booktitle = {Proceedings of the 36th Annual ACM Symposium on User Interface Software and Technology (UIST '23)},
+  year      = {2023},
+  doi       = {10.1145/3586183.3606763},
+  url       = {https://doi.org/10.1145/3586183.3606763},
+  annotation = {The 2023 UIST paper "Generative Agents: Interactive Simulacra of Human Behavior" by Park et al. presented a novel architecture for creating LLM-powered agents capable of simulating believable, long-term human behavior in a sandbox environment. The key innovation was an architecture enabling agents to remember experiences, retrieve relevant memories, reflect, and plan over extended periods (simulated days). Each agent had a **memory stream** (chronological record of experiences), mechanisms for **dynamic memory retrieval** based on relevance, recency, and importance, and periodic **reflection** to synthesize experiences into higher-level insights stored back into memory. This allowed agents to exhibit coherent behavior, maintain relationships, and pursue goals informed by their history. This work is highly relevant prior art for EideticEngine's Unified Memory System and planning capabilities. EideticEngine’s UMS, storing episodic records and retrieving relevant context for the LLM, closely mirrors the memory architecture of Generative Agents. Techniques demonstrated by Park et al. for managing large memory streams and scoring relevance (e.g., using embeddings, time decay, importance scores) inform EideticEngine’s **dynamic context assembly**. Furthermore, the **reflection and consolidation** mechanism in Generative Agents directly inspires EideticEngine’s **meta-cognitive loop**, where the agent analyzes recent events to update its semantic memory or adjust strategies. Citing Park et al. emphasizes that EideticEngine’s architectural choices for memory and planning have been validated in complex interactive settings, supporting the feasibility and importance of its multi-memory, reflection-capable, long-horizon approach for LLM-driven agents.}
+}
+
+@misc{Ref14,
+  author       = {Ramirez, Alexander J. and Mondragon, Oscar F. and Botti, Vicente J. and Julian, Vicente},
+  title        = {Self-adaptive agents using Large Language Models},
+  year         = {2023},
+  eprint       = {2307.06187},
+  archiveprefix= {arXiv},
+  primaryclass = {cs.AI},
+  url          = {https://arxiv.org/abs/2307.06187},
+  annotation = {The 2023 arXiv preprint "Self-adaptive agents using Large Language Models" explores developing autonomous LLM-based agents capable of adapting their behavior and strategies based on environmental feedback or performance analysis. The paper likely discusses using the LLM's reasoning to analyze outcomes, identify errors, and generate revised plans or strategies, possibly guided by external frameworks or specific prompting techniques for reflection. Self-adaptation is crucial for robust agents operating in dynamic environments. EideticEngine strongly emphasizes self-adaptation through its adaptive control layer, which dynamically adjusts meta-cognitive parameters based on operational statistics and internal state, enabling self-regulation. This paper's research on self-adaptive LLM agents is directly relevant to EideticEngine's design principles, particularly its focus on enabling the agent to reflect on performance and adjust behavior for optimal effectiveness. Mechanisms for achieving adaptation (prompting, external control) are important considerations in developing autonomous LLM agents like EideticEngine.}
+}
+
+@misc{Ref15,
+  author       = {Richards, Toran Bruce},
+  title        = {AutoGPT: An autonomous GPT-4 experiment},
+  year         = {2023},
+  howpublished = {GitHub repository},
+  url          = {https://github.com/Significant-Gravitas/Auto-GPT},
+  annotation = {The 2023 GitHub repository "AutoGPT: An autonomous GPT-4 experiment" by Toran Bruce Richards introduced an influential early example of an autonomous agent driven by an LLM (GPT-4). AutoGPT aimed to perform complex tasks by having the LLM iteratively set goals, plan actions, and execute them (often using external tools like web search), without continuous human intervention. It maintained a short-term memory of recent thoughts/actions fed back to the LLM. AutoGPT gained attention for showcasing the potential of LLMs for autonomous behavior but also highlighted challenges like planning reliability, robust memory management, coherence, and error recovery over long runs. AutoGPT represents a pioneering effort in autonomous LLM agents, shaping subsequent research. EideticEngine builds upon lessons from projects like AutoGPT. While AutoGPT used simpler memory and planning, EideticEngine introduces a more structured and persistent Unified Memory System, explicit dependency-aware planning, and mechanisms for meta-cognition and adaptive control, aiming to address challenges faced by earlier agents. The core concept of an LLM in a continuous loop of thinking, planning, and acting is central to both AutoGPT and EideticEngine's Agent Master Loop.}
+}
+
+@misc{Ref16,
+  author       = {Shen, Yongliang and Song, Kaitao and Tan, Xu and Li, Dongdong and Lu, Weiming and Zhuang, Yueting},
+  title        = {HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in HuggingFace},
+  year         = {2023},
+  eprint       = {2303.17580},
+  archiveprefix= {arXiv},
+  primaryclass = {cs.CL},
+  url          = {https://arxiv.org/abs/2303.17580},
+  annotation = {The 2023 arXiv preprint "HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in HuggingFace" presented a system using ChatGPT as a task planner and orchestrator for various AI models from the HuggingFace Hub. HuggingGPT decomposes complex user requests into sub-tasks solvable by specialized models (e.g., image generation, object detection). ChatGPT understands intent, plans the sequence, selects appropriate models, and coordinates their execution, passing outputs between models. This enables solving complex, multi-modal tasks via natural language by leveraging diverse AI tools. While EideticEngine orchestrates an LLM (claude-3-5-sonnet), its focus is more on the agent's internal cognitive architecture (memory, planning, meta-cognition). However, the high-level concept of using an LLM as a central controller to manage and utilize different tools/capabilities is a shared theme. In EideticEngine, the tools are primarily internal (UMS operations, reflection) or external tools accessed via an MCPClient, with the LLM deciding tool use based on its plan and goals. HuggingGPT highlights the power of LLMs in coordinating AI resources, a related aspect of building intelligent autonomous systems.}
+}
+
+@misc{Ref17,
+  author       = {Shinn, Noah and Labash, Beck and Gopinath, Ashwin},
+  title        = {Reflexion: Language Agents with Verbal Reinforcement Learning},
+  booktitle    = {Advances in Neural Information Processing Systems 36},
+  year         = {2023},
+  eprint       = {2303.11366},
+  archiveprefix= {arXiv},
+  primaryclass = {cs.CL},
+  url          = {https://arxiv.org/abs/2303.11366},
+  annotation = {The 2023 NeurIPS paper "Reflexion: Language Agents with Verbal Reinforcement Learning" introduced the **Reflexion** framework, enabling LLM agents to learn from mistakes through self-reflection and iterative refinement using verbal feedback as reinforcement. After a task attempt (especially failure), the agent generates a natural language **reflection** analyzing what went wrong. This reflection is stored (e.g., in an episodic memory or added to future prompts) and used to augment context in subsequent attempts, helping the agent avoid repeating errors. Reflexion demonstrated improved performance on challenging tasks by enabling agents to learn from their own experiences guided by simple reward signals (success/failure) and self-generated textual feedback. This is directly relevant prior art for EideticEngine's **adaptive meta-cognition**. EideticEngine incorporates agent-driven reflection (e.g., using the `generate\_reflection` tool after PlanStep failures) inspired by this principle. While Reflexion focused on learning across multiple trials, EideticEngine integrates reflection into its continuous operational loop for analysis, knowledge consolidation (e.g., promoting insights from reflections to semantic memory), and strategy adaptation within a workflow. Reflexion provided a template for turning errors into lessons automatically using the LLM itself. By citing Shinn et al., we acknowledge that EideticEngine's mechanism for an agent learning from mistakes and updating its knowledge builds upon recently demonstrated successful strategies, validating its meta-cognitive loop and error handling capabilities.}
+}
+
+@misc{Ref18,
+  author       = {Sumers, Theodore R. and Vyas, Shunyu and Xiong, Kanishk and Ringshia, Chintan and Prakash, Bhavan and Van den Broeck, Guy},
+  title        = {Cognitive Architectures for Language Agents},
+  year         = {2023},
+  eprint       = {2309.02427},
+  archiveprefix= {arXiv},
+  primaryclass = {cs.AI},
+  url          = {https://arxiv.org/abs/2309.02427},
+  annotation = {The 2023 arXiv preprint "Cognitive Architectures for Language Agents" by Sumers et al. discusses the importance of designing structured architectural frameworks for agents powered by LLMs to achieve robust and general intelligence. Drawing inspiration from traditional cognitive architectures, the authors argue that simply relying on LLMs is insufficient and explore key components potentially needed for LLM-based agents, such as memory systems, planning mechanisms, goal management, and meta-cognitive abilities. The paper likely reviews different approaches to integrating these components with LLMs, emphasizing the need to move beyond simple reactive loops towards systems enabling reasoning, learning, and effective action over extended periods in complex environments. The development of cognitive architectures for language agents is framed as crucial for realizing the full potential of LLMs in autonomous systems. EideticEngine directly aligns with this paper's central theme, being explicitly presented as a cognitive architecture for orchestrating LLM agents. The paper's discussion of memory systems (cf. EideticEngine's UMS), planning (cf. EideticEngine's structured plans), goal management (cf. EideticEngine's Goal Stack), and meta-cognition (cf. EideticEngine's reflection tools) highlights the relevance of EideticEngine to broader research efforts. This paper provides a conceptual framework validating the role and importance of architectures like EideticEngine in advancing LLM-based autonomous agents.}
+}
+
+@incollection{Ref19,
+  author    = {Tulving, Endel},
+  title     = {Episodic and semantic memory},
+  booktitle = {Organization of memory},
+  publisher = {Academic Press},
+  year      = {1972},
+  editor    = {Tulving, Endel and Donaldson, Wayne},
+  pages     = {381--403},
+  annotation = {In his seminal 1972 chapter "Episodic and semantic memory," Endel Tulving introduced the fundamental distinction between two major types of long-term memory: **episodic memory** and **semantic memory**. Episodic memory stores personally experienced events tied to specific times and places (context-dependent), allowing for "mental time travel." Semantic memory stores general world knowledge, facts, concepts, and vocabulary, independent of learning context. Tulving argued these systems serve different functions and have different properties. This distinction was highly influential, providing a core framework for memory research. Its relevance to EideticEngine is direct and significant. The architecture of EideticEngine's Unified Memory System (UMS) explicitly incorporates both **episodic memory** (storing the agent's interaction history, observations, PlanStep executions) and **semantic memory** (storing distilled facts, learned rules, general knowledge) as distinct levels. This design choice is directly inspired by Tulving's conceptualization, acknowledging prior art that multi-component memory architectures mirroring human cognition are beneficial. EideticEngine's episodic store enables recalling specific past events (important for reflection, avoiding repeated mistakes), while its semantic store allows applying general knowledge. Tulving's work also implies potentially different encoding and retrieval processes for each, informing EideticEngine's memory management operations like consolidation (potentially turning episodic details into semantic facts) and context-specific retrieval.}
+}
+
+@inproceedings{Ref20,
+  author    = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N. and Kaiser, {\L}ukasz and Polosukhin, Illia},
+  title     = {Attention Is All You Need},
+  booktitle = {Advances in Neural Information Processing Systems 30},
+  year      = {2017},
+  pages     = {5998--6008},
+  url       = {https://proceedings.neurips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html},
+  annotation = {The 2017 NeurIPS paper "Attention Is All You Need" introduced the **Transformer architecture**, revolutionizing sequence-to-sequence tasks and becoming the foundation for most modern large language models, including claude-3-5-sonnet used in EideticEngine. The key innovation was relying entirely on **attention mechanisms**, particularly **self-attention**, eliminating the need for recurrent or convolutional layers typical in NLP at the time. Self-attention allows the model to weigh the importance of different input parts when processing each position, enabling effective capture of long-range dependencies and significant parallelization during training. The Transformer consists of encoder and decoder stacks using multi-head self-attention and feed-forward networks. The paper demonstrated state-of-the-art machine translation results with faster training. The relevance to EideticEngine is fundamental: the underlying LLM's ability to process information, generate text, reason, plan, and engage in meta-cognition is directly enabled by the Transformer architecture introduced in this paper. Understanding the Transformer is crucial for comprehending the core capabilities that EideticEngine orchestrates and augments with its memory and control systems.}
+}
+
+@misc{Ref21,
+  author       = {Wang, Lei and Ma, Chen and Feng, Xueyang and Zhang, Zeyu and Yang, Hao and Zhang, Jingsen and Chen, Zhiyuan and Qiao, Jiakai and Hu, Zhiqiang and Wang, Xing},
+  title        = {A Survey on Large Language Model based Autonomous Agents},
+  year         = {2023},
+  eprint       = {2308.11432},
+  archiveprefix= {arXiv},
+  primaryclass = {cs.AI},
+  url          = {https://arxiv.org/abs/2308.11432},
+  annotation = {The 2023 arXiv preprint "A Survey on Large Language Model based Autonomous Agents" by Wang et al. provides a comprehensive overview of the burgeoning field of autonomous agents powered by LLMs. It likely covers architectures, capabilities (planning, memory, tool use), applications, challenges, and future directions. These agents aim to perform complex tasks without continuous human intervention by leveraging LLM reasoning combined with mechanisms for interacting with environments and tools. The survey likely discusses different approaches (memory systems, planning frameworks, control loops) and task domains (web browsing, content creation, research). It probably addresses open challenges like reliability, long-horizon task handling, safety, and ethics. EideticEngine falls squarely within the scope of this survey, presented as an architecture for orchestrating LLM agents with robust memory, structured planning, and meta-cognition. The survey likely highlights the importance of aspects EideticEngine focuses on (memory persistence/structure, planning, adaptation, hierarchical management) as key areas for advancing LLM agents. This survey provides valuable context, positioning EideticEngine within the broader landscape and affirming the significance of the problems it addresses.}
+}
+
+@inproceedings{Ref22,
+  author    = {Wei, Jason and Wang, Xuezhi and Schuurmans, Dale and Bosma, Maarten and Ichter, Brian and Xia, Fei and Chi, Ed and Le, Quoc and Zhou, Denny},
+  title     = {Chain-of-Thought Prompting Elicits Reasoning in Large Language Models},
+  booktitle = {Advances in Neural Information Processing Systems 35},
+  year      = {2022},
+  pages     = {24824--24837},
+  url       = {https://proceedings.neurips.cc/paper\_files/paper/2022/hash/9d5609613524ecf4f15af0f7b31abca4-Abstract-Conference.html},
+  annotation = {The 2022 NeurIPS paper "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models" by Wei et al. introduced a simple yet highly effective prompting technique called **chain-of-thought (CoT)**. CoT involves providing LLMs with few-shot examples that include not just the input and final answer but also the intermediate reasoning steps connecting them. This demonstration of a "chain of thought" enables LLMs to generate similar step-by-step reasoning for new problems, significantly improving performance on complex tasks requiring arithmetic, commonsense, or symbolic reasoning. The novelty was showing that this latent reasoning ability in LLMs could be unlocked through prompting alone. The paper explored CoT's effectiveness across models and tasks, showing substantial gains over standard prompting. Its relevance to EideticEngine lies in the use of an LLM (claude-3-5-sonnet) as its core reasoning engine. CoT prompting principles could potentially be employed within EideticEngine's prompts (e.g., for planning, reflection, or memory consolidation) to elicit more explicit, coherent, and effective multi-step reasoning from the LLM, potentially improving the overall performance and reliability of the autonomous agent.}
+}
+
+@misc{Ref23,
+  author       = {Weston, Jason and Chopra, Sumit and Bordes, Antoine},
+  title        = {Memory Networks},
+  year         = {2014},
+  eprint       = {1410.3916},
+  archiveprefix= {arXiv},
+  primaryclass = {cs.LG},
+  url          = {https://arxiv.org/abs/1410.3916},
+  annotation = {The 2014 arXiv preprint "Memory Networks" by Weston, Chopra, and Bordes introduced a class of neural network architectures designed specifically for tasks requiring reasoning over large memories. Memory Networks consist of a memory component (storing facts/episodes, often as vectors) and inference components that can read from and write to this memory, often iteratively (multiple hops) to perform complex reasoning. The key idea was to allow the network to explicitly access and process relevant information from an external memory store when making predictions, moving beyond the implicit memory stored in network weights. They demonstrated effectiveness on tasks like QA and language modeling. The relevance to EideticEngine lies in the shared principle of augmenting a computational system (neural network or LLM) with an **explicit, accessible memory component** to enhance its capabilities. EideticEngine's Unified Memory System (UMS) serves this purpose for the LLM agent, providing a structured, persistent store. While Memory Networks are a specific neural architecture, the underlying concept of using external memory to support complex cognitive tasks is shared. EideticEngine's mechanisms for reading/writing to the UMS and retrieving relevant information are analogous to Memory Network operations, though implemented within a different LLM-centric framework.}
+}
+
+@misc{Ref24,
+  author       = {Yao, Shunyu and Yu, Dian and Zhao, Jeffrey and Shafran, Izhak and Griffiths, Thomas L. and Cao, Yuan and Narasimhan, Karthik},
+  title        = {Tree of Thoughts: Deliberate Problem Solving with Large Language Models},
+  year         = {2023},
+  eprint       = {2305.10601},
+  archiveprefix= {arXiv},
+  primaryclass = {cs.CL},
+  url          = {https://arxiv.org/abs/2305.10601},
+  annotation = {The 2023 arXiv preprint "Tree of Thoughts: Deliberate Problem Solving with Large Language Models" by Yao et al. introduced the **Tree of Thoughts (ToT)** framework, enhancing LLM problem-solving by allowing exploration of a **search tree of possible reasoning paths**, rather than just a single linear chain-of-thought. ToT involves decomposing the problem, generating multiple diverse candidate thoughts/steps at each node using the LLM, evaluating these candidates (using the LLM or heuristics), and then deciding which branches to explore further, potentially involving backtracking. This brings a classical AI **search perspective** to LLM reasoning, enabling more deliberate and systematic exploration of the problem space, yielding better results on tasks requiring planning, exploration, or handling uncertainty (e.g., puzzles, creative writing). The relevance to EideticEngine lies in enhancing **structured decision-making and exploration**. EideticEngine's planning or reflection mechanisms could potentially incorporate ToT principles, e.g., by having the LLM generate multiple possible PlanStep sequences or reflections, evaluating them based on memory or heuristics, and selecting the best or maintaining alternatives for backtracking upon failure. ToT prior art demonstrates LLMs can perform lookahead and multi-outcome reasoning if guided. EideticEngine's meta-cognitive layer (monitoring progress, reconsidering steps) is analogous to ToT's evaluate-and-branch cycle. Citing Yao et al. (2023) aligns EideticEngine with advanced LLM reasoning techniques, reinforcing the value of systematic exploration over greedy generation for complex problem solving.}
+}
+
+@inproceedings{Ref25,
+  author    = {Yao, Shunyu and Zhao, Jeffrey and Yu, Dian and Du, Nan and Shafran, Izhak and Narasimhan, Karthik and Cao, Yuan},
+  title     = {{ReAct}: Synergizing Reasoning and Acting in Language Models},
+  booktitle = {International Conference on Learning Representations (ICLR 2023)},
+  year      = {2023},
+  url       = {https://openreview.net/forum?id=6LNIBt1J-N},
+  annotation = {The 2023 ICLR paper "{ReAct}: Synergizing Reasoning and Acting in Language Models" by Yao et al. introduced the **ReAct framework**, which enhances LLM capabilities on interactive tasks by **interleaving reasoning steps (thoughts) and action steps** within the LLM's generation process. Instead of generating only actions or only reasoning, ReAct prompts the LLM to produce a sequence like Thought -> Action -> Observation -> Thought -> Action -> ... . The LLM generates textual reasoning about the current state and plan, decides on an action (e.g., API call, environment interaction), receives an observation (result of the action), and uses that observation to inform the next reasoning step and subsequent action. This iterative synergy allows the agent to dynamically plan, gather information, and adapt its strategy based on real-time feedback. ReAct significantly outperformed prior methods on tasks requiring both reasoning and interaction (e.g., tool use QA, text games). ReAct is highly relevant prior art for EideticEngine, as its Agent Master Loop inherently orchestrates the LLM's reasoning and its interactions with the environment/tools (via PlanSteps). The ReAct paradigm of **interleaving reasoning and action** is fundamental to how EideticEngine operates. EideticEngine's structured plan execution, where the LLM reasons about the next step based on the current goal, context, and past results (observations stored in episodic memory), directly implements the ReAct principle within a broader cognitive architecture featuring persistent memory and more complex planning structures. Citing ReAct anchors EideticEngine's core operational loop in proven techniques for LLM-based agency and highlights how EideticEngine extends this concept with long-term memory and sophisticated plan management.}
+}

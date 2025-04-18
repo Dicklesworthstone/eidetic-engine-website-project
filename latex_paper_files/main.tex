@@ -1,0 +1,631 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- CORE PACKAGES ---
+% \usepackage[utf8]{inputenc} % No longer needed with XeLaTeX
+\usepackage[T1]{fontenc}    % Keep for compatibility if some packages expect it
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\geometry{margin=2.5cm} % Page margins
+\usepackage{microtype} % ADDED: Improves justification and reduces overfull boxes
+
+% --- FONT & ENCODING (REQUIRES XeLaTeX) ---
+\usepackage{fontspec}
+% \setmainfont{Your Preferred Font} % Optional: Set your main document font if desired
+% \newfontfamily\emojifont{Noto Color Emoji} % Font needs to be installed
+% \newcommand{\emoji}[1]{\emojifont #1}
+% NOTE: Emoji lines commented out assuming font might not be installed/needed for now.
+
+% --- SPACING & LAYOUT ---
+\usepackage[skip=0.5\baselineskip]{parskip} % Adds vertical space between paragraphs instead of indentation
+\usepackage{setspace} % Optional: If you need finer control over line spacing
+% \onehalfspacing
+% Removed: \usepackage{seqsplit} - Seqsplit in \code was too aggressive
+
+% --- SECTION FORMATTING ---
+\usepackage{titlesec}
+\titleformat{\section}
+  {\normalfont\fontsize{12}{15}\bfseries} {\thesection} {1em} {} []
+\titleformat{\subsection}
+  {\normalfont\fontsize{11}{13}\bfseries} {\thesubsection} {1em} {} []
+\titleformat{\subsubsection}
+  {\normalfont\fontsize{10}{12}\bfseries} {\thesubsubsection} {1em} {} []
+\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.5ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{3.25ex plus 1ex minus .2ex}{2.0ex plus .2ex}
+\titlespacing*{\subsubsection}{0pt}{3.25ex plus 1ex minus .2ex}{1.8ex plus .2ex}
+
+% --- CODE & URL FORMATTING ---
+\usepackage{xurl}
+\urlstyle{tt}
+% REVERTED \code command: Using standard \texttt. Requires manual escaping of underscores (\_)!
+% \newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\code}[1]{\nolinkurl{#1}}
+
+\makeatletter
+\g@addto@macro\UrlBreaks{\do\_} % Still useful for hyperref's \url command
+\makeatother
+
+% --- CODE HIGHLIGHTING (Optional Setup - Minted) ---
+\usepackage{minted}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins}
+\definecolor{verylightgray}{RGB}{248, 248, 248}
+% \newtcolorbox{pageablecode}[1][]{...} % Still commented out
+
+% --- CAPTIONS ---
+\usepackage{caption}
+\DeclareCaptionFont{smallfont}{\footnotesize}
+\captionsetup{ font={smallfont}, labelfont=bf, singlelinecheck=false, skip=10pt }
+
+% --- BIBLIOGRAPHY (Biblatex with Biber) ---
+\usepackage[backend=biber, style=numeric, sorting=none]{biblatex}
+\addbibresource{references.bib}
+\DeclareFieldFormat{annotation}{%
+  \par\medskip\small\textbf{Annotation:} \textit{#1}}
+\renewbibmacro*{finentry}{\finentry\newunit\newblock\printfield{annotation}}
+
+% --- HYPERLINKS ---
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan, citecolor=green,
+    pdftitle={EideticEngine: Adaptive LLM Agent Orchestration}, pdfauthor={Jeffrey Emanuel},
+    pdfpagemode=UseNone, pdfstartview=FitH
+}
+
+% --- TITLE INFO ---
+% ADDED manual line breaks (\\) for better balance
+\title{\LARGE \bf EideticEngine: Adaptive LLM Agent Orchestration with Multi-Level Memory and Performance-Driven Meta-Cognition}
+\author{Jeffrey Emanuel}
+\date{Originally written April 13, 2025 \\ Revised \today}
+
+% ==============================================================================
+\begin{document}
+% ==============================================================================
+
+\maketitle
+\vspace{2\baselineskip} % ADDED: Extra vertical space before Abstract
+
+\begin{abstract}
+Large Language Models (LLMs) form the reasoning core of increasingly sophisticated autonomous agents. However, unlocking their full potential for complex, long-horizon tasks requires architectures that transcend reactive loops and shallow memory. We present \textbf{EideticEngine}, a novel cognitive architecture designed to imbue LLM agents with robust memory, structured planning, hierarchical goal management, and adaptive self-management capabilities inspired by cognitive science.
+\onehalfspacing
+EideticEngine integrates two key components:
+\onehalfspacing
+\begin{enumerate}
+    \item \textbf{Unified Memory System (UMS)}: A persistent, multi-level cognitive workspace implemented on an optimized asynchronous SQLite database (\code{aiosqlite}), featuring distinct memory types (\code{WORKING}, \code{EPISODIC}, \code{SEMANTIC}, \code{PROCEDURAL}), rich metadata (importance, confidence, TTL), explicit typed linking, hybrid search (semantic, keyword/FTS, attribute filtering), and integrated workflow tracking (actions, artifacts, thoughts).
+    \item \textbf{Agent Master Loop (AML)}: An adaptive orchestrator that directs an LLM (specifically \textbf{Claude 3.7 Sonnet}) using the UMS. The AML manages structured, dependency-aware plans (\code{PlanStep} objects with explicit \code{depends\_on} validation), supports hierarchical task decomposition via an explicit \textbf{Goal Stack} (\code{push\_sub\_goal}, \code{mark\_goal\_status}), dynamically assembles comprehensive context (including goal state and memory freshness indicators) from the UMS, handles categorized errors resiliently, incorporates a \textbf{Mental Momentum} bias to favor stable progress, and crucially, orchestrates \textbf{agent-driven meta-cognition}.
+\end{enumerate} % REMEMBER: underscores in \code above need escaping, e.g., depends\_on, push\_sub\_goal
+
+Through specific UMS tools, the agent actively reflects on its performance (\code{generate\_reflection}), consolidates knowledge (\code{consolidate\_memories}), promotes memories between cognitive levels (\code{promote\_memory\_level}), manages its attentional focus (\code{optimize\_working\_memory}, \code{auto\_update\_focus}), and manages reasoning threads (\code{create\_thought\_chain}). Furthermore, EideticEngine incorporates an \textbf{adaptive control layer} (\code{\_adapt\_thresholds}) where meta-cognitive parameters (e.g., reflection/consolidation frequency) are dynamically adjusted based on real-time operational statistics derived from the UMS (\code{compute\_memory\_statistics}) and internal state (\code{tool\_usage\_stats}), enabling the agent to self-regulate its cognitive overhead based on performance. % REMEMBER: escape underscores in \code here too!
+
+We provide detailed architectural analysis demonstrating EideticEngine's ability to support agents navigating complex analytical and creative tasks, exhibiting structured learning, dependency management, error recovery, adaptive behavior, and hierarchical goal pursuit. EideticEngine represents a significant architectural advance, providing essential infrastructure for developing more capable, persistent, and introspective general-purpose AI agents.
+\end{abstract}
+
+\section{Introduction: Towards Cognitive Autonomy in LLM Agents}
+
+The remarkable generative and reasoning abilities of Large Language Models (LLMs) \cite{Ref5, Ref20} have catalyzed the development of autonomous agents aimed at complex problem-solving. Yet, the transition from impressive demonstrations to robust, reliable agents capable of sustained, adaptive operation across diverse, long-horizon tasks remains a formidable challenge \cite{Ref21}. Current agent frameworks often grapple with fundamental limitations:
+
+\begin{itemize}
+    \item \textbf{Memory Persistence \& Structure:} Reliance on ephemeral prompt context or simplistic memory buffers (e.g., chat history, basic vector stores) hinders long-term learning, recall of structured knowledge, and understanding of temporal or causal relationships \cite{Ref12, Ref23}. EideticEngine addresses this with its persistent, multi-level UMS.
+    \item \textbf{Planning \& Execution:} Ad-hoc or reactive planning struggles with complex sequences, interdependencies, and resource management. Lack of explicit dependency tracking leads to brittleness and execution failures \cite{Ref15, Ref25}. EideticEngine employs structured \code{PlanStep} objects with validated \code{depends\_on} relationships.
+    \item \textbf{Adaptation \& Learning:} Most agents lack mechanisms for reflecting on past actions, learning from errors (beyond simple retries), synthesizing experiences into general knowledge, or adapting their strategies based on performance \cite{Ref14, Ref17}. EideticEngine incorporates agent-driven meta-cognition tools and performance-based adaptive control.
+    \item \textbf{Hierarchical Task Management:} Agents often struggle to manage complex goals requiring decomposition into sub-tasks while maintaining focus and context \cite{Ref8}. EideticEngine implements an explicit Goal Stack for this purpose.
+    \item \textbf{Cognitive Coherence:} Agents often lack a unified internal state representation that integrates perception, memory, reasoning, planning, goals, and action within a consistent framework. EideticEngine aims to provide this coherence through the integrated UMS and AML state (\code{AgentState}).
+\end{itemize}
+
+To address these critical gaps, we introduce \textbf{EideticEngine}, a comprehensive cognitive architecture designed explicitly for orchestrating advanced LLM agents (specifically tested with Anthropic's \code{claude-3-7-sonnet-20250219}). EideticEngine is not merely an LLM wrapper or a collection of tools; it is an integrated system built upon two deeply interconnected components:
+
+\begin{enumerate}
+    \item \textbf{The Unified Memory System (UMS):} A persistent, multi-layered cognitive substrate. Inspired by human memory models \cite{Ref3, Ref19}, the UMS provides distinct but interconnected stores for working, episodic, semantic, and procedural memory (\code{MemoryLevel} enum). Implemented using an optimized asynchronous SQLite backend (\code{aiosqlite}) with a detailed relational schema (including deferred foreign keys for circular references), it tracks not only memories with rich metadata (e.g., \code{importance}, \code{confidence}, \code{ttl}, \code{tags}, provenance via \code{action\_id}/\code{thought\_id}/\code{artifact\_id} foreign keys) but also the agent's entire operational history: workflows, hierarchical actions (with explicit dependencies via the \code{dependencies} table), generated artifacts, and structured thought chains. It incorporates hybrid search mechanisms (semantic via vector embeddings in the \code{embeddings} table, keyword via FTS5 in \code{memory\_fts}, and relational attribute filtering via \code{query\_memories}) and supports dynamic memory evolution through explicit linking (\code{create\_memory\_link}) and agent-triggered consolidation (\code{consolidate\_memories}) and promotion (\code{promote\_memory\_level}). It maintains detailed audit logs in the \code{memory\_operations} table.
+
+    \item \textbf{The Agent Master Loop (AML):} An adaptive control loop that orchestrates the agent's interaction with the UMS and the external world (via tools dispatched by an MCPClient). The AML directs the core LLM by providing it with dynamically assembled, multi-faceted context (\code{\_gather\_context}) drawn from the UMS, including goal state, working memory, relevant episodic/semantic/procedural memories, and context freshness indicators. It manages structured plans composed of \code{PlanStep} objects, featuring explicit dependency tracking (\code{depends\_on} fields) validated via \code{\_check\_prerequisites} before execution. It manages hierarchical objectives using an explicit \textbf{Goal Stack} tracked in \code{AgentState}, allowing the agent to \code{push\_sub\_goal} and \code{mark\_goal\_status}. Crucially, the AML empowers the LLM agent to engage in \textbf{meta-cognition} by providing specific UMS tools (\code{generate\_reflection}, \code{consolidate\_memories}, \code{promote\_memory\_level}, \code{update\_memory}, etc.) that allow the agent to analyze its own performance, synthesize knowledge, manage its memory state, and refine its strategies. This meta-cognitive cycle is further enhanced by an \textbf{adaptive control mechanism} (\code{\_adapt\_thresholds}) that dynamically adjusts the frequency of reflection and consolidation based on runtime statistics computed from the UMS (\code{compute\_memory\_statistics}) and internal agent state (\code{tool\_usage\_stats}), enabling the agent to self-regulate its cognitive load. The AML also incorporates a \textbf{Mental Momentum bias} (\code{MOMENTUM\_THRESHOLD\_BIAS\_FACTOR}) which reduces reflection frequency during periods of stable progress. Planning updates are handled either via the LLM invoking the internal \code{AGENT\_TOOL\_UPDATE\_PLAN} tool or through a heuristic fallback (\code{\_apply\_heuristic\_plan\_update}).
+\end{enumerate}
+
+EideticEngine's core hypothesis is that by tightly integrating a structured, cognitive-inspired memory system with an adaptive, meta-cognitively capable control loop featuring explicit goal management, we can create LLM agents that exhibit significantly greater autonomy, robustness, learning capability, and effectiveness on complex, real-world tasks. This paper details the architecture, illustrates its operation through technical analysis, and discusses its implications for the future of general-purpose AI agents.
+
+\section{Related Work: Building on and Departing From Existing Paradigms}
+
+EideticEngine differentiates itself from several established lines of research, drawing inspiration while addressing key limitations. Architectures like those presented in \cite{Ref13} have demonstrated the power of memory and reflection for creating believable, long-term agent behavior, validating the core principles EideticEngine aims to systematize.
+
+\begin{itemize}
+    \item \textbf{Standard LLM Agent Frameworks (LangChain, LlamaIndex, etc.):} While providing valuable abstractions for tool use (akin to systems like \cite{Ref16}) and basic memory (often vector stores or simple buffers), these frameworks typically lack: (i) a deeply integrated, multi-level cognitive memory model (UMS) with explicit typed linking (\code{LinkType}), provenance tracking, relevance dynamics (\code{\_compute\_memory\_relevance}), and dynamic evolution (\code{promote\_memory\_level}, \code{consolidate\_memories}); (ii) structured planning (\code{PlanStep}) with robust dependency checking (\code{\_check\_prerequisites}) enforced by the loop; (iii) explicit hierarchical goal management (Goal Stack); (iv) agent-driven meta-cognitive tools for reflection and knowledge synthesis integrated with operational history (\code{memory\_operations}); (v) adaptive control mechanisms (\code{\_adapt\_thresholds}) adjusting agent behavior based on runtime performance metrics (error rates, memory ratios) and incorporating biases like Mental Momentum. EideticEngine offers a more opinionated and comprehensive \textit{cognitive architecture} rather than solely a flexible toolkit.
+
+    \item \textbf{Early Autonomous Agents (AutoGPT \cite{Ref15}, BabyAGI):} These pioneering efforts demonstrated the potential of LLM loops but suffered from unreliable planning, simplistic memory (often just text files or basic vector stores), lack of error recovery, and significant coherence issues over longer runs. EideticEngine addresses these directly with the persistent, structured UMS, explicit \code{PlanStep} objects, dependency checks, categorized error handling (\code{last\_error\_details} with `type`), Goal Stack management, and meta-cognition for coherence.
+
+    \item \textbf{Memory-Augmented LLMs (MemGPT \cite{Ref12}, RAG \cite{Ref10}):} These focus on enhancing LLM capabilities by providing access to external or specialized memory during generation. EideticEngine complements this by providing a persistent, structured \textit{internal} memory system (UMS) that tracks the agent's \textit{own} experiences, thoughts, actions, and synthesized knowledge, enabling longitudinal learning and self-understanding beyond immediate context retrieval. The UMS serves as the agent's evolving world model and operational history, integrating episodic, semantic, and procedural knowledge. Other related work includes memory network concepts \cite{Ref23} and systems aiming to augment human memory \cite{Ref6}.
+
+    \item \textbf{LLM Planning \& Reasoning Techniques (ReAct \cite{Ref25}, Chain-of-Thought \cite{Ref22}, Tree-of-Thoughts \cite{Ref24}):} These enhance the LLM's internal reasoning process, often within a single prompt or short interaction sequence. EideticEngine operates at a higher architectural level, orchestrating these reasoning steps within a persistent framework. It externalizes the plan (\code{AgentState.current\_plan}), memory (UMS), goals (\code{AgentState.goal\_stack}), and workflow state (UMS \code{workflows} table) into persistent structures, allowing for much longer, more complex tasks, error recovery across loops (using \code{last\_error\_details} and forcing replans), and persistent learning (memory promotion/consolidation) that influences future reasoning cycles. EideticEngine's \code{thought\_chains} provide a structured way to manage and persist complex reasoning paths potentially generated using these techniques. Research on structured plan representation is also relevant \cite{Ref8}.
+
+    \item \textbf{Classical Cognitive Architectures (SOAR \cite{Ref9}, ACT-R \cite{Ref1, Ref2}):} These offer rich, theoretically grounded models of cognition, often based on symbolic rule systems or specialized memory structures. While highly influential, they are typically challenging to integrate directly with the sub-symbolic nature and generative flexibility of LLMs and are rarely deployed as practical, general-purpose agents. EideticEngine adopts key \textit{principles} from cognitive architectures (e.g., memory levels inspired by \cite{Ref3, Ref19}, specific integrations of episodic \cite{Ref11, Ref7} and semantic memory, relevance decay, meta-cognition, goal decomposition \cite{Ref9}) but implements them within a practical, LLM-native framework (AML orchestrating UMS tools) built for autonomous task execution and tool use, leveraging the LLM itself for high-level reasoning and specific meta-cognitive tasks (\code{generate\_reflection}, \code{consolidate\_memories}). The need for such integrated cognitive architectures for language agents is increasingly recognized \cite{Ref18}.
+
+    \item \textbf{Meta-Reasoning and Reflection Research \cite{Ref14, Ref17}:} While the importance of meta-cognition is recognized \cite{Ref14}, few practical LLM agent systems incorporate explicit, agent-driven reflection and knowledge consolidation loops tied to performance metrics. Reflexion \cite{Ref17} demonstrated the power of self-reflection for iterative improvement. EideticEngine operationalizes this through dedicated UMS tools (\code{generate\_reflection}, \code{consolidate\_memories}) triggered by the AML based on success counters or error conditions. Significantly, the \textit{frequency} of these operations is made adaptive via \code{\_adapt\_thresholds}, which analyzes runtime UMS statistics and internal agent state (\code{tool\_usage\_stats}), creating a dynamic feedback loop for self-regulation and improvement.
+\end{itemize}
+
+\section{The Unified Memory System (UMS): A Cognitive Substrate for Agents}
+
+The foundation of the EideticEngine architecture is the Unified Memory System (UMS), a persistent and structured cognitive workspace designed to move beyond the limitations of simple memory buffers or isolated vector stores. It serves not just as a repository of information, but as an active substrate for the agent's learning, reasoning, and operational history. Its novelty and power stem from the deep integration of several key design principles:
+
+\subsection{Multi-Level Cognitive Memory Hierarchy}
+
+Inspired by human memory models \cite{Ref3, Ref19}, the UMS implements distinct but interconnected memory levels (\code{MemoryLevel} enum: \code{WORKING}, \code{EPISODIC}, \code{SEMANTIC}, \code{PROCEDURAL}). The latter three are stored within the main \code{memories} table and differentiated by the \code{memory\_level} column, while working memory is managed separately. This structure dictates default behaviors and enables sophisticated management strategies:
+
+\begin{itemize}
+    \item \textbf{Working Memory:} Explicitly managed outside the main \code{memories} table, residing in the \code{cognitive\_states} table as a list of \code{memory\_id}s (\code{working\_memory} JSON field). It's capacity-constrained (\code{MAX\_WORKING\_MEMORY\_SIZE}) and managed by the AML using UMS tools like \code{optimize\_working\_memory}. This tool uses relevance scoring (\code{compute\_memory\_relevance} custom SQL function) and strategies ('balanced', 'importance', 'recency', 'diversity') to maintain a focused attentional set. The \code{auto\_update\_focus} tool further refines this by identifying the most salient item (\code{focal\_memory\_id} in \code{cognitive\_states}) within this active set based on complex heuristics (\code{\_calculate\_focus\_score}). This concept aligns with models of working memory as an active workspace \cite{Ref4}.
+
+    \item \textbf{Episodic Memory:} Directly captures agent experiences. Records associated with specific \code{actions} (via \code{action\_id} FK in \code{memories}), \code{thoughts} (\code{thought\_id} FK, using deferred constraints), or \code{artifacts} (\code{artifact\_id} FK) default to this level. They often have shorter default \code{ttl} values (defined in \code{DEFAULT\_TTL}), reflecting their time-bound nature. UMS tools like \code{record\_action\_start} and \code{record\_artifact} automatically create linked episodic memories (\code{memory\_type = ACTION\_LOG} or \code{ARTIFACT\_CREATION}). The importance of episodic memory in cognitive architectures has been explored previously \cite{Ref11, Ref7}. See also \cite{Ref19}.
+
+    \item \textbf{Semantic Memory:} Represents generalized knowledge, facts, insights, or summaries. These often result from explicit \code{store\_memory} calls with \code{level=semantic}, or crucially, from meta-cognitive processes like \code{consolidate\_memories} or successful \code{promote\_memory\_level} operations acting on episodic data. They typically have longer default \code{ttl}. Important thoughts (\code{memory\_type=REASONING\_STEP}) are often stored at this level. See \cite{Ref19}.
+
+    \item \textbf{Procedural Memory:} Encodes learned skills or multi-step procedures (\code{memory\_type = SKILL} or \code{PROCEDURE}). This level is primarily populated via \code{promote\_memory\_level} from highly accessed, high-confidence semantic memories that fit the procedural type criteria, representing a form of skill acquisition within the system. It has the longest default \code{ttl}.
+\end{itemize}
+
+\subsection{Rich Metadata and Cognitive Attributes}
+
+Each memory entry in the \code{memories} table is far more than just content. It carries crucial metadata enabling cognitive processing:
+
+\begin{itemize}
+    \item \textbf{Importance \& Confidence:} Explicit REAL fields (\code{importance}, \code{confidence}) allow the agent (or LLM via \code{store\_memory}/\code{update\_memory}) to assign subjective value and certainty to information (validated within 1.0-10.0 and 0.0-1.0 ranges respectively), critical for prioritization and belief revision.
+
+    \item \textbf{Temporal Dynamics:} \code{created\_at}, \code{updated\_at}, \code{last\_accessed} (Unix timestamps) combined with \code{access\_count} and \code{ttl} enable relevance calculations (via the custom \code{compute\_memory\_relevance} SQL function, incorporating \code{MEMORY\_DECAY\_RATE}) and automatic expiration (managed by the \code{delete\_expired\_memories} tool). This gives the memory system temporal dynamics often missing in static knowledge bases.
+
+    \item \textbf{Provenance \& Context:} Foreign keys (\code{action\_id}, \code{thought\_id}, \code{artifact\_id}, using deferred constraints for the thought link) directly link memories to their operational origins. The \code{source} field tracks external origins (tool names, filenames), and the \code{context} JSON field stores arbitrary metadata about the memory's creation circumstances, providing rich contextual grounding.
+
+    \item \textbf{Flexible Categorization:} Besides \code{memory\_level} and \code{memory\_type}, memories have a JSON \code{tags} field, automatically populated with level and type, and allowing additional user-defined tags. This enables multi-dimensional categorization and retrieval using the custom \code{json\_contains\_all} SQLite function within \code{query\_memories}. A separate normalized \code{tags} table and junction tables (\code{workflow\_tags}, etc.) manage the tag taxonomy.
+\end{itemize}
+
+\subsection{Structured Associative Memory Graph}
+
+Unlike systems solely reliant on vector similarity, the UMS builds an explicit, typed graph of relationships via the \code{memory\_links} table:
+
+\begin{itemize}
+    \item \textbf{Typed Links:} The \code{LinkType} enum defines a rich vocabulary for relationships (e.g., \code{RELATED}, \code{CAUSAL}, \code{SUPPORTS}, \code{CONTRADICTS}, \code{HIERARCHICAL}, \code{SEQUENTIAL}, \code{REFERENCES}). This allows the agent to represent and reason about structured knowledge beyond simple proximity in embedding space.
+
+    \item \textbf{Explicit Creation:} The \code{create\_memory\_link} tool allows the agent or LLM to deliberately assert relationships between memories based on its reasoning, including a \code{strength} score (0.0-1.0).
+
+    \item \textbf{Automated Linking:} The \code{store\_memory} tool can optionally trigger background auto-linking (parameter \code{suggest\_links=True}). This uses semantic similarity (\code{\_find\_similar\_memories}) to identify candidate links above a \code{link\_suggestion\_threshold} and creates them using a default \code{link\_type} (typically \code{RELATED}) or contextually inferred types, bootstrapping the knowledge graph. The AML manages this via \code{\_start\_background\_task} calling the internal \code{\_run\_auto\_linking} helper.
+
+    \item \textbf{Graph Traversal:} The \code{get\_linked\_memories} tool enables navigation of this graph structure, retrieving neighbors based on direction (\code{incoming}, \code{outgoing}, \code{both}) and \code{link\_type}, providing structured context retrieval.
+\end{itemize}
+
+\subsection{Deep Integration with Workflow \& Reasoning}
+
+The UMS is not separate from the agent's operational layer; it's intrinsically linked:
+
+\begin{itemize}
+    \item \textbf{Action-Memory Coupling:} Actions recorded via \code{record\_action\_start} automatically generate corresponding \code{Episodic} memories (\code{memory\_type=ACTION\_LOG}). \code{record\_action\_completion} updates this linked memory. Memories can be explicitly linked back to actions (\code{action\_id} FK).
+
+    \item \textbf{Thought-Memory Coupling:} Thoughts recorded via \code{record\_thought} can be directly linked to relevant memories (\code{relevant\_memory\_id} FK in \code{thoughts}). Important thoughts (goals, decisions, summaries, etc.) automatically generate linked \code{Semantic} memories (\code{memory\_type=REASONING\_STEP}) referencing the thought via the \code{thought\_id} FK in \code{memories}. Deferred constraints handle the circular dependency.
+
+    \item \textbf{Artifact-Memory Coupling:} Recording artifacts via \code{record\_artifact} creates linked \code{Episodic} memories (\code{memory\_type=ARTIFACT\_CREATION}), and memories can reference artifacts (\code{artifact\_id} FK).
+
+    \item \textbf{Comprehensive Traceability:} The interconnected schema (\code{workflows}, \code{actions}, \code{artifacts}, \code{thought\_chains}, \code{thoughts}, \code{memories}, \code{memory\_links}, \code{dependencies}, \code{cognitive\_states}, \code{reflections}, \code{memory\_operations}) provides an end-to-end, auditable record of the agent's perception, reasoning, action, and learning history. Tools like \code{generate\_workflow\_report} leverage this structure.
+\end{itemize}
+
+\subsection{Hybrid \& Configurable Retrieval}
+
+The UMS offers multiple, complementary retrieval mechanisms catering to different information needs:
+
+\begin{itemize}
+    \item \textbf{Semantic Search (\code{search\_semantic\_memories}):} Leverages vector embeddings stored in the \code{embeddings} table (using models like \code{text-embedding-3-small}, dimension tracked) and calculated via the external \code{EmbeddingService}. Finds conceptually related information using cosine similarity (\code{\_find\_similar\_memories}), filtered by core metadata (workflow, level, type, TTL). Candidate fetching is optimized.
+
+    \item \textbf{Keyword \& Attribute Search (\code{query\_memories}):} Utilizes SQLite's FTS5 virtual table (\code{memory\_fts}, indexing content, description, reasoning, tags) for fast keyword matching (`MATCH` operator), combined with precise SQL filtering on any metadata attribute (importance, confidence, tags via \code{json\_contains\_all}, timestamps, etc.). Allows sorting by various fields including calculated \code{relevance} (via \code{compute\_memory\_relevance}).
+
+    \item \textbf{Hybrid Search (\code{hybrid\_search\_memories}):} Powerfully combines semantic similarity scores (from \code{\_find\_similar\_memories}) with keyword/attribute relevance scores (derived from \code{compute\_memory\_relevance}) using configurable weights (\code{semantic\_weight}, \code{keyword\_weight}). This allows retrieval ranked by a blend of conceptual meaning and factual importance/recency/confidence, often yielding more pertinent results than either method alone. Scores are normalized before weighting.
+
+    \item \textbf{Direct \& Relational Retrieval:} \code{get\_memory\_by\_id} provides direct access, while \code{get\_linked\_memories} allows navigation based on the explicit graph structure. \code{get\_action\_details}, \code{get\_artifacts}, \code{get\_thought\_chain}, \code{get\_action\_dependencies} retrieve operational context.
+\end{itemize}
+
+\subsection{Mechanisms for Knowledge Evolution}
+
+The UMS incorporates processes for refining and structuring knowledge over time:
+
+\begin{itemize}
+    \item \textbf{Consolidation (\code{consolidate\_memories}):} Explicitly uses an LLM (configured via \code{provider} and \code{model} arguments, using \code{get\_provider}) to synthesize multiple source memories (selected via IDs, filters, or defaults) into more abstract \code{Semantic} forms (summaries, insights via \code{\_generate\_consolidation\_prompt}) or \code{Procedural} forms. The results are stored as new memories (with derived importance/confidence) and linked back to the sources (\code{LinkType.GENERALIZES}), actively structuring the knowledge base.
+
+    \item \textbf{Promotion (\code{promote\_memory\_level}):} Implements a heuristic-based mechanism for memories to "graduate" levels (e.g., Episodic -> Semantic, Semantic -> Procedural) based on sustained usage (\code{access\_count} threshold) and high \code{confidence}, mimicking memory strengthening and generalization. Promotion to Procedural is constrained by \code{memory\_type} (e.g., must be \code{PROCEDURE} or \code{SKILL}). Thresholds (\code{min\_access\_count\_*}, \code{min\_confidence\_*}) are configurable per promotion step.
+
+    \item \textbf{Reflection Integration (\code{generate\_reflection}):} While the reflection content is stored in the \code{reflections} table, the process analyzes \code{memory\_operations} logs (using \code{\_generate\_reflection\_prompt} and an LLM), providing insights that can lead the agent (via the AML) to \code{update\_memory}, \code{create\_memory\_link}, or trigger further \code{consolidate\_memories} calls, thus driving knowledge refinement based on operational analysis.
+\end{itemize}
+
+\subsection{Robust Implementation Details}
+
+\begin{itemize}
+    \item \textbf{Asynchronous Design:} Use of \code{aiosqlite} and the singleton \code{DBConnection} manager ensures the UMS doesn't block the main agent loop during database I/O. Background tasks for linking/promotion are orchestrated by the AML (\code{\_start\_background\_task}).
+
+    \item \textbf{Optimized SQL:} Leverages SQLite features like WAL mode, comprehensive indexing (>30 indices), FTS5, memory mapping (\code{PRAGMA} settings specified in \code{SQLITE\_PRAGMAS}), and custom functions (\code{compute\_memory\_relevance}, \code{json\_contains\_*}). Uses deferred constraints for circular references.
+
+    \item \textbf{Structured Data Handling:} Consistent use of Enums (\code{MemoryLevel}, \code{MemoryType}, \code{LinkType}, \code{ActionStatus}, etc.) ensures data integrity. Careful serialization/deserialization (\code{MemoryUtils.serialize/deserialize}) handles complex data types and prevents errors, including handling potential \code{MAX\_TEXT\_LENGTH} overflows gracefully with structured error reporting. SQL identifiers are validated (\code{\_validate\_sql\_identifier}).
+
+    \item \textbf{Comprehensive Auditing:} The \code{memory\_operations} table (\code{\_log\_memory\_operation}) logs virtually every significant interaction with the UMS, providing deep traceability for debugging and analysis.
+\end{itemize}
+
+\section{The Agent Master Loop (AML): Adaptive Orchestration and Meta-Cognition}
+
+While the UMS provides the cognitive substrate, the Agent Master Loop (AML) acts as the central executive, orchestrating the agent's perception-cognition-action cycle to achieve complex goals. It transcends simple reactive loops by implementing structured planning, hierarchical goal management, sophisticated context management, robust error handling, and, critically, adaptive meta-cognitive control, leveraging the UMS and an LLM reasoning core (\code{claude-3-7-sonnet-20250219}).
+
+\subsection{Structured, Dependency-Aware Planning}
+
+A cornerstone of the AML is its departure from ad-hoc planning. It manages an explicit, dynamic plan within its state (\code{AgentState.current\_plan}), represented as a list of \code{PlanStep} Pydantic objects.
+
+\begin{itemize}
+    \item \textbf{Plan Representation (\code{PlanStep}):} Each step encapsulates not just a \code{description}, but also its \code{status} ('planned', 'in\_progress', 'completed', 'failed', 'skipped' - aligned with \code{ActionStatus}), \code{assigned\_tool} and \code{tool\_args} (optional), \code{result\_summary}, and crucially, a \code{depends\_on} list containing the \code{action\_id}s of prerequisite steps that have been successfully recorded via \code{record\_action\_completion}.
+
+    \item \textbf{LLM-Driven Plan Updates:} The AML enables the LLM (\code{\_call\_agent\_llm}) to propose complete plan revisions by invoking the internal \code{AGENT\_TOOL\_UPDATE\_PLAN} tool. This tool accepts a new list of \code{PlanStep} objects, validates them (including checking for cycles using \code{\_detect\_plan\_cycle}), and replaces the \code{AgentState.current\_plan}. This allows the LLM to dynamically modify the entire strategy based on new information or errors.
+
+    \item \textbf{Dependency Enforcement (\code{\_check\_prerequisites}):} Before executing any \code{PlanStep} that involves a tool call, the \code{\_execute\_tool\_call\_internal} function extracts the \code{depends\_on} list from the \textit{current} plan step. It then calls \code{\_check\_prerequisites}, which queries the UMS (\code{get\_action\_details}) to verify that \textit{all} listed prerequisite action IDs have a status of \code{completed}. If dependencies are unmet, execution is \textbf{blocked}, an error (\code{type=DependencyNotMetError}) is logged in \code{state.last\_error\_details}, and the \code{state.needs\_replan} flag is set, forcing the LLM to reconsider the plan. This mechanism prevents cascading failures.
+
+    \item \textbf{Heuristic Plan Update (\code{\_apply\_heuristic\_plan\_update}):} If the LLM \textit{doesn't} call \code{AGENT\_TOOL\_UPDATE\_PLAN}, this fallback mechanism provides basic plan progression. Based on the success or failure of the last executed tool call or thought recording, it marks the current step as 'completed' or 'failed', records a summary, removes completed steps, inserts an analysis step after failures, and adjusts meta-cognitive counters. This ensures the loop doesn't stall but prioritizes explicit LLM-driven replanning when needed (\code{state.needs\_replan=True}).
+\end{itemize}
+
+\subsection{Hierarchical Goal Stack Management}
+
+EideticEngine introduces explicit management of hierarchical goals, allowing the agent to decompose complex objectives:
+
+\begin{itemize}
+    \item \textbf{State Representation:} The \code{AgentState} maintains a \code{goal\_stack} (list of goal dictionaries containing \code{goal\_id}, \code{description}, \code{status}) and a \code{current\_goal\_id} pointing to the active goal (top of the stack).
+    \item \textbf{Context Integration:} The \code{\_gather\_context} method retrieves details of the \code{current\_goal} (using UMS tool \code{get\_goal\_details}) and provides a summary of the \code{goal\_stack} to the LLM, ensuring decisions are goal-aware.
+    \item \textbf{Agent-Driven Decomposition:} The LLM can push new sub-goals onto the stack using the UMS tool \code{push\_sub\_goal}. The AML (\code{\_handle\_workflow\_and\_goal\_side\_effects}) updates the \code{AgentState} stack and shifts the \code{current\_goal\_id} focus.
+    \item \textbf{Status Tracking \& Popping:} The LLM signals goal completion or failure using the UMS tool \code{mark\_goal\_status}. The AML updates the goal's status in the state stack and pops the finished goal, returning focus to the parent goal.
+    \item \textbf{Workflow Integration:} Completion/failure of the root goal (when the stack becomes empty) sets the \code{state.goal\_achieved\_flag}, signaling the end of the main loop. Sub-workflow completion automatically triggers marking the corresponding parent goal's status. This distinguishes the goal stack (objective decomposition within a workflow) from the workflow stack (context switching).
+\end{itemize}
+
+\subsection{Multi-Faceted Context Assembly (\code{\_gather\_context})}
+
+The AML recognizes that effective LLM reasoning requires rich context beyond simple chat history. The \code{\_gather\_context} function actively probes the UMS to construct a comprehensive snapshot:
+
+\begin{itemize}
+    \item \textbf{Operational State:} Includes \code{current\_loop}, \code{consecutive\_errors}, \code{last\_error\_details} (with error `type`), the active \code{workflow\_id}, \code{context\_id}, \code{workflow\_stack}, \code{current\_thought\_chain\_id}, \code{current\_plan}, and \code{needs\_replan} flag.
+    \item \textbf{Goal Context:} Includes details of the \code{current\_goal} and a summary of the \code{goal\_stack}.
+    \item \textbf{Working Memory:} Queries \code{get\_working\_memory} to retrieve the IDs and summaries of memories currently in the agent's attentional focus, including the \code{focal\_memory\_id}. Results are timestamped (`retrieved\_at`).
+    \item \textbf{Proactive Goal-Relevant Memory:} Performs a \code{hybrid\_search\_memories} query using the description of the current plan step or goal to proactively fetch memories semantically or lexically related to the immediate task. Results limited by \code{CONTEXT\_PROACTIVE\_MEMORIES\_FETCH\_LIMIT} and timestamped.
+    \item \textbf{Procedural Knowledge:} Executes another \code{hybrid\_search\_memories} query specifically filtered for \code{memory\_level=procedural} using the plan step/goal description to find relevant "how-to" knowledge. Limited by \code{CONTEXT\_PROCEDURAL\_MEMORIES\_FETCH\_LIMIT} and timestamped.
+    \item \textbf{Core History Summary:} Uses \code{get\_workflow\_context} to fetch recent actions, important memories (by importance score), and key thoughts (goals, decisions, summaries) from the primary thought chain. Limited by respective \code{FETCH\_LIMIT} constants and timestamped.
+    \item \textbf{Relational Context:} Optionally uses \code{get\_linked\_memories} starting from a highly relevant memory (prioritizing focal, then working, then important) to provide insight into the local knowledge graph structure. Limited by \code{FETCH\_LIMIT} and timestamped.
+    \item \textbf{Meta-Cognitive Feedback:} Includes the summary (\code{state.last\_meta\_feedback}) from the last reflection or consolidation cycle.
+    \item \textbf{Context Freshness:} Crucially, each major context component fetched from the UMS is tagged with a \code{retrieved\_at} timestamp, allowing the LLM to assess the recency of information.
+    \item \textbf{Context Compression:} Monitors the estimated token count (\code{\_estimate\_tokens\_anthropic}) of the assembled context. If it exceeds \code{CONTEXT\_MAX\_TOKENS\_COMPRESS\_THRESHOLD}, it uses the specialized \code{summarize\_context\_block} UMS tool to compress less critical parts (e.g., detailed recent action logs) using context-type-specific prompts, aiming for \code{CONTEXT\_COMPRESSION\_TARGET\_TOKENS} while preserving key information.
+\end{itemize}
+
+\subsection{Adaptive Meta-Cognitive Control (\code{\_run\_periodic\_tasks}, \code{\_adapt\_thresholds})}
+
+This is a key adaptive aspect of the AML. It doesn't just execute tasks; it monitors and regulates its own cognitive processes, inspired by work like Reflexion \cite{Ref17}:
+
+\begin{itemize}
+    \item \textbf{Triggering Meta-Cognition:} \code{\_run\_periodic\_tasks} is executed each loop. It checks various conditions:
+    \begin{itemize}
+        \item Action Counts vs. \textit{Dynamic} Thresholds: Compares \code{state.successful\_actions\_since\_reflection} against \code{state.current\_reflection\_threshold} and \code{state.successful\_actions\_since\_consolidation} against \code{state.current\_consolidation\_threshold}.
+        \item State Flags: Checks \code{state.needs\_replan} (often set after errors or significant feedback).
+        \item Periodic Intervals: Checks \code{state.loops\_since\_*} counters against constants (\code{OPTIMIZATION\_LOOP\_INTERVAL}, \code{MEMORY\_PROMOTION\_LOOP\_INTERVAL}, \code{STATS\_ADAPTATION\_INTERVAL}, \code{MAINTENANCE\_INTERVAL}).
+    \end{itemize}
+
+    \item \textbf{Executing Meta-Cognitive Tools:} When triggered, it schedules and executes UMS tools like \code{generate\_reflection} (cycling through types: summary, progress, gaps, strengths, plan), \code{consolidate\_memories}, \code{optimize\_working\_memory}, \code{auto\_update\_focus}, \code{promote\_memory\_level} (via the internal \code{\_trigger\_promotion\_checks} which starts background tasks), and \code{delete\_expired\_memories}.
+
+    \item \textbf{Feedback Loop:} The output of reflection/consolidation is captured in \code{state.last\_meta\_feedback} and included in the \textit{next} context assembly, allowing the LLM to react to the agent's self-assessment. Successful reflection or consolidation also often sets \code{state.needs\_replan=True}, ensuring the LLM considers the new insights.
+
+    \item \textbf{Adaptive Threshold Adjustment (\code{\_adapt\_thresholds}):} This crucial function makes the meta-cognition \textit{adaptive}. Triggered periodically by \code{\_run\_periodic\_tasks} after \code{compute\_memory\_statistics} runs, it analyzes key UMS stats (e.g., ratio of episodic memories) and internal state (\code{tool\_usage\_stats} failure rates). Based on heuristics (e.g., "if episodic ratio > target range, decrease consolidation threshold"; "if failure rate > target, decrease reflection threshold"), it \textbf{modifies \code{state.current\_reflection\_threshold} and \code{state.current\_consolidation\_threshold}} (within \code{MIN}/\code{MAX} bounds and applying \code{THRESHOLD\_ADAPTATION\_DAMPENING}). This allows the agent to automatically self-regulate its cognitive overhead.
+    \item \textbf{Mental Momentum Bias:} Within \code{\_adapt\_thresholds}, if the agent is experiencing stable progress (low failure rate, zero consecutive errors), a positive bias (\code{MOMENTUM\_THRESHOLD\_BIAS\_FACTOR}) is applied specifically to *increases* in the reflection threshold. This makes the agent less likely to interrupt productive periods with reflection, simulating a cognitive "flow state".
+\end{itemize}
+
+\subsection{Robust Execution and Error Handling (\code{\_execute\_tool\_call\_internal})}
+
+The AML provides a resilient execution layer:
+
+\begin{itemize}
+    \item \textbf{Tool Server Discovery:} Uses \code{\_find\_tool\_server} to locate active servers providing requested tools via the \code{MCPClient}'s server manager. Handles internal tools (\code{AGENT\_TOOL\_UPDATE\_PLAN}) separately.
+    \item \textbf{Action Recording:} Automatically wraps significant tool calls (excluding meta-actions, pure retrievals defined in \code{\_INTERNAL\_OR\_META\_TOOLS}) with UMS tools \code{record\_action\_start} and \code{record\_action\_completion}, ensuring operational history is captured. Associates the correct \code{action\_id} with results and dependencies.
+    \item \textbf{Dependency Recording:} After recording an action start, \code{\_record\_action\_start\_internal} calls the internal helper \code{\_record\_action\_dependencies\_internal} which uses the UMS tool \code{add\_action\_dependency} for all prerequisites listed in the corresponding \code{PlanStep}.
+    \item \textbf{Categorized Error Handling:} Catches tool execution errors (\code{ToolError}, \code{ToolInputError}, network errors, API errors, timeouts) and *categorizes* them (e.g., `DependencyNotMetError`, `InvalidInputError`, `ServerUnavailable`, `PlanValidationError`, `GoalManagementError`). Updates \code{state.last\_error\_details} with the category (`type`), message, status code, and relevant context (tool name, args). Increments \code{state.consecutive\_error\_count} and sets \code{state.needs\_replan=True}. Checks for the specific dependency failure (\code{DependencyNotMetError}, status 412) to inform replanning. If \code{MAX\_CONSECUTIVE\_ERRORS} is reached, it halts the loop and marks the workflow as failed.
+    \item \textbf{Retry Mechanism (\code{\_with\_retries}):} Implements automatic retries with exponential backoff and jitter for specific, configurable exception types (\code{retry\_exceptions}), primarily targeting transient network or API issues. Retries are limited for non-idempotent operations. Checks for shutdown signals during wait periods.
+    \item \textbf{Background Task Management:} Uses \code{\_start\_background\_task} to run non-blocking operations like \code{\_run\_auto\_linking} or \code{\_check\_and\_trigger\_promotion} concurrently after relevant main actions succeed. These tasks are managed robustly with snapshotting of critical state (workflow ID), semaphore-based concurrency limiting (\code{MAX\_CONCURRENT\_BG\_TASKS}), timeouts (\code{BACKGROUND\_TASK\_TIMEOUT\_SECONDS}), thread-safe tracking (\code{\_bg\_tasks\_lock}), and guaranteed resource release via completion callbacks (\code{\_background\_task\_done}). Includes cleanup (\code{\_cleanup\_background\_tasks}) on shutdown.
+\end{itemize}
+
+\subsection{Thought Chain Management}
+
+The AML actively manages the agent's reasoning focus:
+
+\begin{itemize}
+    \item It tracks the \code{state.current\_thought\_chain\_id}, typically set during workflow creation or loaded from state. \code{\_set\_default\_thought\_chain\_id} finds the primary chain on initialization if needed.
+    \item When the LLM calls UMS tool \code{create\_thought\_chain}, the AML's \code{\_handle\_workflow\_and\_goal\_side\_effects} updates the \code{current\_thought\_chain\_id} to the newly created one.
+    \item It automatically injects the \code{current\_thought\_chain\_id} into \code{record\_thought} calls if the LLM doesn't specify one, ensuring thoughts are logged contextually. This allows the LLM to easily switch between reasoning threads simply by targeting its \code{record\_thought} calls to different chains.
+\end{itemize}
+
+\section{The Ultimate MCP Client: Facilitating Cognitive Orchestration}
+
+The EideticEngine architecture, while powerful conceptually, relies on a robust communication and interaction layer to bridge the Agent Master Loop (AML) with the Unified Memory System (UMS) and other potential external tools. The \textbf{Ultimate MCP Client} (\code{mcp\_client.py}) provides this critical "glue," offering a feature-rich environment specifically designed to support the complex needs of advanced cognitive agents like EideticEngine. Its design choices significantly enable and simplify the implementation of EideticEngine's core functionalities.
+
+\subsection{Unified Access to Distributed Capabilities}
+
+EideticEngine's power comes from leveraging diverse tools hosted potentially across different servers (UMS server, corpus search server, web browser server, etc.). The MCP Client abstracts this complexity:
+
+\begin{itemize}
+    \item \textbf{Server Management (\code{ServerManager}, \code{ServerConfig}):} It discovers (\code{discover\_servers} using filesystem, registry, mDNS, \textit{and} active port scanning), configures, connects (\code{connect\_to\_server}), monitors (\code{ServerMonitor}), and manages the lifecycle of multiple MCP servers (both STDIO and SSE types via \code{RobustStdioSession} and standard \code{sse\_client} respectively). This allows the AML to seamlessly access tools without needing to know their physical location or connection type.
+
+    \item \textbf{Centralized Tool/Resource Registry:} The \code{ServerManager} aggregates tools (\code{tools}), resources (\code{resources}), and prompts (\code{prompts}) advertised by all connected servers into unified dictionaries. This allows the AML (\code{\_call\_agent\_llm}) to present a single, comprehensive list of available capabilities to the LLM, simplifying the decision-making prompt. It uses \code{format\_tools\_for\_anthropic} to sanitize names and prepare schemas specifically for the LLM API.
+
+    \item \textbf{Intelligent Routing:} When the AML decides to execute a tool (\code{\_execute\_tool\_call\_internal}), the client implicitly routes the request to the correct server based on the tool's registration (\code{MCPTool.server\_name}) via \code{\_find\_tool\_server}.
+\end{itemize}
+
+\subsection{Robust Communication and Error Handling}
+
+Interacting with potentially unreliable external processes or network services requires resilience:
+
+\begin{itemize}
+    \item \textbf{Asynchronous Architecture (\code{asyncio}, \code{httpx}, \code{aiosqlite}):} The client is built entirely on Python's \code{asyncio}, ensuring that communication with multiple servers, background tasks (like discovery or monitoring), and potentially slow tool executions do not block the main agent loop (AML).
+
+    \item \textbf{Specialized STDIO Handling (\code{RobustStdioSession}):} Recognizing the fragility of STDIO communication, the client implements a custom session handler. This handler directly resolves futures upon receiving responses (\code{\_read\_and\_process\_stdout\_loop}) rather than relying solely on queues, potentially improving responsiveness. It includes logic to filter noisy non-JSON output often emitted by scripts and manages process lifecycles robustly.
+
+    \item \textbf{STDIO Safety (\code{safe\_stdout}, \code{get\_safe\_console}, \code{StdioProtectionWrapper}):} Crucially, the client incorporates multiple layers of protection to prevent accidental \code{print} statements or other stdout pollution from corrupting the JSON-RPC communication channel used by STDIO servers. This is vital for stability when integrating diverse tools.
+
+    \item \textbf{Retry Logic \& Circuit Breaking (\code{retry\_with\_circuit\_breaker} decorator):} The \code{execute\_tool} method incorporates automatic retries with exponential backoff and a simple circuit breaker mechanism (based on \code{ServerMetrics.error\_rate}), improving resilience against transient network issues or server hiccups without overwhelming a failing server. (Note: AML also implements its own retry layer \code{\_with\_retries}.)
+
+    \item \textbf{Graceful Shutdown (\code{close}, signal handling):} The client implements proper signal handling (SIGINT/SIGTERM) and cleanup routines (\code{atexit\_handler}, \code{close} methods) to ensure server processes are terminated, connections are closed, caches are flushed, and state is saved upon exit. This complements the AML's shutdown procedure.
+\end{itemize}
+
+\subsection{Enabling Advanced Agent Features}
+
+The client provides specific features that directly support EideticEngine's cognitive capabilities:
+
+\begin{itemize}
+    \item \textbf{Streaming Support (WebSockets \& Internal):} The \code{process\_streaming\_query} method and the WebSocket endpoint (\code{/ws/chat}) allow for real-time streaming of LLM responses and tool status updates, crucial for interactive use cases and providing immediate feedback during long-running agent tasks. The internal stream processing logic (\code{\_process\_stream\_event}) handles partial JSON accumulation for tool inputs.
+
+    \item \textbf{Tool Result Caching (\code{ToolCache}):} Implements both in-memory and disk-based caching (\code{diskcache}) for tool results, with configurable TTLs (\code{cache\_ttl\_mapping}) potentially derived from tool categories. This significantly speeds up repetitive queries (e.g., retrieving the same document) and reduces load on external tools/APIs, including UMS read operations. It also includes basic dependency invalidation (\code{invalidate\_related}).
+
+    \item \textbf{Conversation Management (\code{ConversationGraph}, \code{ConversationNode}):} Moves beyond linear chat history, implementing a branching conversation structure. This allows the agent (or user) to explore different reasoning paths or "fork" the state (\code{cmd\_fork}, \code{create\_fork}), crucial for complex problem-solving or experimentation. State includes messages and the model used for that node. Persistence is handled via async saving/loading (\code{save}/\code{load} methods) to JSON files.
+
+    \item \textbf{Context Optimization Interface (\code{cmd\_optimize}, \code{auto\_prune\_context}):} Provides both manual and automatic mechanisms (\code{process\_query} calling \code{auto\_prune\_context}) to summarize long conversation histories using a designated LLM (\code{summarization\_model}), helping to manage context window limitations, complementing the AML's specific context compression.
+
+    \item \textbf{Dynamic Prompting (\code{cmd\_prompt}, \code{apply\_prompt\_to\_conversation}):} Allows pre-defined prompt templates stored on MCP servers (\code{ListPromptsResult}, \code{GetPromptResult}) to be fetched and applied to the current conversation context, facilitating standardized interactions or persona adoption by the agent.
+
+    \item \textbf{Observability (OpenTelemetry):} Integration with OpenTelemetry (\code{tracer}, \code{meter}, specific counters/histograms) provides hooks for detailed monitoring of client performance, tool execution latency, and request volumes, essential for understanding and optimizing complex agent behavior in production environments.
+
+    \item \textbf{Configuration Flexibility (\code{Config}, \code{cmd\_config}):} Uses YAML for configuration (\code{config.yaml}), allowing easy management of API keys, model preferences, server definitions, discovery settings (including filesystem paths, mDNS enable/disable, \textit{and port scanning parameters}), caching behavior, and more. Supports loading from environment variables (\code{load\_dotenv}).
+
+    \item \textbf{Enhanced Discovery (mDNS \& Port Scanning):} Beyond static configuration and filesystem discovery, it actively discovers servers on the local network using Zeroconf/mDNS (\code{ServerRegistry.start\_local\_discovery}) and configurable \textit{active port scanning} (\code{\_discover\_port\_scan}, \code{\_probe\_port}), making it easier to connect to dynamically available local tools or UMS instances.
+
+    \item \textbf{Platform Adaptation (\code{adapt\_path\_for\_platform}):} Includes specific logic to handle configuration differences between platforms, particularly translating Windows paths found in imported Claude Desktop configurations into Linux/WSL equivalents, enhancing cross-platform usability.
+\end{itemize}
+
+\subsection{Developer Experience and Usability}
+
+\begin{itemize}
+    \item \textbf{Interactive CLI \& Web UI:} Offers both a powerful interactive command-line interface (using \code{typer} and \code{rich} for enhanced display, history, and completion) and a modern reactive Web UI (via \code{FastAPI} and WebSockets), catering to different user preferences for interacting with the agent and managing servers.
+
+    \item \textbf{API Server (\code{FastAPI}):} Exposes comprehensive REST endpoints (\code{/api/...}) and a WebSocket endpoint (\code{/ws/chat}) allowing programmatic control over the client, agent execution, server management, and conversation state. This enables integration with other applications or orchestration systems.
+
+    \item \textbf{Clear Status \& Monitoring:} Provides immediate feedback via \code{rich.Status}, progress bars (\code{\_run\_with\_progress}), a live dashboard (\code{cmd\_dashboard}, \code{generate\_dashboard\_renderable}), and detailed server status commands (\code{cmd\_servers status}).
+\end{itemize}
+
+In essence, the Ultimate MCP Client provides the sophisticated, resilient, and observable infrastructure necessary for the AML to effectively harness the capabilities of the UMS and other tools within the Ultimate MCP Server ecosystem.
+
+\section{The Ultimate MCP Server: An Ecosystem of Tools for Cognitive Agents}
+
+The EideticEngine architecture relies not only on its internal logic (AML) and its cognitive substrate (UMS) but also on a rich ecosystem of external capabilities accessible via the Model Context Protocol (MCP). The \textbf{Ultimate MCP Client} (\code{mcp\_client.py}) acts as the bridge, connecting the AML to the \textbf{Ultimate MCP Server} instance. This server, designed by the same author, hosts the UMS tools (implemented in the `unified\_memory\_system\_technical\_analysis.md`-described codebase) alongside a powerful suite of complementary tools, significantly expanding the agent's operational repertoire and enabling more complex, real-world workflows.
+
+\subsection{Architecture: UMS as a Tool Suite within a Larger Gateway}
+
+It's crucial to understand that the \textbf{UMS is implemented as a collection of tools within the broader Ultimate MCP Server}. The AML, via the \code{Ultimate MCP Client}, interacts with the UMS not through direct database calls, but by invoking specific \code{unified\_memory:*} tools registered on the Gateway server (e.g., \code{unified\_memory:store\_memory}, \code{unified\_memory:query\_memories}). This modular design offers several advantages:
+
+\begin{itemize}
+    \item \textbf{Decoupling:} The agent's core logic (AML) is decoupled from the specific implementation details of the memory system (e.g., the SQLite backend).
+    \item \textbf{Extensibility:} New memory features or other functionalities can be added to the Gateway server as new tools without requiring changes to the AML itself.
+    \item \textbf{Standardized Interaction:} All interactions (memory, file access, web browsing, LLM calls) occur through the unified MCP interface managed by the client.
+\end{itemize}
+
+\subsection{Core Ultimate MCP Server Capabilities (Beyond UMS)}
+
+The Gateway server provides foundational services that the EideticEngine agent heavily relies upon, often invoked transparently by the UMS tools or directly by the AML:
+
+\begin{itemize}
+    \item \textbf{Multi-Provider LLM Access (\code{ultimate\_mcp\_server/core/providers}, \code{ultimate\_mcp\_server/tools/completion.py}):} Offers a standardized interface (\code{generate\_completion}, \code{chat\_completion}, \code{stream\_completion}) to various LLM backends (OpenAI, Anthropic, Gemini, etc.). Handles API key management, request formatting, response parsing, error handling, and cost/token tracking (\code{ModelResponse}). This allows the AML and UMS tools (like \code{consolidate\_memories}, \code{generate\_reflection}) to easily leverage different LLMs.
+
+    \item \textbf{Embedding Service (\code{ultimate\_mcp\_server/services/vector/embeddings.py}):} Provides embedding generation (\code{create\_embeddings}) using configurable models (defaulting to \code{text-embedding-3-small}), including local caching (\code{EmbeddingCache}) to reduce redundant API calls. This service is used extensively by the UMS \code{store\_memory} tool and search functions (\code{\_store\_embedding}, \code{\_find\_similar\_memories}).
+
+    \item \textbf{Vector Database Service (\code{ultimate\_mcp\_server/services/vector/vector\_service.py}):} Manages vector collections, potentially supporting external databases or fallback in-memory indexes. This conceptually underlies the UMS semantic search capabilities, although the current UMS implementation stores embeddings directly in SQLite BLOBs and performs similarity calculations itself using \code{sklearn}.
+
+    \item \textbf{Caching Service (\code{ultimate\_mcp\_server/core/cache}):} Implements caching strategies with persistence (\code{diskcache}) for tool results, significantly reducing latency and cost for repeated operations. The \code{with\_cache} decorator could potentially be used by UMS tools.
+
+    \item \textbf{Prompt Management (\code{ultimate\_mcp\_server/core/prompts}):} Includes a \code{PromptRepository} and \code{PromptTemplate} system (using Jinja2) allowing pre-defined, reusable prompts to be stored, retrieved, and rendered, potentially used by UMS meta-cognitive tools like \code{generate\_reflection}.
+\end{itemize}
+
+\subsection{Synergistic Tools Enhancing EideticEngine's Capabilities}
+
+Beyond the core UMS tools, The Ultimate MCP Server hosts other tool suites that the EideticEngine agent can leverage, often in conjunction with its memory:
+
+\begin{itemize}
+    \item \textbf{Advanced Extraction Tools (\code{ultimate\_mcp\_server/tools/extraction.py}):}
+    \begin{itemize}
+        \item \code{extract\_json}: Extracts structured JSON, optionally validating against a schema. Crucial for processing tool outputs or structured text stored in memory (\code{ArtifactType.JSON}, \code{MemoryType.JSON}).
+        \item \code{extract\_table}: Parses tables from text into formats like JSON lists or Markdown. Essential for analyzing data stored in \code{ArtifactType.TABLE} or \code{MemoryType.TEXT}.
+        \item \code{extract\_key\_value\_pairs}: Pulls out key-value data, useful for populating \code{Semantic} memories or analyzing configuration-like text artifacts.
+        \item \code{extract\_code\_from\_response}: Cleans up LLM code generation outputs before storing them as \code{ArtifactType.CODE} or \code{MemoryType.CODE}.
+    \end{itemize}
+
+    \item \textbf{Document Processing Tools (\code{ultimate\_mcp\_server/tools/document.py}):}
+    \begin{itemize}
+        \item \code{chunk\_document}: Offers multiple strategies to break down large documents (e.g., from \code{read\_file} or a large \code{MemoryType.TEXT}) before feeding them to other tools (like \code{summarize\_document} or UMS's \code{summarize\_text}/\code{summarize\_context\_block}).
+        \item \code{summarize\_document}: Can summarize text retrieved from memory, artifacts, or files, potentially storing the result back into the UMS as a \code{MemoryType.SUMMARY}.
+        \item \code{extract\_entities}, \code{generate\_qa\_pairs}: Useful for analyzing document content stored as artifacts or memories, generating new factual memories (\code{MemoryType.FACT}) or questions (\code{MemoryType.QUESTION}) to store in the UMS.
+    \end{itemize}
+
+    \item \textbf{Secure Filesystem Tools (\code{ultimate\_mcp\_server/tools/filesystem.py}):}
+    \begin{itemize}
+        \item Provides secure, sandboxed access to the local filesystem. The agent can \code{read\_file} into memory, \code{write\_file} from memory content, \code{list\_directory} to understand context, \code{search\_files} for relevant information, and create UMS \code{Artifact} records (\code{unified\_memory:record\_artifact}) pointing to these files via the \code{path} attribute. \code{validate\_path} ensures operations stay within safe boundaries.
+    \end{itemize}
+
+    \item \textbf{Local Text Processing Tools (\code{ultimate\_mcp\_server/tools/use\_local\_text\_tools.py}):}
+    \begin{itemize}
+        \item Offers offline text manipulation via command-line tools (\code{rg}, \code{awk}, \code{sed}, \code{jq}). An agent could retrieve text from a UMS memory (\code{unified\_memory:get\_memory\_by\_id}), process it locally using \code{run\_jq}, and store the modified result back using \code{unified\_memory:update\_memory} or \code{unified\_memory:store\_memory}. Security validation (\code{\_validate\_tool\_arguments}) prevents command injections.
+    \end{itemize}
+
+    \item \textbf{Web Browser Automation Tools (\code{ultimate\_mcp\_server/tools/browser\_automation.py}):}
+    \begin{itemize}
+        \item Enables the agent to interact with the live web via Playwright. This dramatically expands the agent's capabilities. It can \code{browser\_navigate} to URLs stored in UMS (\code{MemoryType.URL}, \code{ArtifactType.URL}), \code{browser\_get\_text} to scrape information and store it as \code{unified\_memory:store\_memory(type=OBSERVATION)}, interact with forms (\code{browser\_click}, \code{browser\_type}), and \code{browser\_screenshot}/\code{browser\_pdf} to create UMS \code{Artifact} records (\code{unified\_memory:record\_artifact}) linked to the browsing action.
+    \end{itemize}
+
+    \item \textbf{Optimization \& Meta Tools (\code{ultimate\_mcp\_server/tools/optimization.py}, \code{ultimate\_mcp\_server/tools/meta.py}):}
+    \begin{itemize}
+        \item \code{estimate\_cost}, \code{compare\_models}, \code{recommend\_model}: Allow the AML or the LLM itself to reason about LLM costs \textit{before} executing expensive UMS tasks like \code{consolidate\_memories}.
+        \item \code{get\_tool\_info}, \code{get\_llm\_instructions}: Allow the agent to introspect available Gateway capabilities, including the UMS tools.
+    \end{itemize}
+\end{itemize}
+This rich ecosystem, accessible via the MCP Client, transforms the EideticEngine agent from a system with sophisticated internal memory into one capable of interacting deeply with external data, tools, and the web, all while maintaining its cognitive state and history within the UMS.
+
+\section{Evaluation \& Case Studies: Demonstrating Cognitive Capabilities}
+
+We evaluated EideticEngine's architecture through detailed simulations and analysis of its behavior on complex, multi-step tasks, tracing the agent's internal state (AML \code{AgentState}) and UMS interactions.
+
+\begin{itemize}
+    \item \textbf{Case Study 1: Financial Market Analysis (Conceptual Walkthrough):} This task requires the agent to:
+    \begin{itemize}
+        \item \textbf{Structure \& Goal Decomposition:} Create a workflow (\code{create\_workflow}). Define the main goal. Use \code{push\_sub\_goal} to decompose analysis into sub-goals (e.g., "Analyze Interest Rates", "Analyze Equity Trends"). Potentially create separate thought chains (\code{create\_thought\_chain}) for each sub-goal.
+        \item \textbf{Plan \& Depend:} Generate a plan (\code{AGENT\_TOOL\_UPDATE\_PLAN}) with \code{PlanStep} objects. Steps might include searching external data (via browser/filesystem tools), storing findings (\code{store\_memory}), summarizing (\code{summarize\_text}), analyzing (\code{record\_thought}), and consolidating (\code{consolidate\_memories}). Use \code{depends\_on} fields (referencing recorded \code{action\_id}s) to ensure data is gathered before analysis. \code{\_check\_prerequisites} enforces this order.
+        \item \textbf{Remember \& Retrieve:} Store key economic facts (\code{store\_memory}, \code{level=semantic}). Use Gateway tools (e.g., filesystem, browser) to get data, store observations (\code{store\_memory(type=observation)}). Retrieve internal summaries/facts using \code{hybrid\_search\_memories} or \code{get\_memory\_by\_id} when assembling context via \code{\_gather\_context}.
+        \item \textbf{Link:} Explicitly link related concepts (e.g., CPI data memory to market summary memory via \code{create\_memory\_link}). Background auto-linking (\code{\_run\_auto\_linking}) connects related stored facts semantically.
+        \item \textbf{Reflect \& Adapt:} Based on performance (e.g., high error rate in \code{tool\_usage\_stats} or memory imbalance from \code{compute\_memory\_statistics}), \code{\_adapt\_thresholds} adjusts reflection frequency. When triggered, \code{generate\_reflection} analyzes recent \code{memory\_operations} and might identify gaps (e.g., missing political factors). This feedback (\code{last\_meta\_feedback}) prompts the LLM (potentially setting \code{needs\_replan=True}) to revise the plan using \code{AGENT\_TOOL\_UPDATE\_PLAN}.
+        \item \textbf{Synthesize:} \code{consolidate\_memories} generates a high-level insight (\code{type=insight}) connecting disparate stored facts (e.g., rate changes and equity trends), storing it as a new \code{Semantic} memory.
+        \item \textbf{Goal Completion:} Mark sub-goals complete (\code{mark\_goal\_status}) as analysis sections finish. Once the root goal is marked complete, \code{state.goal\_achieved\_flag} is set, terminating the loop.
+    \end{itemize}
+
+    \item \textbf{Case Study 2: Creative Concept Development (Conceptual Walkthrough):} This task requires the agent to:
+    \begin{itemize}
+        \item \textbf{Ideate \& Structure:} Brainstorm concepts (\code{record\_thought}), select one (\code{record\_thought(type=decision)}), store the core concept (\code{store\_memory(type=insight)}), potentially check novelty (via external tool), and manage development phases using the Goal Stack (\code{push\_sub\_goal("Develop Characters"), push\_sub\_goal("Outline Plot")}).
+        \item \textbf{Develop \& Persist:} Create character profiles and story arcs as thoughts (\code{record\_thought}), then store structured versions (\code{store\_memory(memory\_type=fact, level=semantic, tags=["character:Alice"])}). Retrieve these using \code{query\_memories} when needed.
+        \item \textbf{Iterate \& Track:} Generate pilot script scenes iteratively (\code{record\_thought} or direct LLM generation), store each (\code{store\_memory(memory\_type=text, level=episodic, tags=["scene:1"])}), and incrementally update a draft artifact (\code{record\_artifact}) storing the full script path or content. Plan steps (\code{PlanStep}) would have dependencies ensuring scenes are generated before being added to the draft artifact.
+        \item \textbf{Utilize Context:} \code{\_gather\_context} retrieves character profile memories using proactive search or `query\_memories(tags=["character:Alice"])` when the current plan step is "Write Scene 2 featuring Alice".
+        \item \textbf{Finalize:} Retrieve the full draft artifact path/content (\code{get\_artifact\_by\_id}), perform final formatting (simulated internal LLM step or using Gateway text tools), save the final output (\code{filesystem:write\_file}), and record it as a final artifact (\code{record\_artifact(is\_output=True)}). Mark the final goal complete (\code{mark\_goal\_status}).
+    \end{itemize}
+\end{itemize}
+
+\textbf{Analysis:} Across both conceptual studies, the EideticEngine architecture facilitates successful completion of complex, multi-phase tasks. The UMS provides the necessary persistence, structure, and retrieval flexibility. The AML successfully orchestrates the LLM, manages dependencies via explicit checks, recovers from simulated errors using categorized feedback and replanning triggers, manages hierarchical goals via the Goal Stack, and utilizes meta-cognitive tools adaptively based on performance feedback. The Mental Momentum bias allows for more focused execution during productive phases.
+
+\section{Discussion: Implications of the EideticEngine Architecture}
+
+EideticEngine demonstrates a path towards more capable and autonomous LLM agents by integrating principles from cognitive science with robust software engineering. Key implications include:
+
+\begin{itemize}
+    \item \textbf{Beyond Reactive Agents:} EideticEngine moves agents from simple stimulus-response loops towards goal-directed, reflective, and adaptive behavior based on persistent internal state (UMS) and hierarchical objectives (Goal Stack).
+
+    \item \textbf{Scalability for Complex Tasks:} Structured planning (\code{PlanStep}), explicit dependency management (\code{\_check\_prerequisites}), Goal Stack decomposition, and modular thought chains enable tackling problems that overwhelm simpler architectures due to context limitations or lack of coherence over long horizons.
+
+    \item \textbf{Structured Learning and Adaptation:} While not general ML-based learning, the combination of reflection (\code{generate\_reflection}), consolidation (\code{consolidate\_memories}), memory promotion (\code{promote\_memory\_level}), and adaptive thresholds (\code{\_adapt\_thresholds}) allows the agent to refine its knowledge base (UMS) and operational strategy (meta-cognitive frequency) over time based on its experience and performance metrics.
+
+    \item \textbf{Introspection and Explainability:} The detailed logging in the UMS (\code{memory\_operations}, \code{thoughts}, \code{actions}, \code{artifacts}, \code{dependencies}) and visualization tools (\code{visualize\_reasoning\_chain}, \code{visualize\_memory\_network}, \code{generate\_workflow\_report}) provide unprecedented insight into the agent's operational history and "reasoning" process, aiding debugging and analysis.
+
+    \item \textbf{Foundation for General Capabilities:} By providing robust infrastructure for multi-level memory, structured planning, goal management, and adaptive self-management, EideticEngine lays groundwork that future, potentially more powerful AI reasoning cores could leverage to achieve broader intelligence. The architecture itself addresses fundamental bottlenecks in current agent designs.
+\end{itemize}
+
+\textbf{Limitations:} EideticEngine still relies heavily on the quality of the core LLM's reasoning, planning (via \code{AGENT\_TOOL\_UPDATE\_PLAN}), and tool-use abilities. The overhead of UMS interaction (SQLite I/O, serialization, embedding generation) could impact performance on highly real-time tasks, although asynchronous design and optimizations mitigate this. The heuristics for memory promotion and threshold adaptation, while functional, could be further refined or learned. Error recovery depends on the LLM's ability to interpret categorized errors and replan effectively.
+
+\section{Conclusion: A Cognitive Leap for Agent Architectures}
+
+We introduced EideticEngine, an adaptive cognitive architecture enabling LLM agents to manage complex tasks through the tight integration of a Unified Memory System (UMS) and an Agent Master Loop (AML). By incorporating multi-level memory, structured planning with dependency checking, hierarchical goal management via a Goal Stack, agent-driven meta-cognition (reflection, consolidation, promotion), and adaptive self-regulation of cognitive processes (including Mental Momentum bias), EideticEngine demonstrates a significant advance over existing agent paradigms. Its design supports sustained, goal-directed, adaptive, and introspective behavior on challenging analytical and creative tasks. EideticEngine offers a robust and extensible blueprint for the next generation of autonomous AI systems.
+
+\section{Future Work}
+
+\begin{itemize}
+    \item \textbf{Quantitative Benchmarking:} Rigorous evaluation against state-of-the-art baselines (e.g., LangChain agents, MemGPT variants \cite{Ref12}) on complex, multi-step agent benchmarks (like AgentBench or WebArena) to quantify improvements in task success rate, robustness, and efficiency.
+
+    \item \textbf{Advanced Adaptation \& Learning:} Exploring reinforcement learning or other ML techniques to optimize adaptive thresholds, meta-cognitive strategy selection (choosing reflection type or consolidation strategy), and procedural skill derivation (\code{promote\_memory\_level} based on success patterns). Developing more sophisticated heuristics for Mental Momentum.
+
+    \item \textbf{Multi-Agent Systems:} Extending EideticEngine to support collaborative tasks with shared or selectively synchronized UMS spaces and coordinated planning/goal management protocols. Investigating distributed UMS implementations.
+
+    \item \textbf{Real-Time Interaction:} Investigating architectural adaptations for tighter perception-action loops in dynamic environments, potentially involving faster memory tiers or predictive processing.
+
+    \item \textbf{Theoretical Grounding:} Further formalizing the EideticEngine loop, Goal Stack dynamics, and memory relevance/decay models in relation to established cognitive science models (e.g., ACT-R working memory activation \cite{Ref1, Ref2}) and decision theory.
+
+    \item \textbf{Hybrid Reasoning:} Integrating symbolic planners or knowledge graph reasoning engines that can interact with the UMS (querying structured data, adding inferred links) and the LLM via the AML, potentially invoked as specialized tools.
+
+    \item \textbf{Advanced Memory Management:} Implementing priority-based garbage collection (considering importance, access, links) alongside TTL expiration. Exploring memory compression techniques for long-term storage.
+
+    \item \textbf{Enhanced Introspection \& Self-Modeling:} Enabling the agent to reason more deeply about its own UMS contents, operational statistics, and cognitive biases using dedicated introspection tools. Investigating confidence calibration mechanisms.
+
+    \item \textbf{Advanced Cognitive Simulation:} Exploring mechanisms for counterfactual reasoning ("what-if" scenarios via temporary thought chains) or basic emotional modeling to influence memory salience or creative generation.
+
+    \item \textbf{Multimodal UMS:} Extending the UMS schema and tools to handle image, audio, or video data, potentially storing feature vectors alongside textual descriptions and enabling cross-modal linking and search. % Corrected: Removed **
+\end{itemize}
+
+\section*{Addendum: Implementation Details} % Use \section* for unnumbered
+
+This addendum provides supplementary technical details on the EideticEngine implementation.
+
+\subsection{Low-Level Implementation Considerations}
+\begin{itemize}
+    \item \textbf{Transaction Management:} UMS operations executed via tools like \code{create\_workflow}, \code{record\_action\_start}, \code{store\_memory} use the \code{DBConnection.transaction} asynchronous context manager. This ensures atomicity for operations involving multiple table inserts/updates (e.g., creating a workflow and its initial thought chain). Deferred foreign key constraints are used specifically to handle the circular dependency between the \code{thoughts} and \code{memories} tables.
+
+    \item \textbf{Memory Compression/Summarization:} Compression primarily occurs within the AML's context gathering phase (\code{\_gather\_context}) when estimated token counts exceed a threshold. It invokes the UMS tool \code{summarize\_context\_block} to summarize verbose context components (like action history) using specialized prompts before sending the context to the main LLM. Direct compression *before* storage in the UMS is not a standard feature but could be achieved by piping tool outputs through summarization tools before calling \code{store\_memory}.
+
+    \item \textbf{Embedding Caching:} Embedding generation within the UMS (\code{\_store\_embedding}) leverages the caching mechanisms built into the underlying \code{EmbeddingService} (provided by the Ultimate MCP Server), reducing redundant API calls for identical text inputs.
+
+    \item \textbf{Retry Logic Patterns:} The AML implements retry logic for external tool calls (including UMS tools via MCP and LLM calls) using the \code{\_with\_retries} helper. This features configurable max retries, exponential backoff (\code{retry\_backoff}), jitter (\code{jitter} tuple), and targets specific, potentially transient exceptions (\code{retry\_exceptions} includes network errors, API errors, timeouts). Retries are limited for non-idempotent operations.
+
+    \item \textbf{Memory Expiration:} The UMS implements TTL-based expiration. The \code{delete\_expired\_memories} tool periodically removes memories where \code{created\_at + ttl < current\_time} and \code{ttl > 0}. No other priority-based garbage collection is currently implemented.
+\end{itemize}
+
+\subsection{Operational Statistics and Telemetry}
+
+The EideticEngine v4.1 implementation provides basic operational statistics:
+
+\begin{itemize}
+    \item \textbf{Performance Metrics:} The \code{with\_tool\_metrics} decorator logs the processing time for each UMS tool execution. The AML tracks overall loop count (\code{AgentState.current\_loop}).
+    \item \textbf{Tool Usage Statistics:} The AML's \code{AgentState.tool\_usage\_stats} dictionary tracks success/failure counts and total latency per tool name, which feeds into the \code{\_adapt\_thresholds} logic.
+    \item \textbf{Memory Statistics:} The \code{compute\_memory\_statistics} UMS tool provides aggregate counts (total, by level, by type), average importance/confidence, link counts, and basic tag/workflow status distributions, used by \code{\_adapt\_thresholds}.
+    \item \textbf{Logging:} Detailed logs capture operations, errors, context gathering steps, decisions, and state changes. The UMS \code{memory\_operations} table provides a persistent audit trail.
+    \item \textbf{Current Limitations:} Granular telemetry (e.g., detailed token tracking per operation, reflection effectiveness metrics, usage heatmaps) is not currently implemented but could be added via enhanced logging or integration with systems like OpenTelemetry (supported by the MCP Client).
+\end{itemize}
+
+\subsection{Micro-Level Decision Handling}
+
+\begin{itemize}
+    \item \textbf{LLM Output Handling:} The AML's \code{\_call\_agent\_llm} parses the LLM response, identifying tool calls (\code{stop\_reason='tool\_use'}), goal completion signals (\code{'text'} starts with \code{'GOAL ACHIEVED:'}), or textual thoughts. It does *not* rely on complex regex parsing for plan updates, instead requiring the LLM to use the dedicated \code{AGENT\_TOOL\_UPDATE\_PLAN} tool for significant plan changes.
+    \item \textbf{Tool Selection:} The AML currently executes the single tool call requested by the LLM. If multiple are requested (a rare case for current models), it executes only the first. More sophisticated selection logic based on cost/success rate is not implemented in the AML itself.
+    \item \textbf{Error Classification System:} The \code{\_execute\_tool\_call\_internal} function categorizes errors based on exception types, status codes, and keywords into types like \code{DependencyNotMetError}, \code{InvalidInputError}, \code{ServerUnavailable}, \code{PlanValidationError}, \code{GoalManagementError}, etc., storing this \code{type} in \code{state.last\_error\_details} to guide LLM recovery attempts via tailored prompt instructions.
+    \item \textbf{Conversation Management:} Conversation history/branching is managed by the MCP Client (\code{ConversationGraph}), not directly within the AML/UMS state, though the AML operates within the context of the client's current conversation state.
+\end{itemize}
+
+\subsection{Meta-Cognitive Mechanisms (Implemented)}
+
+The specific meta-cognitive mechanisms implemented in v4.1 are:
+\begin{itemize}
+    \item \textbf{Reflection:} Agent-triggered execution of \code{generate\_reflection} based on dynamic thresholds or errors, cycling through types (summary, progress, gaps, etc.). Feedback influences the next LLM prompt.
+    \item \textbf{Consolidation:} Agent-triggered execution of \code{consolidate\_memories} based on dynamic thresholds, synthesizing multiple memories into a new UMS entry.
+    \item \textbf{Memory Promotion:} Background checks (\code{\_trigger\_promotion\_checks}) trigger \code{promote\_memory\_level} based on configured access/confidence heuristics.
+    \item \textbf{Working Memory Optimization:} Periodic execution of \code{optimize\_working\_memory} using relevance/diversity strategies and \code{auto\_update\_focus} based on heuristics.
+    \item \textbf{Adaptive Thresholds:} Dynamic adjustment of reflection/consolidation frequency via \code{\_adapt\_thresholds} based on memory stats and tool success rates.
+    \item \textbf{Mental Momentum:} Bias applied in \code{\_adapt\_thresholds} to reduce reflection frequency during stable progress.
+\end{itemize}
+
+\subsection{Micro-Task Case Study Insights}
+
+Revisiting the micro-tasks based on implementation:
+\subsubsection{Knowledge Integration Challenge}
+\begin{enumerate}
+    \item \textbf{Contradiction Detection:} Identifying contradictions would rely on the LLM noticing conflicting content during context assembly or reflection, potentially prompting it to use \code{create\_memory\_link(type=CONTRADICTS)}. Semantic search might bring conflicting items together, but explicit detection isn't automatic in the UMS/AML.
+    \item \textbf{Authority Assessment:} Relies on LLM reasoning based on metadata (\code{source}, \code{confidence}) provided in context.
+    \item \textbf{Reconciliation Strategy:} Would require the LLM to formulate the rule and store it as a new memory (\code{store\_memory}).
+    \item \textbf{Knowledge Structure Update:} Possible via LLM using \code{create\_memory\_link} to explicitly link conflicting facts and the reconciliation rule.
+\end{enumerate}
+
+\subsubsection{Dynamic Planning Adaptation}
+\begin{enumerate}
+    \item \textbf{Impact Analysis:} The LLM would need to analyze the plan (\code{AgentState.current\_plan}) and dependencies after being informed of the constraint change (likely via context or a stored memory). Dependency traversal isn't an explicit AML/UMS tool, relying on LLM reasoning over the plan structure.
+    \item \textbf{Resource Reallocation:} The agent (LLM) could decide to use \code{get\_artifact\_by\_id} or \code{get\_memory\_by\_id} to retrieve intermediates and then use appropriate tools (potentially including Gateway tools like text processing) to transform them before saving new artifacts/memories.
+    \item \textbf{Graceful Constraint Handling:} The agent could use \code{hybrid\_search\_memories(memory\_level=procedural)} or \code{query\_memories(memory\_type=procedure)} to find relevant past solutions stored in the UMS.
+    \item \textbf{Meta-Cognitive Efficiency:} The adaptive thresholds (\code{\_adapt\_thresholds}) would naturally adjust reflection based on any errors encountered during adaptation, but there isn't explicit logic to *delay* reflection just because a constraint changed; it depends on success/error counters.
+\end{enumerate}
+
+\subsubsection{Long-Duration Task Management}
+\begin{enumerate}
+    \item \textbf{Hibernate/Resume Capability:} Yes, the \code{\_save\_agent\_state} and \code{\_load\_agent\_state} methods handle persistence of the workflow ID, goal stack, plan, thought chain ID, counters, and thresholds. Background tasks are *not* saved.
+    \item \textbf{Re-Contextualization:} Upon resuming (\code{initialize} calls \code{\_load\_agent\_state}), the AML's first \code{\_gather\_context} call rebuilds the context based on the loaded state and UMS queries.
+    \item \textbf{Time-Aware Reasoning:} Yes, the \code{compute\_memory\_relevance} function incorporates time decay, affecting subsequent relevance calculations and memory retrieval ranking. Freshness indicators (`retrieved\_at`) in context also aid the LLM.
+    \item \textbf{Continuity Verification:} No explicit "consistency check" step is implemented; continuity relies on successful state loading and context re-assembly.
+\end{enumerate}
+
+
+% Use \section* for unnumbered References section if biblatex handles title
+% \nocite{*} % Include all references from the .bib file, even if not cited
+\printbibliography
+
+
+% ==============================================================================
+\end{document}
+% ==============================================================================
