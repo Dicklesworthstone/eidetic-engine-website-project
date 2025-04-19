@@ -11,20 +11,7 @@ export default defineConfig({
     }
   },
   build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'agent-loop': ['./src/AgentLoopFlow.tsx'],
-          'agent-architecture': ['./src/AgentArchitectureDiagram.tsx'],
-          'schema-diagram': ['./src/SchemaDiagram.tsx'],
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'aml-analysis': ['./src/AmlTechnicalAnalysis.tsx'],
-          'ums-analysis': ['./src/UmsTechnicalAnalysis.tsx'],
-          'eidetic-engine': ['./src/EideticEngineWebsite.tsx'],
-          'memory-graph': ['./src/MemoryGraph.tsx']
-        }
-      }
-    },
+
     chunkSizeWarningLimit: 2000,
     minify: process.env.NODE_ENV === 'development' ? false : 'esbuild'
   },
