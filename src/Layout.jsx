@@ -5,8 +5,6 @@ import { Analytics } from '@vercel/analytics/react';
 import useGoogleAnalytics from './hooks/useGoogleAnalytics';
 import './index.css';
 
-inject({ framework: 'vite' }); 
-
 // Layout component providing common background, header, and progress bar
 export default function Layout() {
   const [scrollProg, setScrollProg] = useState(0);
