@@ -1,12 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Brain } from 'lucide-react';
 import { Analytics } from '@vercel/analytics/react';
+import useGoogleAnalytics from './hooks/useGoogleAnalytics';
 import './index.css';
 
 // Layout component providing common background, header, and progress bar
 export default function Layout() {
   const [scrollProg, setScrollProg] = useState(0);
+  const location = useLocation();
+  
+  // Initialize Google Analytics
+  useGoogleAnalytics();
+  
+  // Track page views on route change
+  useEffect(() => {
+    // This will track page views in Google Analytics when the route changes
+    import('react-ga4').then((ReactGA) => {
+      ReactGA.default.send({ 
+        hitType: "pageview", 
+        page: location.pathname + location.search 
+      });
+    });
+  }, [location]);
   
   useEffect(() => {
     // Only run in browser environment

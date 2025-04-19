@@ -2,6 +2,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'; // <-- Import
+import { GoogleAnalyticsProvider } from './contexts/GoogleAnalyticsContext';
 import './index.css'
 import App from './App.jsx'
 
@@ -12,7 +13,9 @@ if (typeof document !== 'undefined') {
     createRoot(rootElement).render(
       <StrictMode>
         <BrowserRouter> {/* <-- Wrap App */}
-          <App />
+          <GoogleAnalyticsProvider>
+            <App />
+          </GoogleAnalyticsProvider>
         </BrowserRouter>
       </StrictMode>,
     )
