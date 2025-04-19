@@ -598,7 +598,7 @@ export default function AgentLoopFlow() {
     }, []);
 
     return (
-        <div className="relative w-full h-120 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-4 shadow-xl overflow-hidden">
+        <div className="relative w-full h-120 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-2 md:p-4 shadow-xl overflow-hidden">
             {/* Enhanced background with subtle gradient - Increased height to 120 */}
             <div className="absolute inset-0 opacity-10">
                 <div className="w-full h-full bg-grid-white-100/[0.06] bg-[size:20px_20px]"></div>
@@ -632,7 +632,8 @@ export default function AgentLoopFlow() {
                 Agent Cognitive Loop
             </div>
 
-            <svg ref={svgRef} viewBox="0 0 100 100" className="w-full h-full select-none">
+            {/* Reset viewBox to original with proper padding */}
+            <svg ref={svgRef} viewBox="0 0 100 100" className="w-full h-full select-none" preserveAspectRatio="xMidYMid meet">
                 {/* Enhanced gradients */}
                 <defs>
                     {/* Filter for ambient glow */}
@@ -703,8 +704,8 @@ export default function AgentLoopFlow() {
                     ))}
                 </defs>
 
-                {/* Added padding around the entire diagram - increased padding and reduced scale */}
-                <g transform="translate(10, 15) scale(0.8)">
+                {/* Restore padding but make it more mobile-friendly */}
+                <g transform="translate(10, 15) scale(0.85)">
                     {/* Center radial glow */}
                     <circle
                         cx="50"
@@ -753,8 +754,8 @@ export default function AgentLoopFlow() {
                         </text>
                     </g>
 
-                    {/* Properly sized Task Input node matching other elements */}
-                    <g className="node" transform="translate(18, 18)">
+                    {/* Move Task Input node a bit to the right to prevent overlap */}
+                    <g className="node" transform="translate(22, 18)">
                         <rect
                             x="-7"
                             y="-4.5"

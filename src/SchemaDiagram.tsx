@@ -630,24 +630,24 @@ export default function DatabaseSchemaDiagram() {
             )}
 
             {/* Move stats panel back to bottom and center */}
-            <div className="absolute bottom-5 left-0 right-0 flex justify-center">
-                <div className="bg-slate-900/80 backdrop-blur-sm py-3 px-6 rounded-xl border border-slate-800/60 z-10 shadow-lg">
-                    <div className="flex items-center space-x-8">
+            <div className="absolute bottom-5 left-0 right-0 flex justify-center px-4">
+                <div className="bg-slate-900/80 backdrop-blur-sm py-3 px-4 sm:px-6 rounded-xl border border-slate-800/60 z-10 shadow-lg w-full max-w-lg sm:max-w-xl md:max-w-2xl">
+                    <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8">
                         <div className="flex items-center">
-                            <Database className="w-5 h-5 text-blue-400 mr-2" />
-                            <span className="text-sm text-slate-200 whitespace-nowrap">{tables.length} Tables</span>
+                            <Database className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 mr-2" />
+                            <span className="text-xs sm:text-sm text-slate-200 whitespace-nowrap">{tables.length} Tables</span>
                         </div>
                         <div className="flex items-center">
-                            <Link2 className="w-5 h-5 text-purple-400 mr-2" />
-                            <span className="text-sm text-slate-200 whitespace-nowrap">{initialGraph.edges.length} Relationships</span>
+                            <Link2 className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400 mr-2" />
+                            <span className="text-xs sm:text-sm text-slate-200 whitespace-nowrap">{initialGraph.edges.length} Relationships</span>
                         </div>
                         <div className="flex items-center">
-                            <GitBranch className="w-5 h-5 text-green-400 mr-2" />
-                            <span className="text-sm text-slate-200 whitespace-nowrap">{Object.keys(domainDescriptions).length} Domains</span>
+                            <GitBranch className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 mr-2" />
+                            <span className="text-xs sm:text-sm text-slate-200 whitespace-nowrap">{Object.keys(domainDescriptions).length} Domains</span>
                         </div>
                         <div className="flex items-center">
-                            <Tag className="w-5 h-5 text-yellow-400 mr-2" />
-                            <span className="text-sm text-slate-200 whitespace-nowrap">Memory System Schema</span>
+                            <Tag className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400 mr-2" />
+                            <span className="text-xs sm:text-sm text-slate-200 whitespace-nowrap">Memory System Schema</span>
                         </div>
                     </div>
                 </div>

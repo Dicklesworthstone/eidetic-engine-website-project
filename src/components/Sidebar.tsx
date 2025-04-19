@@ -70,10 +70,24 @@ const Sidebar: React.FC<SidebarProps> = ({
         };
     }, [showNavigation, setShowNavigation]);
 
+    // Update mobile overlay visibility when sidebar state changes
+    useEffect(() => {
+        const overlay = document.getElementById('mobile-overlay');
+        if (overlay) {
+            if (showNavigation) {
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                overlay.classList.add('opacity-100', 'pointer-events-auto');
+            } else {
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                overlay.classList.remove('opacity-100', 'pointer-events-auto');
+            }
+        }
+    }, [showNavigation]);
+
     return (
         <aside
             ref={sidebarRef}
-            className={`fixed top-16 h-[calc(100vh-4rem)] overflow-y-auto code-scrollbar bg-gray-900 border-r border-gray-800 w-64 md:w-64 transition-transform duration-300 ease-in-out z-30 md:translate-x-0 ${showNavigation ? 'translate-x-0 shadow-xl' : '-translate-x-full'} md:left-0`}
+            className={`fixed top-16 bottom-0 left-0 overflow-y-auto code-scrollbar bg-gray-900 border-r border-gray-800 w-64 transition-transform duration-300 ease-in-out z-30 ${showNavigation ? 'translate-x-0 shadow-xl md:shadow-none' : '-translate-x-full'} md:translate-x-0`}
             aria-hidden={!showNavigation}
             tabIndex={showNavigation ? 0 : -1}
             style={{ WebkitOverflowScrolling: 'touch' }}

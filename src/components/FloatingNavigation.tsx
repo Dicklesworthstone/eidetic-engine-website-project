@@ -69,7 +69,7 @@ const FloatingNavigation: React.FC<FloatingNavigationProps> = ({
     return (
         <div 
             ref={containerRef}
-            className="fixed right-4 top-1/2 transform -translate-y-1/2 z-30 hidden md:hidden"
+            className="fixed right-2 top-1/2 transform -translate-y-1/2 z-30 hidden md:hidden"
             style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
         >
             {navItems.map((item) => (

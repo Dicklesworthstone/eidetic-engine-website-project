@@ -13,9 +13,7 @@ const Footer = () => {
           </div>
           
           <div className="flex items-center text-sm text-gray-400">
-            <p>Built with</p>
-            <Heart className="w-4 h-4 mx-1 text-red-400" />
-            <p>by the EideticEngine Team</p>
+            <p>Built by Jeffrey Emanuel</p>
           </div>
         </div>
       </div>

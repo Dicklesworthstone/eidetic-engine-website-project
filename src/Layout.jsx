@@ -39,8 +39,8 @@ export default function Layout() {
 
       {/* Mobile Overlay - only visible when sidebar is open on mobile */}
       <div 
-        className="fixed inset-0 bg-black/50 z-30 md:hidden transition-opacity duration-300"
-        style={{ opacity: window.innerWidth < 768 ? 1 : 0, pointerEvents: window.innerWidth < 768 ? 'auto' : 'none' }}
+        className="fixed inset-0 bg-black/50 z-30 md:hidden transition-opacity duration-300 opacity-0 pointer-events-none"
+        id="mobile-overlay"
         onClick={() => document.dispatchEvent(new CustomEvent('toggle-sidebar', { detail: { show: false } }))}
       ></div>
 

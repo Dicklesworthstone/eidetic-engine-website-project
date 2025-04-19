@@ -1,5 +1,9 @@
 // AmlTechnicalAnalysis.jsx - Redesigned to match EideticEngine main page aesthetic
 import React, { useState, useEffect, useRef } from 'react';
+import Header from './components/Header';
+import Sidebar from './components/Sidebar';
+import MobileNavToggle from './components/MobileNavToggle';
+import FloatingNavigation from './components/FloatingNavigation';
 import {
     RefreshCw,
     List,
@@ -30,7 +34,14 @@ import {
     Compass,
     Share2,
     FlaskConical,
-    Scale
+    Scale,
+    FileText,
+    Aperture,
+    UserPlus,
+    AlertOctagon,
+    BarChart2,
+    Map,
+    X
 } from 'lucide-react';
 import Prism from 'prismjs';
 // Import Prism languages
@@ -42,16 +53,11 @@ import 'prismjs/components/prism-json';
 // Import Monokai theme
 import './prism-monokai.css'; // We'll create this file next
 import AgentLoopFlow from './AgentLoopFlow';
-import Header from './components/Header';
-import Sidebar from './components/Sidebar';
-import MobileNavToggle from './components/MobileNavToggle';
-// Add import at the beginning of the file, near other imports
-import './styles/scrollbars.css';
 import Footer from './components/Footer';
 
 // Helper components for consistent styling
 const InlineCode = ({ children }) => (
-    <code className="mx-1 px-1.5 py-0.5 bg-gray-700/80 rounded text-blue-200 text-[11px] md:text-xs font-mono whitespace-nowrap">
+    <code className="mx-1 px-1.5 py-0.5 bg-gray-700/80 rounded text-blue-200 text-[9px] md:text-xs font-mono whitespace-nowrap">
         {children}
     </code>
 );
@@ -66,8 +72,8 @@ const CodeBlock = ({ children, language = 'python' }) => {
     }, [children]);
 
     return (
-        <div className="my-4 bg-gray-800/80 border border-gray-700/50 rounded-lg overflow-hidden">
-            <pre className="p-4 text-xs md:text-sm font-mono overflow-x-auto code-scrollbar">
+        <div className="my-4 border border-gray-700/50 rounded-lg overflow-hidden">
+            <pre className="p-4 text-[10px] md:text-sm font-mono overflow-x-auto code-scrollbar !bg-[#272822]">
                 <code ref={codeRef} className={`language-${language}`}>
                     {children}
                 </code>
@@ -144,10 +150,6 @@ const OverviewAndArchitecture = () => (
                             <p className="text-sm text-gray-300">MCPClient (for UMS), AsyncAnthropic (for LLM).</p>
                         </div>
                     </div>
-                </div>
-                {/* Interactive Visualization */}
-                <div className="relative w-full h-64 mt-12 mb-8 bg-gray-900/60 rounded-xl overflow-hidden border border-gray-700/30">
-                    {/* ... visualization content ... */}
                 </div>
                 <h3 className="text-2xl font-bold mt-8 mb-4 text-purple-300 flex items-center">
                     <Zap className="w-6 h-6 mr-2 text-purple-400 flex-shrink-0" /> Key Features and Innovations
@@ -270,11 +272,11 @@ const PromptEngineering = () => (
 
                             {/* Runtime Context Layer */}
                             <div className="h-1/6 bg-red-900/30 flex items-center justify-center px-4 group relative">
-                                <div className="text-red-300 text-sm font-medium text-center flex items-center">
-                                    <div className="absolute left-4 p-1.5 bg-red-900/70 rounded-lg">
+                                <div className="text-red-300 text-sm font-medium text-center flex items-center pl-10 sm:pl-0">
+                                    <div className="absolute left-2 sm:left-4 p-1.5 bg-red-900/70 rounded-lg">
                                         <Activity className="w-5 h-5 text-red-300" />
                                     </div>
-                                    Runtime Context & Final Instruction
+                                    <span>Runtime Context &amp; Final Instruction</span>
                                 </div>
                                 <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity bg-gray-900/90 inset-0 p-4 flex items-center overflow-y-auto code-scrollbar">
                                     <div className="text-xs text-red-200 max-w-md">
@@ -536,40 +538,47 @@ const IntegrationArchitecture = () => (
             </h2>
             <div className="prose prose-lg prose-invert max-w-none space-y-6 text-gray-300">
                 <div className="bg-gradient-to-br from-gray-800/60 to-gray-800/40 p-6 rounded-xl border border-indigo-700/30 shadow-lg">
-                    <p className="mb-8 text-center text-lg">
+                    <p className="mb-6 text-center text-lg">
                         The operational lifecycle of the EideticEngine Agent Master Loop follows a structured workflow:
                     </p>
 
-                    {/* Enhanced Workflow Visualization */}
-                    <div className="relative space-y-8 md:space-y-0 md:flex md:items-center md:justify-between">
-                        {/* Connecting Line (Behind Cards) */}
-                        <div className="absolute top-0 left-1/2 md:left-0 md:top-1/2 w-1 md:w-full h-full md:h-1 bg-gradient-to-r from-indigo-600/50 via-purple-500/50 to-blue-400/50 -translate-x-1/2 md:translate-x-0 md:-translate-y-1/2 z-0"></div>
-
-                        {/* Workflow Steps */}
-                        {[
-                            { icon: <Zap className="w-5 h-5" />, title: "Initialize", description: "Instantiate AML & State" },
-                            { icon: <Database className="w-5 h-5" />, title: "Load State", description: "Fetch previous session" },
-                            { icon: <Server className="w-5 h-5" />, title: "Start Tasks", description: "Begin background processes" },
-                            { icon: <RefreshCw className="w-5 h-5" />, title: "Enter Loop", description: "Core think-act cycle" },
-                            { icon: <Target className="w-5 h-5" />, title: "Process", description: "Handle state & goals" },
-                            { icon: <CheckCircle className="w-5 h-5" />, title: "Persist", description: "Save state on exit" }
-                        ].map((step, index) => (
-                            <div key={index} className="relative z-10 flex md:flex-col items-center group">
-                                <div className="flex-shrink-0 w-16 h-16 bg-gray-900/80 border-2 border-indigo-600/70 rounded-full flex items-center justify-center shadow-lg shadow-indigo-900/30 transform transition-all duration-300 group-hover:scale-110 group-hover:border-indigo-400">
-                                    {React.cloneElement(step.icon, { className: "w-6 h-6 text-indigo-300 transition-colors group-hover:text-indigo-100" })}
+                    {/* Mobile-first workflow visualization */}
+                    <div className="-mx-2 px-2 overflow-visible">
+                        {/* Vertical workflow for mobile - horizontal for desktop */}
+                        <div className="relative flex flex-col md:flex-row items-center md:justify-between md:items-center gap-8 md:gap-4">
+                            {/* Vertical line for mobile / Horizontal line for desktop */}
+                            <div className="absolute top-0 bottom-0 left-6 md:top-1/2 md:left-0 md:right-0 md:bottom-auto w-px md:w-full h-full md:h-px bg-gradient-to-b md:bg-gradient-to-r from-indigo-600/50 via-purple-500/50 to-blue-400/50 z-0"></div>
+                            
+                            {/* Steps */}
+                            {[
+                                { icon: <Zap className="w-5 h-5" />, title: "Initialize", description: "Instantiate AML & State" },
+                                { icon: <Database className="w-5 h-5" />, title: "Load State", description: "Fetch previous session" },
+                                { icon: <Server className="w-5 h-5" />, title: "Start Tasks", description: "Begin background processes" },
+                                { icon: <RefreshCw className="w-5 h-5" />, title: "Enter Loop", description: "Core think-act cycle" },
+                                { icon: <Target className="w-5 h-5" />, title: "Process", description: "Handle state & goals" },
+                                { icon: <CheckCircle className="w-5 h-5" />, title: "Persist", description: "Save state on exit" }
+                            ].map((step, index) => (
+                                <div key={index} className="relative z-10 flex md:flex-col md:items-center group">
+                                    {/* Circle with icon */}
+                                    <div className="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 bg-gray-900/80 border-2 border-indigo-600/70 rounded-full flex items-center justify-center shadow-lg shadow-indigo-900/30 transform transition-all duration-300 group-hover:scale-110 group-hover:border-indigo-400">
+                                        {React.cloneElement(step.icon, { className: "w-5 h-5 md:w-6 md:h-6 text-indigo-300 transition-colors group-hover:text-indigo-100" })}
+                                    </div>
+                                    
+                                    {/* Step label - visible on all screens */}
+                                    <div className="ml-4 md:ml-0 md:mt-2">
+                                        <span className="text-sm font-medium text-indigo-300">{step.title}</span>
+                                        
+                                        {/* Description - visible on mobile */}
+                                        <p className="text-xs text-gray-400 md:hidden mt-0.5">{step.description}</p>
+                                    </div>
+                                    
+                                    {/* Desktop hover details - appears on hover on desktop only */}
+                                    <div className="hidden md:block absolute p-3 bg-gray-800/70 rounded-lg border border-indigo-700/30 shadow-md text-center w-40 transform transition-all duration-300 opacity-0 group-hover:opacity-100 bottom-full mb-2 left-1/2 -translate-x-1/2 invisible group-hover:visible">
+                                        <p className="text-xs text-gray-400">{step.description}</p>
+                                    </div>
                                 </div>
-                                <div className="ml-4 md:ml-0 md:mt-4 p-3 bg-gray-800/70 rounded-lg border border-indigo-700/30 shadow-md text-center w-40 transform transition-all duration-300 opacity-0 group-hover:opacity-100 group-hover:-translate-y-2 md:group-hover:translate-y-0 md:group-hover:translate-x-2 absolute left-full md:left-auto md:top-full invisible group-hover:visible">
-                                    <h4 className="font-bold text-indigo-200 text-sm mb-1">{step.title}</h4>
-                                    <p className="text-xs text-gray-400">{step.description}</p>
-                                </div>
-                                {/* Small label visible normally */}
-                                <div className="md:absolute md:top-full md:left-1/2 md:transform md:-translate-x-1/2 mt-2 md:mt-2">
-                                    <span className="text-xs font-medium text-indigo-300 whitespace-nowrap px-2 py-0.5 bg-indigo-900/50 rounded group-hover:opacity-0 transition-opacity">
-                                        {step.title}
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -697,7 +706,7 @@ AGENT_TOOL_UPDATE_PLAN = "agent:update_plan"`}</CodeBlock>
                             <h4 className="font-bold text-blue-300 mb-2 text-center">Memory Management</h4>
                             <div className="flex justify-center mb-3">
                                 <Database className="w-8 h-8 text-blue-400" />
-                            </div>
+</div>
                             <p className="text-xs text-gray-300 text-center">
                                 Core storage and retrieval operations
                             </p>
@@ -724,9 +733,9 @@ AGENT_TOOL_UPDATE_PLAN = "agent:update_plan"`}</CodeBlock>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
+</div>
+</div>
+</section>
 );
 
 // --- SECTION: Core Utility Functions ---
@@ -779,7 +788,7 @@ const AgentMasterLoopCoreImplementation = () => (
                 <div className="bg-gray-800/50 p-6 rounded-xl border border-purple-700/30 shadow-lg">
                     <h3 className="text-2xl font-bold mb-4 text-purple-300 flex items-center">
                         <Zap className="w-6 h-6 mr-2 text-purple-400 flex-shrink-0" /> Initialization and Setup
-                    </h3>
+                            </h3>
                     <ul className="space-y-2 list-disc pl-5">
                         <li><InlineCode>__init__(...)</InlineCode>: Stores MCPClient, Anthropic client, sets up logger, state, sync primitives, cognitive parameters.</li>
                         <li><InlineCode>initialize()</InlineCode>: Loads state (<InlineCode>_load_agent_state</InlineCode>), fetches/filters tool schemas, verifies essential tools, validates workflow/goal stack (<InlineCode>_validate_goal_stack_on_load</InlineCode>), sets default thought chain (<InlineCode>_set_default_thought_chain_id</InlineCode>).</li>
@@ -830,7 +839,13 @@ const AgentMasterLoopCoreImplementation = () => (
                 {/* Sub-section: Context Gathering */}
                 <div className="bg-gray-800/50 p-6 rounded-xl border border-blue-700/30 shadow-lg mt-8">
                     <h3 className="text-2xl font-bold mb-4 text-blue-300 flex items-center">
-                        <Telescope className="w-6 h-6 mr-2 text-blue-400 flex-shrink-0" /> Context Gathering System (<InlineCode>_gather_context</InlineCode>)
+                        <Telescope className="w-6 h-6 mr-2 text-blue-400 flex-shrink-0" /> 
+                        <span className="flex flex-col sm:flex-row sm:items-center">
+                            <span>Context Gathering System</span>
+                            <span className="text-sm mt-1 sm:mt-0 sm:ml-2 opacity-70">
+                                (<InlineCode>_gather_context</InlineCode>)
+                            </span>
+                        </span>
                     </h3>
 
                     <p>Assembles multi-faceted context:</p>
@@ -842,8 +857,8 @@ const AgentMasterLoopCoreImplementation = () => (
                             </h4>
                             <p className="text-xs text-gray-300">
                                 Loop count, IDs, plan, errors, workflow stack
-                            </p>
-                        </div>
+                                    </p>
+                                </div>
 
                         <div className="bg-gray-900/60 p-4 rounded-lg border border-blue-700/20">
                             <h4 className="font-bold text-blue-300 mb-2 flex items-center">
@@ -851,8 +866,8 @@ const AgentMasterLoopCoreImplementation = () => (
                             </h4>
                             <p className="text-xs text-gray-300">
                                 Current goal details, stack summary
-                            </p>
-                        </div>
+                                    </p>
+                                </div>
 
                         <div className="bg-gray-900/60 p-4 rounded-lg border border-blue-700/20">
                             <h4 className="font-bold text-blue-300 mb-2 flex items-center">
@@ -886,7 +901,13 @@ const AgentMasterLoopCoreImplementation = () => (
                 {/* Sub-section: Plan Management */}
                 <div className="bg-gray-800/50 p-6 rounded-xl border border-amber-700/30 shadow-lg mt-8">
                     <h3 className="text-2xl font-bold mb-4 text-amber-300 flex items-center">
-                        <GitMerge className="w-6 h-6 mr-2 text-amber-400 flex-shrink-0" /> Plan Management (<InlineCode>_apply_heuristic_plan_update</InlineCode>)
+                        <GitMerge className="w-6 h-6 mr-2 text-amber-400 flex-shrink-0" />
+                        <span className="flex flex-col sm:flex-row sm:items-center">
+                            <span>Plan Management</span>
+                            <span className="text-sm mt-1 sm:mt-0 sm:ml-2 opacity-70">
+                                (<InlineCode>_apply_heuristic_plan_update</InlineCode>)
+                            </span>
+                        </span>
                     </h3>
 
                     <p>Updates plan heuristically if LLM doesn't explicitly replan:</p>
@@ -896,10 +917,10 @@ const AgentMasterLoopCoreImplementation = () => (
                             <h4 className="font-bold text-green-300 mb-2 text-center">Success</h4>
                             <p className="text-xs text-gray-300 text-center">
                                 Marks step complete, removes from plan, generates summary, resets errors
-                            </p>
-                        </div>
+                                    </p>
+                                </div>
 
-                        <div className="bg-red-900/20 p-4 rounded-lg border border-red-700/30">
+                                <div className="bg-red-900/20 p-4 rounded-lg border border-red-700/30">
                             <h4 className="font-bold text-red-300 mb-2 text-center">Failure</h4>
                             <p className="text-xs text-gray-300 text-center">
                                 Marks step failed, keeps in plan, inserts analysis step, sets replan flag, updates errors
@@ -910,17 +931,17 @@ const AgentMasterLoopCoreImplementation = () => (
                             <h4 className="font-bold text-indigo-300 mb-2 text-center">Thought</h4>
                             <p className="text-xs text-gray-300 text-center">
                                 Marks complete, uses thought as summary, updates counters at reduced weight
-                            </p>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
                 {/* Sub-sections continued with other components */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                     <div className="bg-gray-800/50 p-6 rounded-xl border border-purple-700/30 shadow-lg">
                         <h3 className="text-xl font-bold mb-4 text-purple-300 flex items-center">
                             <Target className="w-5 h-5 mr-2 text-purple-400 flex-shrink-0" /> Goal Stack Management
-                        </h3>
+                            </h3>
 
                         <p className="text-sm">Manages hierarchical goals within a workflow context:</p>
 
@@ -967,20 +988,20 @@ const CognitiveEngineMetaphor = () => (
                         as a comprehensive cognitive engine with specialized components mirroring human mental faculties:
                     </p>
 
-                    {/* Interactive Engine Visualization */}
-                    <div className="relative w-full h-[32rem] mb-8 bg-gray-900/70 rounded-xl overflow-hidden border border-purple-700/20"> {/* Increased height from h-96 */}
+                    {/* Responsive Engine Visualization - Mobile first approach */}
+                    <div className="relative w-full h-[24rem] md:h-[28rem] mb-8 bg-gray-900/70 rounded-xl overflow-hidden border border-purple-700/20">
                         {/* Central "Engine Core" */}
                         <div className="absolute inset-0">
-                            {/* Rotating inner gears animation */}
-                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40">
-                                <div className="absolute inset-0 border-4 border-dashed border-purple-500/30 rounded-full animate-spin-slow"></div>
-                                <div className="absolute inset-2 border-4 border-dashed border-blue-500/30 rounded-full animate-spin-reverse"></div>
-                                <div className="absolute inset-8 border-4 border-dashed border-indigo-500/30 rounded-full animate-spin-slow"></div>
+                            {/* Rotating inner gears animation - reduced size on mobile */}
+                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 md:w-40 h-16 md:h-40">
+                                <div className="absolute inset-0 border-2 md:border-4 border-dashed border-purple-500/30 rounded-full animate-spin-slow"></div>
+                                <div className="absolute inset-1 md:inset-2 border-2 md:border-4 border-dashed border-blue-500/30 rounded-full animate-spin-reverse"></div>
+                                <div className="absolute inset-3 md:inset-8 border-2 md:border-4 border-dashed border-indigo-500/30 rounded-full animate-spin-slow"></div>
 
-                                {/* Central brain */}
+                                {/* Central brain - smaller on mobile */}
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="relative w-24 h-24 bg-purple-900/70 rounded-full flex items-center justify-center border border-purple-500/50 shadow-lg shadow-purple-500/20">
-                                        <Brain className="w-12 h-12 text-purple-300" />
+                                    <div className="relative w-12 md:w-24 h-12 md:h-24 bg-purple-900/70 rounded-full flex items-center justify-center border border-purple-500/50 shadow-lg shadow-purple-500/20">
+                                        <Brain className="w-6 md:w-12 h-6 md:h-12 text-purple-300" />
                                     </div>
                                 </div>
                             </div>
@@ -989,80 +1010,80 @@ const CognitiveEngineMetaphor = () => (
                             <div className="absolute top-0 left-0 w-full h-full">
                                 {/* Memory System */}
                                 <div className="absolute top-[15%] left-[20%] transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110">
-                                    <div className="w-16 h-16 bg-blue-900/70 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/20 border border-blue-500/50 cursor-pointer">
-                                        <Database className="w-8 h-8 text-blue-300" />
+                                    <div className="w-8 h-8 md:w-16 md:h-16 bg-blue-900/70 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/20 border border-blue-500/50 cursor-pointer">
+                                        <Database className="w-4 h-4 md:w-8 md:h-8 text-blue-300" />
                                     </div>
-                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap text-blue-300 font-medium text-sm">
-                                        Memory System
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-0.5 md:mt-2 whitespace-nowrap text-blue-300 font-medium text-[10px] md:text-sm">
+                                        Memory
                                     </div>
                                 </div>
 
                                 {/* Attention System */}
                                 <div className="absolute top-[15%] right-[20%] transform translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110">
-                                    <div className="w-16 h-16 bg-amber-900/70 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/20 border border-amber-500/50 cursor-pointer">
-                                        <Eye className="w-8 h-8 text-amber-300" />
+                                    <div className="w-8 h-8 md:w-16 md:h-16 bg-amber-900/70 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/20 border border-amber-500/50 cursor-pointer">
+                                        <Eye className="w-4 h-4 md:w-8 md:h-8 text-amber-300" />
                                     </div>
-                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap text-amber-300 font-medium text-sm">
-                                        Attention System
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-0.5 md:mt-2 whitespace-nowrap text-amber-300 font-medium text-[10px] md:text-sm">
+                                        Attention
                                     </div>
                                 </div>
 
                                 {/* Executive Function */}
                                 <div className="absolute top-[35%] right-[10%] transform translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110">
-                                    <div className="w-16 h-16 bg-green-900/70 rounded-full flex items-center justify-center shadow-lg shadow-green-500/20 border border-green-500/50 cursor-pointer">
-                                        <GitBranch className="w-8 h-8 text-green-300" />
+                                    <div className="w-8 h-8 md:w-16 md:h-16 bg-green-900/70 rounded-full flex items-center justify-center shadow-lg shadow-green-500/20 border border-green-500/50 cursor-pointer">
+                                        <GitBranch className="w-4 h-4 md:w-8 md:h-8 text-green-300" />
                                     </div>
-                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap text-green-300 font-medium text-sm">
-                                        Executive Function
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-0.5 md:mt-2 whitespace-nowrap text-green-300 font-medium text-[10px] md:text-sm">
+                                        Executive
                                     </div>
                                 </div>
 
                                 {/* Metacognitive System */}
                                 <div className="absolute top-[35%] left-[10%] transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110">
-                                    <div className="w-16 h-16 bg-indigo-900/70 rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/20 border border-indigo-500/50 cursor-pointer">
-                                        <Telescope className="w-8 h-8 text-indigo-300" />
+                                    <div className="w-8 h-8 md:w-16 md:h-16 bg-indigo-900/70 rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/20 border border-indigo-500/50 cursor-pointer">
+                                        <Telescope className="w-4 h-4 md:w-8 md:h-8 text-indigo-300" />
                                     </div>
-                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap text-indigo-300 font-medium text-sm">
-                                        Metacognitive System
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-0.5 md:mt-2 whitespace-nowrap text-indigo-300 font-medium text-[10px] md:text-sm">
+                                        Metacog
                                     </div>
                                 </div>
 
                                 {/* Reasoning Engine */}
                                 <div className="absolute bottom-[35%] left-[10%] transform -translate-x-1/2 translate-y-1/2 transition-all duration-300 hover:scale-110">
-                                    <div className="w-16 h-16 bg-red-900/70 rounded-full flex items-center justify-center shadow-lg shadow-red-500/20 border border-red-500/50 cursor-pointer">
-                                        <MessageCircle className="w-8 h-8 text-red-300" />
+                                    <div className="w-8 h-8 md:w-16 md:h-16 bg-red-900/70 rounded-full flex items-center justify-center shadow-lg shadow-red-500/20 border border-red-500/50 cursor-pointer">
+                                        <MessageCircle className="w-4 h-4 md:w-8 md:h-8 text-red-300" />
                                     </div>
-                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap text-red-300 font-medium text-sm">
-                                        Reasoning Engine
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-0.5 md:mt-2 whitespace-nowrap text-red-300 font-medium text-[10px] md:text-sm">
+                                        Reasoning
                                     </div>
                                 </div>
 
                                 {/* Action System */}
                                 <div className="absolute bottom-[35%] right-[10%] transform translate-x-1/2 translate-y-1/2 transition-all duration-300 hover:scale-110">
-                                    <div className="w-16 h-16 bg-emerald-900/70 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-emerald-500/50 cursor-pointer">
-                                        <Terminal className="w-8 h-8 text-emerald-300" />
+                                    <div className="w-8 h-8 md:w-16 md:h-16 bg-emerald-900/70 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-emerald-500/50 cursor-pointer">
+                                        <Terminal className="w-4 h-4 md:w-8 md:h-8 text-emerald-300" />
                                     </div>
-                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap text-emerald-300 font-medium text-sm">
-                                        Action System
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-0.5 md:mt-2 whitespace-nowrap text-emerald-300 font-medium text-[10px] md:text-sm">
+                                        Action
                                     </div>
                                 </div>
 
                                 {/* Learning System */}
                                 <div className="absolute bottom-[15%] left-[20%] transform -translate-x-1/2 translate-y-1/2 transition-all duration-300 hover:scale-110">
-                                    <div className="w-16 h-16 bg-cyan-900/70 rounded-full flex items-center justify-center shadow-lg shadow-cyan-500/20 border border-cyan-500/50 cursor-pointer">
-                                        <GitMerge className="w-8 h-8 text-cyan-300" />
+                                    <div className="w-8 h-8 md:w-16 md:h-16 bg-cyan-900/70 rounded-full flex items-center justify-center shadow-lg shadow-cyan-500/20 border border-cyan-500/50 cursor-pointer">
+                                        <GitMerge className="w-4 h-4 md:w-8 md:h-8 text-cyan-300" />
                                     </div>
-                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap text-cyan-300 font-medium text-sm">
-                                        Learning System
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-0.5 md:mt-2 whitespace-nowrap text-cyan-300 font-medium text-[10px] md:text-sm">
+                                        Learning
                                     </div>
                                 </div>
 
                                 {/* Emotional System */}
                                 <div className="absolute bottom-[15%] right-[20%] transform translate-x-1/2 translate-y-1/2 transition-all duration-300 hover:scale-110">
-                                    <div className="w-16 h-16 bg-pink-900/70 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/20 border border-pink-500/50 cursor-pointer">
-                                        <Activity className="w-8 h-8 text-pink-300" />
+                                    <div className="w-10 h-10 md:w-16 md:h-16 bg-pink-900/70 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/20 border border-pink-500/50 cursor-pointer">
+                                        <Activity className="w-5 h-5 md:w-8 md:h-8 text-pink-300" />
                                     </div>
-                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap text-pink-300 font-medium text-sm">
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 md:mt-2 whitespace-nowrap text-pink-300 font-medium text-xs md:text-sm">
                                         Momentum System
                                     </div>
                                 </div>
@@ -1087,44 +1108,44 @@ const CognitiveEngineMetaphor = () => (
                             <h3 className="text-lg font-bold mb-2 text-blue-300 flex items-center">
                                 <Database className="w-4 h-4 mr-2 text-blue-400" /> Memory Systems
                             </h3>
-                            <p className="text-sm">
+                                    <p className="text-sm">
                                 Multi-level memory implementation including episodic, semantic, and procedural memory
                                 in the UMS, with working memory and context handling.
-                            </p>
-                        </div>
+                                    </p>
+                                </div>
 
                         <div className="bg-gray-900/40 p-4 rounded-lg border border-amber-700/20">
                             <h3 className="text-lg font-bold mb-2 text-amber-300 flex items-center">
                                 <Eye className="w-4 h-4 mr-2 text-amber-400" /> Attention Mechanism
                             </h3>
-                            <p className="text-sm">
+                                    <p className="text-sm">
                                 Working memory with focal point optimization, prioritized context component truncation,
                                 and contextual link traversal mirroring human attention.
-                            </p>
-                        </div>
+                                    </p>
+                                </div>
 
                         <div className="bg-gray-900/40 p-4 rounded-lg border border-green-700/20">
                             <h3 className="text-lg font-bold mb-2 text-green-300 flex items-center">
                                 <GitBranch className="w-4 h-4 mr-2 text-green-400" /> Executive Function
                             </h3>
-                            <p className="text-sm">
+                                    <p className="text-sm">
                                 Goal stack and plan management, hierarchical goal decomposition, and dependency
                                 management for cognitive task control.
-                            </p>
-                        </div>
+                                    </p>
+                                </div>
 
                         <div className="bg-gray-900/40 p-4 rounded-lg border border-pink-700/20">
                             <h3 className="text-lg font-bold mb-2 text-pink-300 flex items-center">
                                 <Activity className="w-4 h-4 mr-2 text-pink-400" /> Momentum System
                             </h3>
-                            <p className="text-sm">
+                                    <p className="text-sm">
                                 Mental momentum bias, adaptive thresholds, and performance monitoring,
                                 simulating human flow states and cognitive preferences.
-                            </p>
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
         </div>
     </section>
 );
@@ -1314,25 +1335,25 @@ const LimitationsAndFuture = () => (
                     </p>
 
                     {/* Roadmap Visualization */}
-                    <div className="relative w-full h-[28rem] mb-8 bg-gray-900/50 rounded-xl overflow-hidden border border-gray-700/30">
+                    <div className="relative w-full h-[22rem] md:h-[28rem] mb-8 bg-gray-900/50 rounded-xl overflow-hidden border border-gray-700/30">
                         {/* Coordinate system */}
-                        <div className="absolute inset-0 p-6">
+                        <div className="absolute inset-0 p-4 md:p-6">
                             {/* Y-axis: Complexity */}
-                            <div className="absolute top-6 bottom-6 left-10 w-px bg-gray-700/50"></div>
-                            <div className="absolute left-10 top-6 -translate-x-1/2 -translate-y-1/2 text-xs text-gray-500">High</div>
-                            <div className="absolute left-10 bottom-6 -translate-x-1/2 translate-y-1/2 text-xs text-gray-500">Low</div>
-                            <div className="absolute left-6 top-1/2 -translate-y-1/2 transform -rotate-90 text-xs text-gray-500">Complexity</div>
+                            <div className="absolute top-6 bottom-6 left-6 md:left-10 w-px bg-gray-700/50"></div>
+                            <div className="absolute left-6 md:left-10 top-6 -translate-x-1/2 -translate-y-1/2 text-[10px] md:text-xs text-gray-500">High</div>
+                            <div className="absolute left-6 md:left-10 bottom-6 -translate-x-1/2 translate-y-1/2 text-[10px] md:text-xs text-gray-500">Low</div>
+                            <div className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 transform -rotate-90 text-[10px] md:text-xs text-gray-500">Complexity</div>
 
                             {/* X-axis: Time */}
-                            <div className="absolute left-10 right-10 bottom-6 h-px bg-gray-700/50"></div>
-                            <div className="absolute left-10 bottom-6 -translate-y-4 text-xs text-gray-500">Current</div>
-                            <div className="absolute right-10 bottom-6 -translate-y-4 text-xs text-gray-500">Future</div>
-                            <div className="absolute left-1/2 bottom-2 -translate-x-1/2 text-xs text-gray-500">Development Timeline</div>
+                            <div className="absolute left-6 md:left-10 right-6 md:right-10 bottom-6 h-px bg-gray-700/50"></div>
+                            <div className="absolute left-6 md:left-10 bottom-6 -translate-y-4 text-[10px] md:text-xs text-gray-500">Current</div>
+                            <div className="absolute right-6 md:right-10 bottom-6 -translate-y-4 text-[10px] md:text-xs text-gray-500">Future</div>
+                            <div className="absolute left-1/2 bottom-1 md:bottom-2 -translate-x-1/2 text-[10px] md:text-xs text-gray-500">Development Timeline</div>
 
                             {/* Current state point */}
-                            <div className="absolute left-[15%] bottom-[25%] w-6 h-6 bg-blue-900/80 rounded-full border-2 border-blue-500 shadow-lg shadow-blue-900/30 flex items-center justify-center group cursor-pointer z-10">
-                                <div className="text-xs text-white font-bold">1.0</div>
-                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 bg-gray-900 text-blue-300 text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute left-[15%] bottom-[25%] w-4 h-4 md:w-6 md:h-6 bg-blue-900/80 rounded-full border-2 border-blue-500 shadow-lg shadow-blue-900/30 flex items-center justify-center group cursor-pointer z-10">
+                                <div className="text-[8px] md:text-xs text-white font-bold">1.0</div>
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-1 md:-translate-y-2 bg-gray-900 text-blue-300 text-[8px] md:text-xs px-1 md:px-2 py-0.5 md:py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
                                     Current Version
                                 </div>
                             </div>
@@ -1340,9 +1361,9 @@ const LimitationsAndFuture = () => (
                             {/* Connection line */}
                             <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
                                 <path
-                                    d="M 15% 75% C 30% 65%, 40% 55%, 50% 30% C 60% 20%, 70% 45%, 80% 65%"
+                                    d="M 60 250 C 180 230, 260 180, 320 110 C 380 70, 460 150, 540 210"
                                     stroke="url(#progress-gradient)"
-                                    strokeWidth="3"
+                                    strokeWidth="2"
                                     fill="none"
                                     strokeDasharray="6,3"
                                 />
@@ -1356,75 +1377,75 @@ const LimitationsAndFuture = () => (
                             </svg>
 
                             {/* Future milestones */}
-                            <div className="absolute left-[50%] bottom-[70%] w-6 h-6 bg-purple-900/80 rounded-full border-2 border-purple-500/70 shadow-lg shadow-purple-900/30 flex items-center justify-center group cursor-pointer z-10">
-                                <div className="text-xs text-white font-bold">2.0</div>
-                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 bg-gray-900 text-purple-300 text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute left-[50%] bottom-[70%] w-4 h-4 md:w-6 md:h-6 bg-purple-900/80 rounded-full border-2 border-purple-500/70 shadow-lg shadow-purple-900/30 flex items-center justify-center group cursor-pointer z-10">
+                                <div className="text-[8px] md:text-xs text-white font-bold">2.0</div>
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-1 md:-translate-y-2 bg-gray-900 text-purple-300 text-[8px] md:text-xs px-1 md:px-2 py-0.5 md:py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
                                     Enhanced Collaboration
                                 </div>
                             </div>
 
-                            <div className="absolute left-[80%] bottom-[35%] w-6 h-6 bg-emerald-900/80 rounded-full border-2 border-emerald-500/70 shadow-lg shadow-emerald-900/30 flex items-center justify-center group cursor-pointer z-10">
-                                <div className="text-xs text-white font-bold">3.0</div>
-                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 bg-gray-900 text-emerald-300 text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute left-[80%] bottom-[35%] w-4 h-4 md:w-6 md:h-6 bg-emerald-900/80 rounded-full border-2 border-emerald-500/70 shadow-lg shadow-emerald-900/30 flex items-center justify-center group cursor-pointer z-10">
+                                <div className="text-[8px] md:text-xs text-white font-bold">3.0</div>
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-1 md:-translate-y-2 bg-gray-900 text-emerald-300 text-[8px] md:text-xs px-1 md:px-2 py-0.5 md:py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
                                     Self-Modification
                                 </div>
                             </div>
 
                             {/* Limitation Areas */}
-                            <div className="absolute grid grid-cols-2 grid-rows-2 gap-4 left-16 top-16 right-6 bottom-16">
+                            <div className="absolute grid grid-cols-2 grid-rows-2 gap-2 md:gap-4 left-10 top-10 right-4 bottom-10">
                                 {/* LLM Dependence */}
-                                <div className="relative bg-gray-800/50 rounded-lg border border-blue-700/20 p-3 overflow-hidden group hover:bg-gray-800/70 transition-colors">
-                                    <div className="flex items-start mb-2">
-                                        <div className="p-1.5 bg-blue-900/70 rounded-lg mr-2 flex-shrink-0">
-                                            <MessageCircle className="w-4 h-4 text-blue-300" />
+                                <div className="relative bg-gray-800/50 rounded-lg border border-blue-700/20 p-2 md:p-3 overflow-hidden group hover:bg-gray-800/70 transition-colors">
+                                    <div className="flex items-start mb-1 md:mb-2">
+                                        <div className="p-1 md:p-1.5 bg-blue-900/70 rounded-lg mr-1 md:mr-2 flex-shrink-0">
+                                            <MessageCircle className="w-3 h-3 md:w-4 md:h-4 text-blue-300" />
                                         </div>
-                                        <div className="font-bold text-blue-300 text-sm">LLM Dependence</div>
+                                        <div className="font-bold text-blue-300 text-[10px] md:text-sm">LLM Dependence</div>
                                     </div>
-                                    <p className="text-xs text-gray-300">Relies heavily on underlying LLM reasoning quality, inheriting biases and limitations.</p>
-                                    <div className="mt-2 text-xs text-emerald-300 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <span className="font-bold">Future:</span> Integration with specialized models, multi-model orchestration
+                                    <p className="text-[8px] md:text-xs text-gray-300">Relies heavily on underlying LLM reasoning quality, inheriting biases and limitations.</p>
+                                    <div className="mt-1 md:mt-2 text-[8px] md:text-xs text-emerald-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="font-bold">Future:</span> Multi-model orchestration
                                     </div>
                                 </div>
 
                                 {/* Tool-Based Action Space */}
-                                <div className="relative bg-gray-800/50 rounded-lg border border-purple-700/20 p-3 overflow-hidden group hover:bg-gray-800/70 transition-colors">
-                                    <div className="flex items-start mb-2">
-                                        <div className="p-1.5 bg-purple-900/70 rounded-lg mr-2 flex-shrink-0">
-                                            <Terminal className="w-4 h-4 text-purple-300" />
+                                <div className="relative bg-gray-800/50 rounded-lg border border-purple-700/20 p-2 md:p-3 overflow-hidden group hover:bg-gray-800/70 transition-colors">
+                                    <div className="flex items-start mb-1 md:mb-2">
+                                        <div className="p-1 md:p-1.5 bg-purple-900/70 rounded-lg mr-1 md:mr-2 flex-shrink-0">
+                                            <Terminal className="w-3 h-3 md:w-4 md:h-4 text-purple-300" />
                                         </div>
-                                        <div className="font-bold text-purple-300 text-sm">Tool-Based Action Space</div>
+                                        <div className="font-bold text-purple-300 text-[10px] md:text-sm">Tool-Based Action</div>
                                     </div>
-                                    <p className="text-xs text-gray-300">Actions limited to available tools, constraining potential capabilities.</p>
-                                    <div className="mt-2 text-xs text-emerald-300 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <span className="font-bold">Future:</span> Dynamic tool discovery, tool creation capabilities
+                                    <p className="text-[8px] md:text-xs text-gray-300">Actions limited to available tools, constraining potential capabilities.</p>
+                                    <div className="mt-1 md:mt-2 text-[8px] md:text-xs text-emerald-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="font-bold">Future:</span> Dynamic tool discovery
                                     </div>
                                 </div>
 
                                 {/* Single-Agent Focus */}
-                                <div className="relative bg-gray-800/50 rounded-lg border border-amber-700/20 p-3 overflow-hidden group hover:bg-gray-800/70 transition-colors">
-                                    <div className="flex items-start mb-2">
-                                        <div className="p-1.5 bg-amber-900/70 rounded-lg mr-2 flex-shrink-0">
-                                            <Users className="w-4 h-4 text-amber-300" />
+                                <div className="relative bg-gray-800/50 rounded-lg border border-amber-700/20 p-2 md:p-3 overflow-hidden group hover:bg-gray-800/70 transition-colors">
+                                    <div className="flex items-start mb-1 md:mb-2">
+                                        <div className="p-1 md:p-1.5 bg-amber-900/70 rounded-lg mr-1 md:mr-2 flex-shrink-0">
+                                            <Users className="w-3 h-3 md:w-4 md:h-4 text-amber-300" />
                                         </div>
-                                        <div className="font-bold text-amber-300 text-sm">Single-Agent Focus</div>
+                                        <div className="font-bold text-amber-300 text-[10px] md:text-sm">Single-Agent Focus</div>
                                     </div>
-                                    <p className="text-xs text-gray-300">Multi-agent collaboration exists but is limited, sub-workflows lack true coordination.</p>
-                                    <div className="mt-2 text-xs text-emerald-300 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <span className="font-bold">Future:</span> Advanced multi-agent coordination protocols, specialization
+                                    <p className="text-[8px] md:text-xs text-gray-300">Multi-agent collaboration exists but is limited, sub-workflows lack true coordination.</p>
+                                    <div className="mt-1 md:mt-2 text-[8px] md:text-xs text-emerald-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="font-bold">Future:</span> Advanced coordination
                                     </div>
                                 </div>
 
                                 {/* Limited Self-Modification */}
-                                <div className="relative bg-gray-800/50 rounded-lg border border-emerald-700/20 p-3 overflow-hidden group hover:bg-gray-800/70 transition-colors">
-                                    <div className="flex items-start mb-2">
-                                        <div className="p-1.5 bg-emerald-900/70 rounded-lg mr-2 flex-shrink-0">
-                                            <Code className="w-4 h-4 text-emerald-300" />
+                                <div className="relative bg-gray-800/50 rounded-lg border border-emerald-700/20 p-2 md:p-3 overflow-hidden group hover:bg-gray-800/70 transition-colors">
+                                    <div className="flex items-start mb-1 md:mb-2">
+                                        <div className="p-1 md:p-1.5 bg-emerald-900/70 rounded-lg mr-1 md:mr-2 flex-shrink-0">
+                                            <Code className="w-3 h-3 md:w-4 md:h-4 text-emerald-300" />
                                         </div>
-                                        <div className="font-bold text-emerald-300 text-sm">Limited Self-Modification</div>
+                                        <div className="font-bold text-emerald-300 text-[10px] md:text-sm">Limited Self-Modification</div>
                                     </div>
-                                    <p className="text-xs text-gray-300">Cannot modify cognitive architecture or core processes, static prompt engineering.</p>
-                                    <div className="mt-2 text-xs text-emerald-300 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <span className="font-bold">Future:</span> Self-optimization of prompts, component adaptation, learning
+                                    <p className="text-[8px] md:text-xs text-gray-300">Cannot modify cognitive architecture or core processes, static prompt engineering.</p>
+                                    <div className="mt-1 md:mt-2 text-[8px] md:text-xs text-emerald-300 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="font-bold">Future:</span> Self-optimization
                                     </div>
                                 </div>
                             </div>
@@ -1446,7 +1467,7 @@ const LimitationsAndFuture = () => (
                                     <li>Improved cross-model integration</li>
                                     <li>Expanded feedback mechanisms</li>
                                 </ul>
-                            </div>
+                </div>
 
                             <div className="bg-gray-800/50 p-3 rounded-lg border border-purple-700/20">
                                 <h4 className="font-bold text-purple-300 mb-2 text-sm">Medium Term (3-4 Versions)</h4>
@@ -1490,11 +1511,11 @@ const CognitiveSystemConclusion = () => (
                     </p>
 
                     {/* Animated Brain Network Visualization */}
-                    <div className="relative w-full h-80 mb-8 bg-gradient-to-b from-gray-900/90 to-indigo-900/10 rounded-xl overflow-hidden border border-indigo-700/20">
+                    <div className="relative w-full h-auto aspect-[3/5] md:h-[30rem] mb-8 bg-gradient-to-b from-gray-900/90 to-indigo-900/10 rounded-xl overflow-hidden border border-indigo-700/20">
                         <div className="absolute inset-0">
                             {/* Brain network background */}
                             <div className="absolute inset-0 opacity-20 mix-blend-screen">
-                                <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                                <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
                                     <defs>
                                         <radialGradient id="glow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
                                             <stop offset="0%" stopColor="#8b5cf6" stopOpacity="1" />
@@ -1505,21 +1526,21 @@ const CognitiveSystemConclusion = () => (
                                     {/* Abstract neural network pattern */}
                                     {/* This would be a more complex SVG in production */}
                                     <path
-                                        d="M 100,200 C 200,100 300,300 400,200 C 500,100 600,300 700,200"
+                                        d="M 100,400 C 200,200 300,500 400,400 C 500,200 600,500 700,400"
                                         stroke="#8b5cf6"
                                         strokeWidth="1"
                                         fill="none"
                                         opacity="0.3"
                                     />
                                     <path
-                                        d="M 100,100 C 200,200 300,100 400,200 C 500,300 600,200 700,100"
+                                        d="M 100,200 C 200,400 300,200 400,400 C 500,600 600,400 700,200"
                                         stroke="#3b82f6"
                                         strokeWidth="1"
                                         fill="none"
                                         opacity="0.3"
                                     />
                                     <path
-                                        d="M 100,300 C 200,200 300,300 400,200 C 500,100 600,200 700,300"
+                                        d="M 100,600 C 200,400 300,600 400,400 C 500,200 600,400 700,600"
                                         stroke="#a855f7"
                                         strokeWidth="1"
                                         fill="none"
@@ -1536,53 +1557,53 @@ const CognitiveSystemConclusion = () => (
                             </div>
 
                             {/* Core Capabilities */}
-                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72">
+                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full md:w-72 h-[80%] md:h-72">
                                 {/* Memory and Context */}
-                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110">
-                                    <div className="w-16 h-16 bg-blue-900/60 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/20 border border-blue-500/50">
-                                        <Database className="w-8 h-8 text-blue-300" />
+                                <div className="absolute top-[5%] left-1/2 transform -translate-x-1/2 transition-all duration-300 hover:scale-110">
+                                    <div className="w-12 h-12 md:w-16 md:h-16 bg-blue-900/60 rounded-full flex items-center justify-center shadow-lg shadow-blue-500/20 border border-blue-500/50">
+                                        <Database className="w-6 h-6 md:w-8 md:h-8 text-blue-300" />
                                     </div>
-                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap text-blue-300 font-medium text-sm">
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 md:mt-2 whitespace-nowrap text-blue-300 font-medium text-xs md:text-sm">
                                         Contextual Memory
                                     </div>
                                 </div>
 
                                 {/* Adaptive Learning */}
-                                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 transition-all duration-300 hover:scale-110">
-                                    <div className="w-16 h-16 bg-green-900/60 rounded-full flex items-center justify-center shadow-lg shadow-green-500/20 border border-green-500/50">
-                                        <Activity className="w-8 h-8 text-green-300" />
+                                <div className="absolute bottom-[5%] left-1/2 transform -translate-x-1/2 transition-all duration-300 hover:scale-110">
+                                    <div className="w-12 h-12 md:w-16 md:h-16 bg-green-900/60 rounded-full flex items-center justify-center shadow-lg shadow-green-500/20 border border-green-500/50">
+                                        <Activity className="w-6 h-6 md:w-8 md:h-8 text-green-300" />
                                     </div>
-                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap text-green-300 font-medium text-sm">
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 md:mt-2 whitespace-nowrap text-green-300 font-medium text-xs md:text-sm">
                                         Adaptive Learning
                                     </div>
                                 </div>
 
                                 {/* Goal Decomposition */}
-                                <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110">
-                                    <div className="w-16 h-16 bg-amber-900/60 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/20 border border-amber-500/50">
-                                        <Target className="w-8 h-8 text-amber-300" />
+                                <div className="absolute right-[5%] top-1/2 transform -translate-y-1/2 transition-all duration-300 hover:scale-110">
+                                    <div className="w-12 h-12 md:w-16 md:h-16 bg-amber-900/60 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/20 border border-amber-500/50">
+                                        <Target className="w-6 h-6 md:w-8 md:h-8 text-amber-300" />
                                     </div>
-                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap text-amber-300 font-medium text-sm">
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 md:mt-2 whitespace-nowrap text-amber-300 font-medium text-xs md:text-sm">
                                         Goal Decomposition
                                     </div>
                                 </div>
 
                                 {/* Resilient Execution */}
-                                <div className="absolute left-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110">
-                                    <div className="w-16 h-16 bg-red-900/60 rounded-full flex items-center justify-center shadow-lg shadow-red-500/20 border border-red-500/50">
-                                        <CheckCircle className="w-8 h-8 text-red-300" />
+                                <div className="absolute left-[5%] top-1/2 transform -translate-y-1/2 transition-all duration-300 hover:scale-110">
+                                    <div className="w-12 h-12 md:w-16 md:h-16 bg-red-900/60 rounded-full flex items-center justify-center shadow-lg shadow-red-500/20 border border-red-500/50">
+                                        <CheckCircle className="w-6 h-6 md:w-8 md:h-8 text-red-300" />
                                     </div>
-                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap text-red-300 font-medium text-sm">
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 md:mt-2 whitespace-nowrap text-red-300 font-medium text-xs md:text-sm">
                                         Resilient Execution
                                     </div>
                                 </div>
 
                                 {/* Self-Reflection */}
-                                <div className="absolute top-1/3 right-1/4 transition-all duration-300 hover:scale-110">
-                                    <div className="w-14 h-14 bg-purple-900/60 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/20 border border-purple-500/50">
-                                        <Telescope className="w-7 h-7 text-purple-300" />
+                                <div className="absolute top-1/3 right-[20%] transition-all duration-300 hover:scale-110">
+                                    <div className="w-10 h-10 md:w-14 md:h-14 bg-purple-900/60 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/20 border border-purple-500/50">
+                                        <Telescope className="w-5 h-5 md:w-7 md:h-7 text-purple-300" />
                                     </div>
-                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 whitespace-nowrap text-purple-300 font-medium text-sm">
+                                    <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 md:mt-2 whitespace-nowrap text-purple-300 font-medium text-xs md:text-sm">
                                         Self-Reflection
                                     </div>
                                 </div>
@@ -1591,8 +1612,8 @@ const CognitiveSystemConclusion = () => (
                                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300">
                                     <div className="relative">
                                         <div className="absolute inset-0 bg-indigo-500/20 rounded-full animate-ping"></div>
-                                        <div className="relative w-24 h-24 bg-indigo-900/70 rounded-full flex items-center justify-center border-2 border-indigo-500/70 shadow-lg shadow-indigo-500/30">
-                                            <Brain className="w-12 h-12 text-indigo-300" />
+                                        <div className="relative w-16 h-16 md:w-24 md:h-24 bg-indigo-900/70 rounded-full flex items-center justify-center border-2 border-indigo-500/70 shadow-lg shadow-indigo-500/30">
+                                            <Brain className="w-8 h-8 md:w-12 md:h-12 text-indigo-300" />
                                         </div>
                                     </div>
                                 </div>
@@ -1734,8 +1755,8 @@ const ArchitecturalOverviewSection = () => (
                                 Uses advanced prompt engineering (<InlineCode>_construct_agent_prompt</InlineCode>) as cognitive scaffolding,
                                 guiding analysis, providing recovery frameworks, and structuring decisions.
                             </p>
+                            </div>
                         </div>
-                    </div>
 
                     <div className="mt-6">
                         <h3 className="text-xl font-bold mb-4 text-indigo-300 flex items-center">
@@ -1747,8 +1768,12 @@ const ArchitecturalOverviewSection = () => (
                             background tasks, meta-cognition, and errors.
                         </p>
 
-                        {/* Replace ASCII diagram with the new animated component */}
-                        <AgentLoopFlow />
+                        {/* Provide more horizontal space for the flow diagram on mobile */}
+                        <div className="overflow-hidden -mx-4 sm:mx-0">
+                            <div className="px-1 sm:px-0">
+                                <AgentLoopFlow />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1885,10 +1910,10 @@ class AgentState:
                     </div>
 
                     {/* Context Components */}
-                    <div>
+                        <div>
                         <h3 className="text-xl font-bold mb-4 text-blue-300 flex items-center">
                             <Package className="w-5 h-5 mr-2 text-blue-400" /> ContextComponent
-                        </h3>
+                            </h3>
                         <p className="mb-4 text-sm">
                             Structure for memory and context elements that feed into LLM prompts,
                             with priority, freshness and size management.
@@ -1927,7 +1952,7 @@ class ContextComponent:
                                 <h4 className="text-lg font-bold mb-2 text-blue-300 flex items-center">
                                     <Clock className="w-4 h-4 mr-2 text-blue-400" /> Context Prioritization
                                 </h4>
-                                <p className="text-sm">
+                            <p className="text-sm">
                                     Uses both explicit priority setting and implicit freshness scoring
                                     to optimize context window utilization.
                                 </p>
@@ -1941,8 +1966,8 @@ class ContextComponent:
                                     Components act as containers for memory elements, contextual
                                     data, tool results, and agent state information.
                                 </p>
-                            </div>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -1968,7 +1993,7 @@ const KeyConstantsAndConfiguration = () => (
                     <div className="mb-8">
                         <h3 className="text-xl font-bold mb-4 text-green-300 flex items-center">
                             <Settings className="w-5 h-5 mr-2 text-green-400" /> Threshold Constants
-                        </h3>
+                    </h3>
                         <p className="mb-4 text-sm">
                             Key parameters that control when various cognitive processes are triggered.
                         </p>
@@ -2074,7 +2099,7 @@ PLANNING_TEMPLATE = "agent_loop_planning"`}
                     </div>
 
                     {/* Error Classification */}
-                    <div>
+                            <div>
                         <h3 className="text-xl font-bold mb-4 text-green-300 flex items-center">
                             <AlertTriangle className="w-5 h-5 mr-2 text-green-400" /> Error Classification
                         </h3>
@@ -2421,20 +2446,21 @@ const sections = [
 
 // Main component to display the AML Technical Analysis
 const AmlTechnicalAnalysis = () => {
-    // State for navigation
-    const [activeSection, setActiveSection] = useState('overview');
-    const [showNavigation, setShowNavigation] = useState(window.innerWidth >= 768);
-    const [scrollProgress, setScrollProgress] = useState(0);
+    const [activeSection, setActiveSection] = useState<string>('overview');
+    const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' && window.innerWidth < 768);
+    const [showNavigation, setShowNavigation] = useState<boolean>(typeof window !== 'undefined' && window.innerWidth >= 768);
+    const [scrollProgress, setScrollProgress] = useState<number>(0);
+    const mainContentRef = useRef<HTMLDivElement>(null);
 
-    // Handle initial navigation state and resize events
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth >= 768) {
-                setShowNavigation(true);
+            if (typeof window !== 'undefined') {
+                const mobile = window.innerWidth < 768;
+                setIsMobile(mobile);
+                setShowNavigation(window.innerWidth >= 768);
             }
         };
-
-        handleResize();
+        
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
@@ -2547,32 +2573,51 @@ const AmlTechnicalAnalysis = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-gray-100 font-sans relative overflow-x-hidden">
             {/* Header Component */}
-            <Header
-                showNavigation={showNavigation}
-                setShowNavigation={setShowNavigation}
-                scrollProgress={scrollProgress}
+            <Header 
+                showNavigation={showNavigation} 
+                setShowNavigation={setShowNavigation} 
+                scrollProgress={scrollProgress} 
             />
 
             {/* Main Content Wrapper */}
             <div className="flex pt-16">
                 {/* Sidebar Component */}
-                <Sidebar
-                    showNavigation={showNavigation}
-                    setShowNavigation={setShowNavigation}
-                    activeSection={activeSection}
+                <Sidebar 
+                    showNavigation={showNavigation} 
+                    setShowNavigation={setShowNavigation} 
+                    activeSection={activeSection} 
                     navItems={navItems}
-                    docLinks={docLinks}
                     scrollToSection={scrollToSection}
                 />
 
+                {/* Mobile Sidebar Overlay - only visible when sidebar is open on mobile */}
+                {showNavigation && isMobile && (
+                    <div 
+                        className="fixed inset-0 bg-black/50 z-20 md:hidden"
+                        onClick={() => setShowNavigation(false)}
+                    ></div>
+                )}
+
                 {/* Mobile Navigation Toggle */}
-                <MobileNavToggle
-                    showNavigation={showNavigation}
-                    setShowNavigation={setShowNavigation}
+                <MobileNavToggle 
+                    showNavigation={showNavigation} 
+                    setShowNavigation={setShowNavigation} 
                 />
 
+                {/* Floating Navigation Dots (mobile only) */}
+                {isMobile && (
+                    <FloatingNavigation 
+                        activeSection={activeSection}
+                        navItems={navItems}
+                        scrollToSection={scrollToSection}
+                    />
+                )}
+
                 {/* Main content */}
-                <main className={`flex-1 transition-margin duration-300 ease-in-out ${showNavigation ? 'md:ml-64' : 'ml-0'} overflow-x-hidden`}>
+                <main 
+                    ref={mainContentRef}
+                    className="flex-1 transition-all duration-300 ease-in-out ml-0 md:ml-64 overflow-x-hidden"
+                >
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
                         {/* Title Section */}

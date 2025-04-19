@@ -30,14 +30,8 @@ import {
     Target,
     Upload,
     Play,
-    MessageCircle,
     AlertTriangle,
     FlaskConical,
-    Info,
-    ArrowDown,
-    ArrowUp,
-    ChevronsUpDown,
-    PieChart,
 } from 'lucide-react';
 import Prism from 'prismjs';
 // Import Prism languages
@@ -79,7 +73,7 @@ const CodeBlock = ({ children, language = 'python' }) => {
 
     return (
         <div className="my-4 bg-gray-800/80 border border-gray-700/50 rounded-lg overflow-hidden">
-            <pre className="p-4 text-xs md:text-sm font-mono overflow-x-auto code-scrollbar">
+            <pre className="p-4 text-[10px] xs:text-xs md:text-sm font-mono overflow-x-auto code-scrollbar">
                 <code ref={codeRef} className={`language-${language}`}>
                     {children}
                 </code>
@@ -167,7 +161,7 @@ const MemoryGraphVisualization = () => (
                     <FileText className="w-5 h-5 text-green-300" />
                 </div>
             </div>
-            <div className="absolute mt-1 ml-5 bg-gray-900/90 px-2 py-1 rounded text-xs text-green-300 whitespace-nowrap">
+            <div className="absolute mt-1 ml-5 bg-gray-900/90 px-2 py-1 rounded text-[10px] xs:text-xs text-green-300 whitespace-nowrap">
                 Episodic Memory
             </div>
         </div>
@@ -179,7 +173,7 @@ const MemoryGraphVisualization = () => (
                     <Brain className="w-5 h-5 text-yellow-300" />
                 </div>
             </div>
-            <div className="absolute mt-1 ml-5 bg-gray-900/90 px-2 py-1 rounded text-xs text-yellow-300 whitespace-nowrap">
+            <div className="absolute mt-1 ml-5 bg-gray-900/90 px-2 py-1 rounded text-[10px] xs:text-xs text-yellow-300 whitespace-nowrap">
                 Semantic Memory
             </div>
         </div>
@@ -191,7 +185,7 @@ const MemoryGraphVisualization = () => (
                     <Clock className="w-5 h-5 text-blue-300" />
                 </div>
             </div>
-            <div className="absolute mt-1 ml-5 bg-gray-900/90 px-2 py-1 rounded text-xs text-blue-300 whitespace-nowrap">
+            <div className="absolute mt-1 ml-5 bg-gray-900/90 px-2 py-1 rounded text-[10px] xs:text-xs text-blue-300 whitespace-nowrap">
                 Working Memory
             </div>
         </div>
@@ -203,7 +197,7 @@ const MemoryGraphVisualization = () => (
                     <Code className="w-5 h-5 text-purple-300" />
                 </div>
             </div>
-            <div className="absolute mt-1 ml-5 bg-gray-900/90 px-2 py-1 rounded text-xs text-purple-300 whitespace-nowrap">
+            <div className="absolute mt-1 ml-5 bg-gray-900/90 px-2 py-1 rounded text-[10px] xs:text-xs text-purple-300 whitespace-nowrap">
                 Procedural Memory
             </div>
         </div>
@@ -250,7 +244,7 @@ const MemoryGraphVisualization = () => (
             </defs>
         </svg>
 
-        <div className="absolute bottom-2 right-2 text-xs text-gray-500">Memory Association Graph</div>
+        <div className="absolute bottom-2 right-2 text-[10px] xs:text-xs text-gray-500">Memory Association Graph</div>
     </div>
 );
 
@@ -1635,7 +1629,7 @@ const DatabaseSchemaSection: React.FC<DatabaseSchemaSectionProps> = ({
                             <div className="relative group">
                                 <div className={`absolute inset-0 bg-gradient-to-r ${getTableGradientClass(selectedTable)} opacity-0 group-hover:opacity-100 rounded-lg transition-opacity duration-300`}></div>
 
-                                <pre className="relative z-10 p-4 bg-gray-900/80 rounded-lg border border-gray-700/50 text-xs md:text-sm font-mono overflow-x-auto code-scrollbar max-h-96 overflow-y-auto">
+                                <pre className="relative z-10 p-4 bg-gray-900/80 rounded-lg border border-gray-700/50 text-[10px] xs:text-xs md:text-sm font-mono overflow-x-auto code-scrollbar max-h-96 overflow-y-auto">
                                     {/* Use SqlCodeDisplay component here */}
                                     <SqlCodeDisplay sql={getTableDefinition(selectedTable)} sqlRef={sqlCodeRef} />
                                 </pre>

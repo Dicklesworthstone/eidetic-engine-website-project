@@ -5,7 +5,6 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import MobileNavToggle from './components/MobileNavToggle';
 import FloatingNavigation from './components/FloatingNavigation';
-import MobileFAB from './components/MobileFAB';
 // Import custom scrollbar styles
 import './styles/scrollbars.css';
 
@@ -227,20 +226,19 @@ const EideticEngineWebsite = () => {
         />
 
         {/* Floating Navigation Dots (mobile only) */}
-        <FloatingNavigation 
-          activeSection={activeSection}
-          navItems={navItems}
-          scrollToSection={scrollToSection}
-        />
-
-        {/* Mobile FAB (Floating Action Button) */}
-        <MobileFAB />
+        {isMobile && (
+          <FloatingNavigation 
+            activeSection={activeSection}
+            navItems={navItems}
+            scrollToSection={scrollToSection}
+          />
+        )}
 
         {/* Main content */}
         {/* Adjusted margin logic to be simpler: only apply margin on md+ when nav is shown */}
         <main 
           ref={mainContentRef}
-          className={`flex-1 transition-margin duration-300 ease-in-out ${showNavigation ? 'md:ml-64' : 'ml-0'} overflow-x-hidden`}
+          className="flex-1 transition-all duration-300 ease-in-out ml-0 md:ml-64 overflow-x-hidden"
         >
           {/* Added container-fluid equivalent for padding, adjust max-width inside sections */}
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
