@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Brain } from 'lucide-react';
 import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from "@vercel/speed-insights/next"
 import useGoogleAnalytics from './hooks/useGoogleAnalytics';
 import './index.css';
+
+inject({ framework: 'vite' }); 
 
 // Layout component providing common background, header, and progress bar
 export default function Layout() {
@@ -87,7 +88,6 @@ export default function Layout() {
       {/* Vercel Analytics */}
       <Analytics />
 
-      {/* Vercel Speed Insights */}
     </div>
   );
 }

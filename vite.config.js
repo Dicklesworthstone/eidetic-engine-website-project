@@ -10,6 +10,20 @@ export default defineConfig({
       overlay: false
     }
   },
+  rollupOptions: {
+    output: {
+      manualChunks: {
+        'agent-loop': ['./src/AgentLoopFlow.tsx'],
+        'agent-architecture': ['./src/AgentArchitectureDiagram.tsx'],
+        'schema-diagram': ['./src/SchemaDiagram.tsx'],
+        'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+        'aml-analysis': ['./src/AmlTechnicalAnalysis.tsx'],
+        'ums-analysis': ['./src/UmsTechnicalAnalysis.tsx'],
+        'eidetic-engine': ['./src/EideticEngineWebsite.tsx'],
+        'memory-graph': ['./src/MemoryGraph.tsx']
+      }
+    }
+  },
   build: {
 
     chunkSizeWarningLimit: 2000,
