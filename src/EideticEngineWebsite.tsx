@@ -235,13 +235,13 @@ const EideticEngineWebsite = () => {
           scrollToSection={scrollToSection}
         />
 
-        {/* Mobile Sidebar Overlay - only visible when sidebar is open on mobile */}
-        {showNavigation && isMobile && (
+        {/* Mobile Sidebar Overlay - TEMPORARILY REMOVED FOR DEBUGGING */}
+        {/* {showNavigation && isMobile && (
           <div 
             className="fixed inset-0 bg-black/50 z-20 md:hidden"
             onClick={() => setShowNavigation(false)}
           ></div>
-        )}
+        )} */}
 
         {/* Mobile Navigation Toggle */}
         <MobileNavToggle 

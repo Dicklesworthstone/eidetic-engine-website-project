@@ -70,20 +70,6 @@ const Sidebar: React.FC<SidebarProps> = ({
         };
     }, [showNavigation, setShowNavigation]);
 
-    // Update mobile overlay visibility when sidebar state changes
-    useEffect(() => {
-        const overlay = document.getElementById('mobile-overlay');
-        if (overlay) {
-            if (showNavigation) {
-                overlay.classList.remove('opacity-0', 'pointer-events-none');
-                overlay.classList.add('opacity-100', 'pointer-events-auto');
-            } else {
-                overlay.classList.add('opacity-0', 'pointer-events-none');
-                overlay.classList.remove('opacity-100', 'pointer-events-auto');
-            }
-        }
-    }, [showNavigation]);
-
     return (
         <aside
             ref={sidebarRef}
@@ -92,8 +78,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             tabIndex={showNavigation ? 0 : -1}
             style={{ WebkitOverflowScrolling: 'touch' }}
         >
-            {/* Mobile close button inside aside */}
-            <div className="absolute top-4 right-4 md:hidden">
+            {/* Mobile close button inside aside - Added z-40 */}
+            <div className="absolute top-4 right-4 md:hidden z-40">
                 <button
                     onClick={() => {
                         setShowNavigation(false);
