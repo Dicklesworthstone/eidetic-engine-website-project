@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { Brain } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import './index.css';
 
 // Layout component providing common background, header, and progress bar
@@ -65,6 +66,9 @@ export default function Layout() {
           <Outlet />
         </div>
       </main>
+      
+      {/* Vercel Analytics */}
+      <Analytics />
     </div>
   );
 }

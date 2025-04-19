@@ -61,8 +61,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             }
         };
 
-        sidebar.addEventListener('touchstart', handleTouchStart);
-        sidebar.addEventListener('touchmove', handleTouchMove);
+        sidebar.addEventListener('touchstart', handleTouchStart, { passive: true });
+        sidebar.addEventListener('touchmove', handleTouchMove, { passive: true });
 
         return () => {
             sidebar.removeEventListener('touchstart', handleTouchStart);

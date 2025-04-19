@@ -5,6 +5,8 @@ import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import MobileNavToggle from './components/MobileNavToggle';
 import FloatingNavigation from './components/FloatingNavigation';
+import Footer from './components/Footer';
+import Analytics from './components/Analytics';
 // Import custom scrollbar styles
 import './styles/scrollbars.css';
 
@@ -1699,21 +1701,8 @@ const EideticEngineWebsite = () => {
             </section>
 
             {/* Footer */}
-            <footer className="mt-24 mb-8 text-center">
-              <p className="text-xs md:text-sm text-gray-500">© 2025 Jeffrey Emanuel. EideticEngine: An Adaptive Cognitive Architecture for LLM Agents.</p>
-              <div className="flex justify-center space-x-4 md:space-x-6 mt-4">
-                {/* Links could be added here if desired */}
-                <a href="#" aria-label="Related Link 1" className="text-gray-500 hover:text-gray-300 transition-colors">
-                  <GitBranch className="w-4 h-4 md:w-5 md:h-5" />
-                </a>
-                <a href="#" aria-label="Related Link 2" className="text-gray-500 hover:text-gray-300 transition-colors">
-                  <Award className="w-4 h-4 md:w-5 md:h-5" />
-                </a>
-                <a href="#" aria-label="Related Link 3" className="text-gray-500 hover:text-gray-300 transition-colors">
-                  <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
-                </a>
-              </div>
-            </footer>
+            <Footer />
+            <Analytics />
           </div>
         </main>
       </div>
