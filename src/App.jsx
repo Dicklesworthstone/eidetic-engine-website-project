@@ -1,12 +1,21 @@
 // src/App.jsx
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Routes, Route, Outlet, useLocation } from 'react-router-dom'; // <-- Import routing components
-import EideticEngineWebsite from './EideticEngineWebsite';
-import UmsTechnicalAnalysis from './UmsTechnicalAnalysis';
-import AmlTechnicalAnalysis from './AmlTechnicalAnalysis';
 import Layout from './Layout';
 import { Brain, Map, X, FileText, Eye } from 'lucide-react'; // <-- Import necessary icons for Header
 import './index.css'; // <-- Keep index.css
+
+// Use React.lazy for code splitting
+const EideticEngineWebsite = React.lazy(() => import('./EideticEngineWebsite'));
+const UmsTechnicalAnalysis = React.lazy(() => import('./UmsTechnicalAnalysis'));
+const AmlTechnicalAnalysis = React.lazy(() => import('./AmlTechnicalAnalysis'));
+
+// Loading component to show while chunks are loading
+const Loading = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+  </div>
+);
 
 // --- Define Layout Component ---
 // This extracts the common shell (Header, Progress Bar, etc.)
@@ -22,9 +31,21 @@ function App() {
     <Routes>
       {/* Wrap all pages in shared Layout */}
       <Route element={<Layout />}>
-        <Route path="/" element={<EideticEngineWebsite />} />
-        <Route path="ums-technical-analysis" element={<UmsTechnicalAnalysis />} />
-        <Route path="aml-technical-analysis" element={<AmlTechnicalAnalysis />} />
+        <Route path="/" element={
+          <Suspense fallback={<Loading />}>
+            <EideticEngineWebsite />
+          </Suspense>
+        } />
+        <Route path="ums-technical-analysis" element={
+          <Suspense fallback={<Loading />}>
+            <UmsTechnicalAnalysis />
+          </Suspense>
+        } />
+        <Route path="aml-technical-analysis" element={
+          <Suspense fallback={<Loading />}>
+            <AmlTechnicalAnalysis />
+          </Suspense>
+        } />
       </Route>
     </Routes>
   );

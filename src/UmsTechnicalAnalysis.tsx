@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import {
     Database,
     Clock,
@@ -43,9 +43,8 @@ import 'prismjs/components/prism-json';
 import 'prismjs/components/prism-sql';
 import './prism-monokai.css';
 import './styles/scrollbars.css';
-import DatabaseSchema from './SchemaDiagram';
 import AgentArchitectureDiagram from './AgentArchitectureDiagram';
-import mermaid from 'mermaid'; // Import mermaid
+// import mermaid from 'mermaid'; // Import mermaid
 
 // Import our reusable components at the top of the file
 import Header from './components/Header';
@@ -54,6 +53,15 @@ import Sidebar from './components/Sidebar';
 import MobileNavToggle from './components/MobileNavToggle';
 // import MermaidDiagram from './components/MermaidDiagram'; // Comment out import
 
+// Lazy load SchemaDiagram component
+const DatabaseSchema = lazy(() => import('./SchemaDiagram'));
+
+// Simple loading component for Suspense fallback
+const SchemaLoading = () => (
+  <div className="flex items-center justify-center py-20">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+  </div>
+);
 
 // Helper components for consistent styling
 const InlineCode = ({ children }) => (
@@ -1268,7 +1276,9 @@ const DatabaseSchemaSection: React.FC<DatabaseSchemaSectionProps> = ({
 
             {/* Schema overview with improved interactive diagram */}
             <div className="relative mb-8 overflow-hidden p-6">
-                <DatabaseSchema />
+                <Suspense fallback={<SchemaLoading />}>
+                    <DatabaseSchema />
+                </Suspense>
             </div>
 
             {/* Table categories with selectable tables */}

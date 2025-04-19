@@ -35,13 +35,6 @@ import {
     Share2,
     FlaskConical,
     Scale,
-    FileText,
-    Aperture,
-    UserPlus,
-    AlertOctagon,
-    BarChart2,
-    Map,
-    X
 } from 'lucide-react';
 import Prism from 'prismjs';
 // Import Prism languages
