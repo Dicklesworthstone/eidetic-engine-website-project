@@ -88,7 +88,6 @@ export default function Layout() {
       <Analytics />
 
       {/* Vercel Speed Insights */}
-      <SpeedInsights />
     </div>
   );
 }
