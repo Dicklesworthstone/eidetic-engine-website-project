@@ -36,12 +36,12 @@ function App() {
             <EideticEngineWebsite />
           </Suspense>
         } />
-        <Route path="ums-technical-analysis" element={
+        <Route path="/ums-technical-analysis" element={
           <Suspense fallback={<Loading />}>
             <UmsTechnicalAnalysis />
           </Suspense>
         } />
-        <Route path="aml-technical-analysis" element={
+        <Route path="/aml-technical-analysis" element={
           <Suspense fallback={<Loading />}>
             <AmlTechnicalAnalysis />
           </Suspense>
