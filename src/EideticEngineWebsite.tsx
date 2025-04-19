@@ -1700,7 +1700,6 @@ const EideticEngineWebsite = () => {
 
             {/* Footer */}
             <Footer />
-            <Analytics />
           </div>
         </main>
       </div>
