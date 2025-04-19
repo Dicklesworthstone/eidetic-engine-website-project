@@ -1,0 +1,20 @@
+/* Minimal custom scrollbars for code blocks and other elements */
+.code-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+.code-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.code-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.2);
+    border-radius: 20px;
+}
+.code-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.4);
+}
+/* Firefox scrollbar styles */
+.code-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100, 116, 139, 0.2) transparent;
+} 

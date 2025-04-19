@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Aperture, Brain, Cpu, Database, GitBranch, GitMerge, Layers, MessageCircle, Server, UserPlus, Zap, Clock, FileText, RefreshCw, GitCommit, Eye, Award, Bookmark, BarChart2, Map, Code, X } from 'lucide-react'; // Added X for close icon
+import { Aperture, Brain, Cpu, Database, GitBranch, GitMerge, Layers, MessageCircle, Server, UserPlus, Zap, Clock, FileText, RefreshCw, GitCommit, Eye, Award, Bookmark, BarChart2, Map, Code, X, Target, CheckCircle, AlertTriangle, Telescope } from 'lucide-react';
 import MemoryGraph from './MemoryGraph';
+import Header from './components/Header';
+import Sidebar from './components/Sidebar';
+import MobileNavToggle from './components/MobileNavToggle';
+// Import custom scrollbar styles
+import './styles/scrollbars.css';
 
 // Main App Component
 const EideticEngineWebsite = () => {
@@ -13,13 +18,8 @@ const EideticEngineWebsite = () => {
   useEffect(() => {
     const handleResize = () => {
       // Show nav if window is medium size or larger, hide otherwise unless explicitly shown
-      // Preserve manual toggling state on mobile unless resizing crosses the md breakpoint
       if (window.innerWidth >= 768) {
-        setShowNavigation(true); // Always show on desktop unless user hides it manually via header button (handled separately)
-      } else {
-        // If resizing below md, hide it unless it was manually toggled open (tricky state to preserve perfectly without more complex logic, default to hidden is safer)
-        // Let's default to hidden on mobile resize for simplicity unless already open
-        // setShowNavigation(false); // Reverted: Keep the current state on mobile resize
+        setShowNavigation(true); // Always show on desktop unless user hides it manually via header button
       }
     };
     // Set initial state correctly
@@ -64,7 +64,6 @@ const EideticEngineWebsite = () => {
         }
       }
 
-
       setActiveSection(currentSection);
     };
 
@@ -84,7 +83,6 @@ const EideticEngineWebsite = () => {
         top: offsetPosition,
         behavior: 'smooth'
       });
-      // setActiveSection(sectionId); // Let scroll handler manage active section for accuracy
       // Close navigation on mobile after clicking a link
       if (window.innerWidth < 768) {
         setShowNavigation(false);
@@ -92,117 +90,76 @@ const EideticEngineWebsite = () => {
     }
   };
 
-  // Separate function for header toggle to handle desktop hiding explicitly
-  const toggleNavFromHeader = () => {
-    setShowNavigation(!showNavigation);
-  };
+  // Helper for code styling
+  const CodeTag = ({ children }) => (
+    <code className="mx-1 px-1.5 md:px-2 py-0.5 md:py-1 bg-gray-700/80 rounded text-blue-200 text-[11px] md:text-xs">{children}</code>
+  );
 
-  // Function for mobile bottom toggle
-  const toggleNavFromMobile = () => {
-    setShowNavigation(!showNavigation);
-  };
+  // Define navigation items
+  const navItems = [
+    // Added Architecture Visual to nav
+    { id: 'architecture-visual', name: 'Architecture', icon: <Eye className="w-4 h-4" /> },
+    { id: 'abstract', name: 'Abstract', icon: <FileText className="w-4 h-4" /> },
+    { id: 'introduction', name: 'Introduction', icon: <MessageCircle className="w-4 h-4" /> },
+    { id: 'related-work', name: 'Related Work', icon: <GitBranch className="w-4 h-4" /> },
+    { id: 'ums', name: 'Unified Memory System', icon: <Database className="w-4 h-4" /> },
+    { id: 'aml', name: 'Agent Master Loop', icon: <RefreshCw className="w-4 h-4" /> },
+    { id: 'mcp-client', name: 'Ultimate MCP Client', icon: <UserPlus className="w-4 h-4" /> },
+    { id: 'llm-gateway', name: 'Ultimate MCP Server', icon: <Server className="w-4 h-4" /> },
+    { id: 'evaluation', name: 'Evaluation & Cases', icon: <BarChart2 className="w-4 h-4" /> },
+    { id: 'discussion', name: 'Discussion', icon: <GitCommit className="w-4 h-4" /> },
+    { id: 'conclusion', name: 'Conclusion', icon: <Award className="w-4 h-4" /> },
+    { id: 'future-work', name: 'Future Work', icon: <Zap className="w-4 h-4" /> },
+    { id: 'addendum', name: 'Addendum', icon: <Bookmark className="w-4 h-4" /> },
+  ];
 
+  // Define technical doc links
+  const docLinks = [
+    {
+      href: "/ums-technical-analysis",
+      title: "UMS Technical Analysis",
+      description: "Unified Memory System Deep Dive",
+      icon: <Database className="w-5 h-5 text-blue-300" />,
+      bgColorClass: "from-blue-900/50 to-blue-800/30 hover:from-blue-800/60 hover:to-blue-700/40",
+      textColorClass: "text-blue-300"
+    },
+    {
+      href: "/aml-technical-analysis",
+      title: "AML Technical Analysis",
+      description: "Agent Master Loop Architecture",
+      icon: <RefreshCw className="w-5 h-5 text-purple-300" />,
+      bgColorClass: "from-purple-900/50 to-purple-800/30 hover:from-purple-800/60 hover:to-purple-700/40",
+      textColorClass: "text-purple-300"
+    }
+  ];
 
   return (
     // Added overflow-x-hidden to body/html equivalent if needed, but tailwind handles it mostly
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-gray-100 font-sans relative overflow-x-hidden">
-      {/* Progress Bar */}
-      <div className="fixed top-0 left-0 right-0 h-1 z-50 bg-gray-800">
-        <div
-          className="h-full bg-gradient-to-r from-blue-600 to-purple-600 transition-width duration-150 ease-linear"
-          style={{ width: `${scrollProgress * 100}%` }}
-        />
-      </div>
-
-      {/* Header */}
-      {/* Reduced py-3 on mobile, keeps md:py-4 */}
-      <header className="fixed top-0 left-0 right-0 bg-gray-900/90 backdrop-blur-sm z-40 shadow-xl border-b border-gray-800">
-        <div className="container mx-auto px-2 md:px-4 py-3 md:py-4 flex justify-between items-center">
-          <div className="flex items-center flex-shrink-0"> {/* Added flex-shrink-0 */}
-            <Brain className="w-7 md:w-8 h-7 md:h-8 text-blue-500 mr-2 md:mr-3 flex-shrink-0" />
-            <h1 className="text-lg md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 whitespace-nowrap">
-              EideticEngine
-            </h1>
-          </div>
-          {/* Changed header button text based on window size possibility */}
-          <div className="flex">
-            {/* This button now *always* toggles, text changes based on state */}
-            <button
-              onClick={toggleNavFromHeader}
-              className="px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors flex items-center text-sm"
-            >
-              {showNavigation ? 'Hide' : 'Show'} <span className="hidden sm:inline ml-1">Nav</span> <Map className="ml-1.5 w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* Header Component */}
+      <Header 
+        showNavigation={showNavigation} 
+        setShowNavigation={setShowNavigation} 
+        scrollProgress={scrollProgress} 
+      />
 
       {/* Main Content Wrapper */}
       <div className="flex pt-16"> {/* Ensure pt matches header height */}
-        {/* Side Navigation */}
-        {/* Adjusted width for mobile w-64, kept md:w-64. Ensured translation matches width */}
-        {/* Added focus management trapping potential */}
-        <aside
-          className={`fixed top-0 h-screen overflow-y-auto bg-gray-900 border-r border-gray-800 w-64 transition-transform duration-300 ease-in-out z-50 md:z-30 md:translate-x-0 ${showNavigation ? 'translate-x-0 shadow-xl' : '-translate-x-full'} md:left-0 pt-16 md:pt-0`} // Added pt-16 for mobile to clear header
-          aria-hidden={!showNavigation}
-          tabIndex={showNavigation ? 0 : -1} // Basic accessibility
-        >
-          {/* Mobile close button inside aside */}
-          <div className="absolute top-4 right-4 md:hidden">
-            <button
-              onClick={() => setShowNavigation(false)}
-              className="p-1.5 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
-              aria-label="Close navigation menu"
-            >
-              <X className="h-5 w-5 text-gray-400" />
-            </button>
-          </div>
-          {/* Added more padding top to nav content to clear header/close button */}
-          <nav className="p-4 pt-12 md:pt-4">
-            <div className="mb-8">
-              <h2 className="text-gray-400 text-xs uppercase tracking-wider mb-4 px-4">Navigation</h2>
-              {[
-                // Added Architecture Visual to nav
-                { id: 'architecture-visual', name: 'Architecture', icon: <Eye className="w-4 h-4" /> },
-                { id: 'abstract', name: 'Abstract', icon: <FileText className="w-4 h-4" /> },
-                { id: 'introduction', name: 'Introduction', icon: <MessageCircle className="w-4 h-4" /> },
-                { id: 'related-work', name: 'Related Work', icon: <GitBranch className="w-4 h-4" /> },
-                { id: 'ums', name: 'Unified Memory System', icon: <Database className="w-4 h-4" /> },
-                { id: 'aml', name: 'Agent Master Loop', icon: <RefreshCw className="w-4 h-4" /> },
-                { id: 'mcp-client', name: 'MCP Client', icon: <UserPlus className="w-4 h-4" /> },
-                { id: 'llm-gateway', name: 'LLM Gateway Server', icon: <Server className="w-4 h-4" /> },
-                { id: 'evaluation', name: 'Evaluation & Cases', icon: <BarChart2 className="w-4 h-4" /> },
-                { id: 'discussion', name: 'Discussion', icon: <GitCommit className="w-4 h-4" /> },
-                { id: 'conclusion', name: 'Conclusion', icon: <Award className="w-4 h-4" /> },
-                { id: 'future-work', name: 'Future Work', icon: <Zap className="w-4 h-4" /> },
-                { id: 'addendum', name: 'Addendum', icon: <Bookmark className="w-4 h-4" /> },
-              ].map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  // Adjusted padding/margin slightly for mobile density
-                  className={`flex items-center space-x-3 w-full text-left px-4 py-3 md:py-2.5 rounded-lg mb-1 hover:bg-gray-800 transition-colors duration-150 ${activeSection === item.id ? 'bg-blue-900 bg-opacity-50 text-blue-300 font-medium' : 'text-gray-300 hover:text-gray-100'}`}
-                >
-                  <span className="flex-shrink-0 w-4">{item.icon}</span>
-                  <span className="text-sm">{item.name}</span>
-                </button>
-              ))}
-            </div>
-          </nav>
-        </aside>
+        {/* Sidebar Component */}
+        <Sidebar 
+          showNavigation={showNavigation} 
+          setShowNavigation={setShowNavigation} 
+          activeSection={activeSection} 
+          navItems={navItems}
+          docLinks={docLinks}
+          scrollToSection={scrollToSection}
+        />
 
-        {/* Mobile Navigation Toggle Button (Fixed at bottom) */}
-        {/* Adjusted position slightly */}
-        <div className="fixed bottom-4 right-4 z-40 md:hidden">
-          <button
-            onClick={toggleNavFromMobile}
-            className={`p-3 rounded-full shadow-lg ${showNavigation ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'} transition-all duration-300 ease-in-out border border-gray-700 transform active:scale-95`}
-            aria-label={showNavigation ? "Close navigation menu" : "Open navigation menu"}
-            aria-expanded={showNavigation}
-          >
-            {showNavigation ? <X className="w-5 h-5 text-white" /> : <Map className="w-5 h-5 text-white" />}
-          </button>
-        </div>
+        {/* Mobile Navigation Toggle */}
+        <MobileNavToggle 
+          showNavigation={showNavigation} 
+          setShowNavigation={setShowNavigation} 
+        />
 
         {/* Main content */}
         {/* Adjusted margin logic to be simpler: only apply margin on md+ when nav is shown */}
@@ -229,12 +186,11 @@ const EideticEngineWebsite = () => {
                     EideticEngine
                   </span>
                 </h1>
-                {/* Adjusted text sizes and removed mobile br */}
+                {/* Updated subtitle */}
                 <p className="text-base sm:text-lg md:text-2xl text-gray-300 mb-8">
-                  An Adaptive Cognitive Architecture Integrating Multi-Level Memory,
-                  Structured Orchestration, and Meta-Cognition for Advanced LLM Agents
+                  Adaptive LLM Agent Orchestration with Multi‑Level Memory <br className="hidden md:inline" /> and Performance‑Driven Meta‑Cognition
                 </p>
-                <p className="text-sm md:text-base text-gray-400 italic">By Jeffrey Emanuel, 4/13/2025</p>
+                <p className="text-sm md:text-base text-gray-400 italic">By Jeffrey Emanuel, April 2025</p>
 
                 {/* Adjusted button padding/text size */}
                 <div className="mt-10 md:mt-12 flex flex-col sm:flex-row justify-center items-center gap-4">
@@ -285,29 +241,29 @@ const EideticEngineWebsite = () => {
                         <div className="bg-blue-900 bg-opacity-30 p-1 rounded-full mr-2 mt-1 flex-shrink-0">
                           <Clock className="w-4 h-4 text-blue-400" />
                         </div>
-                        <span className="text-gray-300"><span className="font-medium text-blue-300">Working Memory:</span> Active attention focus</span>
+                        <span className="text-gray-300"><strong className="font-medium text-blue-300">WORKING:</strong> Active attention focus</span>
                       </li>
                       <li className="flex items-start">
                         <div className="bg-blue-900 bg-opacity-30 p-1 rounded-full mr-2 mt-1 flex-shrink-0">
                           <FileText className="w-4 h-4 text-blue-400" />
                         </div>
-                        <span className="text-gray-300"><span className="font-medium text-blue-300">Episodic Memory:</span> Experience records</span>
+                        <span className="text-gray-300"><strong className="font-medium text-blue-300">EPISODIC:</strong> Experience records</span>
                       </li>
                       <li className="flex items-start">
                         <div className="bg-blue-900 bg-opacity-30 p-1 rounded-full mr-2 mt-1 flex-shrink-0">
                           <Brain className="w-4 h-4 text-blue-400" />
                         </div>
-                        <span className="text-gray-300"><span className="font-medium text-blue-300">Semantic Memory:</span> General knowledge</span>
+                        <span className="text-gray-300"><strong className="font-medium text-blue-300">SEMANTIC:</strong> General knowledge</span>
                       </li>
                       <li className="flex items-start">
                         <div className="bg-blue-900 bg-opacity-30 p-1 rounded-full mr-2 mt-1 flex-shrink-0">
                           <Code className="w-4 h-4 text-blue-400" />
                         </div>
-                        <span className="text-gray-300"><span className="font-medium text-blue-300">Procedural Memory:</span> Skills & procedures</span>
+                        <span className="text-gray-300"><strong className="font-medium text-blue-300">PROCEDURAL:</strong> Skills & procedures</span>
                       </li>
                     </ul>
                     <div className="bg-gray-900 p-3 md:p-4 rounded-lg">
-                      <p className="text-xs text-gray-400"><a href="https://github.com/Dicklesworthstone/llm_gateway_mcp_server/blob/main/llm_gateway/tools/cognitive_and_agent_memory.py" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">Implemented</a> with optimized SQLite, featuring hybrid search, explicit typing, metadata, and associative linking.</p>
+                      <p className="text-xs text-gray-400"><a href="https://github.com/Dicklesworthstone/ultimate_mcp_server/blob/main/ultimate_mcp_server/tools/cognitive_and_agent_memory.py" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">Implemented</a> with optimized SQLite, featuring hybrid search, explicit typing, metadata, and associative linking.</p>
                     </div>
                   </div>
 
@@ -326,29 +282,35 @@ const EideticEngineWebsite = () => {
                         <div className="bg-purple-900 bg-opacity-30 p-1 rounded-full mr-2 mt-1 flex-shrink-0">
                           <GitBranch className="w-4 h-4 text-purple-400" />
                         </div>
-                        <span className="text-gray-300"><span className="font-medium text-purple-300">Structured Planning:</span> Dependency-aware steps</span>
+                        <span className="text-gray-300"><strong className="font-medium text-purple-300">Structured Planning:</strong> Dependency-aware steps</span>
+                      </li>
+                      <li className="flex items-start">
+                        <div className="bg-purple-900 bg-opacity-30 p-1 rounded-full mr-2 mt-1 flex-shrink-0">
+                          <Target className="w-4 h-4 text-purple-400" />
+                        </div>
+                        <span className="text-gray-300"><strong className="font-medium text-purple-300">Hierarchical Goals:</strong> Goal Stack management</span>
                       </li>
                       <li className="flex items-start">
                         <div className="bg-purple-900 bg-opacity-30 p-1 rounded-full mr-2 mt-1 flex-shrink-0">
                           <Layers className="w-4 h-4 text-purple-400" />
                         </div>
-                        <span className="text-gray-300"><span className="font-medium text-purple-300">Context Assembly:</span> Multi-faceted retrieval</span>
+                        <span className="text-gray-300"><strong className="font-medium text-purple-300">Context Assembly:</strong> Multi-faceted retrieval</span>
                       </li>
                       <li className="flex items-start">
                         <div className="bg-purple-900 bg-opacity-30 p-1 rounded-full mr-2 mt-1 flex-shrink-0">
                           <GitCommit className="w-4 h-4 text-purple-400" />
                         </div>
-                        <span className="text-gray-300"><span className="font-medium text-purple-300">Meta-Cognition:</span> Reflection, consolidation</span>
+                        <span className="text-gray-300"><strong className="font-medium text-purple-300">Meta-Cognition:</strong> Reflection, consolidation</span>
                       </li>
                       <li className="flex items-start">
                         <div className="bg-purple-900 bg-opacity-30 p-1 rounded-full mr-2 mt-1 flex-shrink-0">
                           <Aperture className="w-4 h-4 text-purple-400" />
                         </div>
-                        <span className="text-gray-300"><span className="font-medium text-purple-300">Adaptive Control:</span> Dynamic thresholds</span>
+                        <span className="text-gray-300"><strong className="font-medium text-purple-300">Adaptive Control:</strong> Mental Momentum</span>
                       </li>
                     </ul>
                     <div className="bg-gray-900 p-3 md:p-4 rounded-lg">
-                      <p className="text-xs text-gray-400">Directs LLM reasoning, manages dependencies, recovers from errors, and orchestrates self-improvement cycles. Find implementation <a href="https://github.com/Dicklesworthstone/ultimate_mcp_client/blob/main/agent_master_loop.py" target="_blank" rel="noopener noreferrer" className="underline hover:text-purple-300">here</a>.</p>
+                      <p className="text-xs text-gray-400">Directs LLM reasoning (Claude 3.7 Sonnet), manages dependencies, recovers from errors, and orchestrates self-improvement. Find implementation <a href="https://github.com/Dicklesworthstone/ultimate_mcp_client/blob/main/agent_master_loop.py" target="_blank" rel="noopener noreferrer" className="underline hover:text-purple-300">here</a>.</p>
                     </div>
                   </div>
                 </div>
@@ -364,7 +326,7 @@ const EideticEngineWebsite = () => {
                       <div className="p-3 md:p-4 bg-blue-900 bg-opacity-40 rounded-full mb-2 md:mb-4">
                         <Cpu className="w-8 h-8 md:w-10 md:h-10 text-blue-400" />
                       </div>
-                      <p className="font-bold text-sm md:text-base text-blue-300">LLM Core</p>
+                      <p className="font-bold text-sm md:text-base text-blue-300">LLM Core (Claude 3.7)</p>
                     </div>
 
                     <div className="flex flex-col items-center text-center">
@@ -387,7 +349,7 @@ const EideticEngineWebsite = () => {
                 {/* Adjusted padding, max-width */}
                 <div className="bg-gray-800 p-4 md:p-6 rounded-xl shadow-lg border border-gray-700 max-w-3xl mx-auto mt-8 md:mt-12">
                   <h3 className="text-base md:text-xl font-bold mb-4 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-                    Key Innovation: Meta-Cognitive Cycle
+                    Key Innovation: Performance-Driven Meta-Cognition
                   </h3>
                   {/* Slightly smaller visualization on mobile */}
                   <div className="flex flex-col items-center">
@@ -408,7 +370,7 @@ const EideticEngineWebsite = () => {
                   </div>
                   <p className="text-gray-300 text-center mt-2 md:mt-8 text-xs sm:text-sm md:text-base leading-relaxed">
                     The agent actively improves its cognitive operation through reflection, knowledge consolidation,
-                    memory promotion, and adaptive threshold adjustment based on performance metrics.
+                    memory promotion, and adaptive threshold adjustment (Mental Momentum) based on performance metrics.
                   </p>
                 </div>
               </div>
@@ -425,13 +387,13 @@ const EideticEngineWebsite = () => {
                 <div className="prose prose-sm sm:prose-base md:prose-lg prose-invert max-w-none space-y-4 md:space-y-6 text-gray-300">
                   <p>
                     Large Language Models (LLMs) form the reasoning core of increasingly sophisticated autonomous agents.
-                    However, unlocking their full potential for complex, long-horizon tasks requires architectures that
+                    However, unlocking their full potential for complex, long‑horizon tasks requires architectures that
                     transcend reactive loops and shallow memory.
                   </p>
 
                   <p>
                     We present <strong className="text-blue-300 font-semibold">EideticEngine</strong>, a novel cognitive architecture designed to
-                    imbue LLM agents with robust memory, structured planning, and adaptive self-management capabilities
+                    imbue LLM agents with robust memory, structured planning, hierarchical goal management, and adaptive self‑management capabilities
                     inspired by cognitive science.
                   </p>
 
@@ -442,30 +404,20 @@ const EideticEngineWebsite = () => {
                   {/* Use standard list styling from prose */}
                   <ol className="list-decimal space-y-3 pl-5">
                     <li>
-                      <strong className="text-blue-300 font-semibold">Unified Memory System (UMS)</strong>: A persistent, multi-level
-                      cognitive workspace implemented on an optimized asynchronous database, featuring distinct memory types
-                      (working, episodic, semantic, procedural), rich metadata (importance, confidence, TTL), explicit typed
-                      linking, hybrid search (semantic, keyword, relational), and integrated workflow tracking.
+                      <strong className="text-blue-300 font-semibold">Unified Memory System (UMS)</strong>: a persistent, multi‑level
+                      cognitive workspace implemented on an asynchronous SQLite backend, featuring distinct memory types
+                      (<CodeTag>WORKING</CodeTag>, <CodeTag>EPISODIC</CodeTag>, <CodeTag>SEMANTIC</CodeTag>, <CodeTag>PROCEDURAL</CodeTag>), rich metadata, explicit typed
+                      linking, hybrid search, and integrated workflow tracking.
                     </li>
 
                     <li>
-                      <strong className="text-purple-300 font-semibold">Agent Master Loop (AML)</strong>: An adaptive orchestrator that
-                      directs an LLM using the UMS. The AML manages structured, dependency-aware plans, dynamically assembles
-                      comprehensive context, handles errors resiliently, and crucially, orchestrates agent-driven meta-cognition.
+                      <strong className="text-purple-300 font-semibold">Agent Master Loop (AML)</strong>: an adaptive orchestrator that
+                      directs an LLM (specifically <em className="italic">Claude 3.7 Sonnet</em>) using the UMS. The AML enforces dependency‑aware plans, supports hierarchical task decomposition via a Goal Stack, and orchestrates agent‑driven meta‑cognition for reflection, consolidation, and self‑regulation.
                     </li>
                   </ol>
 
                   <p>
-                    Through specific UMS tools, the agent actively reflects on its performance, consolidates knowledge,
-                    promotes memories between cognitive levels, manages its attentional focus, and even manages distinct
-                    reasoning threads. Furthermore, EideticEngine incorporates an adaptive control layer where meta-cognitive
-                    parameters are dynamically adjusted based on real-time operational statistics.
-                  </p>
-
-                  <p>
-                    We provide detailed simulations and analysis demonstrating EideticEngine's ability to autonomously navigate
-                    complex analytical and creative tasks, exhibiting structured learning, error recovery, and adaptive
-                    behavior.
+                    Empirical analysis demonstrates that EideticEngine enables agents to navigate analytical and creative tasks with greater autonomy, robustness, and learning capacity than existing frameworks.
                   </p>
                 </div>
               </div>
@@ -481,7 +433,7 @@ const EideticEngineWebsite = () => {
                   <p>
                     The remarkable generative and reasoning abilities of Large Language Models (LLMs) have catalyzed the
                     development of autonomous agents aimed at complex problem-solving. Yet, the transition from impressive
-                    demonstrations to robust, reliable agents capable of sustained, adaptive operation across diverse,
+                    demonstrations to <em className="italic">robust</em>, <em className="italic">reliable</em> agents capable of sustained, adaptive operation across diverse,
                     long-horizon tasks remains a formidable challenge.
                   </p>
 
@@ -490,49 +442,57 @@ const EideticEngineWebsite = () => {
                   <ul className="space-y-3 list-none pl-0"> {/* Removed default list styling */}
                     <li className="flex items-start">
                       <div className="flex-shrink-0 mt-1 mr-2.5">
-                        <div className="w-5 h-5 rounded-full bg-red-900/70 flex items-center justify-center">
-                          <span className="text-red-300 text-xs font-bold">✕</span>
+                        <div className="w-5 h-5 rounded-full bg-blue-900/70 flex items-center justify-center">
+                          <span className="text-blue-300 text-xs font-bold">1</span>
                         </div>
                       </div>
-                      <span><strong className="text-red-300 font-semibold">Memory Persistence & Structure:</strong> Reliance on ephemeral prompt
+                      <span><strong className="text-blue-300 font-semibold">Memory Persistence & Structure:</strong> Reliance on ephemeral prompt
                         context or simplistic memory buffers hinders long-term learning, recall of structured knowledge, and
                         understanding of temporal or causal relationships.</span>
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0 mt-1 mr-2.5">
-                        <div className="w-5 h-5 rounded-full bg-red-900/70 flex items-center justify-center">
-                          <span className="text-red-300 text-xs font-bold">✕</span>
+                        <div className="w-5 h-5 rounded-full bg-blue-900/70 flex items-center justify-center">
+                          <span className="text-blue-300 text-xs font-bold">2</span>
                         </div>
                       </div>
-                      <span><strong className="text-red-300 font-semibold">Planning & Execution:</strong> Ad-hoc or reactive planning struggles
+                      <span><strong className="text-blue-300 font-semibold">Planning & Execution:</strong> Ad-hoc or reactive planning struggles
                         with complex sequences, interdependencies, and resource management. Lack of explicit dependency tracking
                         leads to brittleness and execution failures.</span>
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0 mt-1 mr-2.5">
-                        <div className="w-5 h-5 rounded-full bg-red-900/70 flex items-center justify-center">
-                          <span className="text-red-300 text-xs font-bold">✕</span>
+                        <div className="w-5 h-5 rounded-full bg-blue-900/70 flex items-center justify-center">
+                          <span className="text-blue-300 text-xs font-bold">3</span>
                         </div>
                       </div>
-                      <span><strong className="text-red-300 font-semibold">Adaptation & Learning:</strong> Most agents lack mechanisms for
-                        reflecting on past actions, learning from errors, synthesizing experiences into general knowledge, or
-                        adapting their strategies based on performance.</span>
+                      <span><strong className="text-blue-300 font-semibold">Adaptation & Learning:</strong> Few agents reflect on past actions or
+                        synthesize experiences into durable knowledge. Our AML integrates explicit meta-cognitive tools
+                        and performance-driven adaptation.</span>
                     </li>
                     <li className="flex items-start">
                       <div className="flex-shrink-0 mt-1 mr-2.5">
-                        <div className="w-5 h-5 rounded-full bg-red-900/70 flex items-center justify-center">
-                          <span className="text-red-300 text-xs font-bold">✕</span>
+                        <div className="w-5 h-5 rounded-full bg-blue-900/70 flex items-center justify-center">
+                          <span className="text-blue-300 text-xs font-bold">4</span>
                         </div>
                       </div>
-                      <span><strong className="text-red-300 font-semibold">Cognitive Coherence:</strong> Agents often lack a unified internal
+                      <span><strong className="text-blue-300 font-semibold">Hierarchical Task Management:</strong> Managing nested goals without
+                        losing focus is challenging. A dedicated Goal Stack in EideticEngine provides disciplined decomposition.</span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="flex-shrink-0 mt-1 mr-2.5">
+                        <div className="w-5 h-5 rounded-full bg-blue-900/70 flex items-center justify-center">
+                          <span className="text-blue-300 text-xs font-bold">5</span>
+                        </div>
+                      </div>
+                      <span><strong className="text-blue-300 font-semibold">Cognitive Coherence:</strong> Agents often lack a unified internal
                         state representation that integrates perception, memory, reasoning, planning, and action within a
                         consistent framework.</span>
                     </li>
                   </ul>
 
                   <p>
-                    To address these critical gaps, we introduce <strong className="text-blue-300 font-semibold">EideticEngine</strong>, a
-                    comprehensive cognitive architecture designed explicitly for orchestrating advanced LLM agents. EideticEngine
+                    To address these critical gaps, we introduce <strong className="text-blue-300 font-semibold">EideticEngine</strong>, a comprehensive cognitive architecture designed explicitly for orchestrating advanced LLM agents. EideticEngine
                     is not merely an LLM wrapper or a collection of tools; it is an integrated system built upon two deeply
                     interconnected components.
                   </p>
@@ -618,6 +578,16 @@ const EideticEngineWebsite = () => {
                         Examples: SOAR, ACT-R, OpenCog
                       </p>
                     </div>
+
+                    <div className="bg-gray-800/80 rounded-lg p-4 md:p-6 shadow-lg border border-gray-700/50">
+                      <h3 className="text-lg md:text-xl font-bold mb-2 text-blue-300">Meta‑Reasoning and Reflection Research</h3>
+                      <p className="text-sm md:text-base text-gray-300">
+                        Few practical systems incorporate explicit, agent‑driven reflection tied to performance metrics. EideticEngine operationalizes this through dedicated UMS tools triggered by the AML. Significantly, the frequency is adaptive, creating a dynamic feedback loop for self‑regulation.
+                      </p>
+                      <p className="text-xs md:text-sm text-gray-400 mt-3 italic">
+                        Examples: Reflexion
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -650,22 +620,30 @@ const EideticEngineWebsite = () => {
                     {/* Grid adjusts columns for mobile */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                       <div className="border border-blue-800/50 rounded-lg p-3 md:p-4 bg-blue-900/20">
-                        <h4 className="font-semibold text-blue-300 mb-1 md:mb-2 text-sm md:text-base">Working Memory</h4>
+                        <h4 className="font-semibold text-blue-300 mb-1 md:mb-2 text-sm md:text-base flex items-center">
+                          <Clock className="w-4 h-4 mr-2" />Working Memory
+                        </h4>
                         <p className="text-xs md:text-sm text-gray-300">Explicitly managed outside the main memories table, capacity-constrained and dynamically optimized to maintain a focused attentional set.</p>
                       </div>
 
                       <div className="border border-blue-800/50 rounded-lg p-3 md:p-4 bg-blue-900/20">
-                        <h4 className="font-semibold text-blue-300 mb-1 md:mb-2 text-sm md:text-base">Episodic Memory</h4>
+                        <h4 className="font-semibold text-blue-300 mb-1 md:mb-2 text-sm md:text-base flex items-center">
+                          <FileText className="w-4 h-4 mr-2" />Episodic Memory
+                        </h4>
                         <p className="text-xs md:text-sm text-gray-300">Directly captures agent experiences, records associated with specific actions, thoughts, or artifacts, often with shorter default TTL values.</p>
                       </div>
 
                       <div className="border border-blue-800/50 rounded-lg p-3 md:p-4 bg-blue-900/20">
-                        <h4 className="font-semibold text-blue-300 mb-1 md:mb-2 text-sm md:text-base">Semantic Memory</h4>
+                        <h4 className="font-semibold text-blue-300 mb-1 md:mb-2 text-sm md:text-base flex items-center">
+                          <Brain className="w-4 h-4 mr-2" />Semantic Memory
+                        </h4>
                         <p className="text-xs md:text-sm text-gray-300">Represents generalized knowledge, facts, insights, summaries, or stable profiles, often resulting from consolidation or promotion processes.</p>
                       </div>
 
                       <div className="border border-blue-800/50 rounded-lg p-3 md:p-4 bg-blue-900/20">
-                        <h4 className="font-semibold text-blue-300 mb-1 md:mb-2 text-sm md:text-base">Procedural Memory</h4>
+                        <h4 className="font-semibold text-blue-300 mb-1 md:mb-2 text-sm md:text-base flex items-center">
+                          <Code className="w-4 h-4 mr-2" />Procedural Memory
+                        </h4>
                         <p className="text-xs md:text-sm text-gray-300">Encodes learned skills or multi-step procedures, primarily populated via promotion from highly accessed, high-confidence semantic memories.</p>
                       </div>
                     </div>
@@ -703,8 +681,8 @@ const EideticEngineWebsite = () => {
                   <div className="bg-gray-800/80 rounded-xl p-4 md:p-8 mb-8 mx-auto max-w-full border border-gray-700/50">
                     <div className="flex flex-col items-center">
                       {/* Wrapper for horizontal scrolling if needed on small screens */}
-                      {/* Added scrollbar styling for better visibility */}
-                      <div className="w-full overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800/50 rounded-lg">
+                      {/* Updated to use code-scrollbar class */}
+                      <div className="w-full overflow-x-auto pb-4 code-scrollbar rounded-lg">
                         {/* Inner container: Keeps desktop dimensions but allows mobile scroll */}
                         {/* Added min-width to prevent collapse on very small screens */}
                         <div className="relative w-full min-w-[340px] sm:min-w-[400px] md:w-96 h-64 md:h-96 bg-gray-900 rounded-2xl p-4 md:p-8 shadow-xl mx-auto">
@@ -721,7 +699,7 @@ const EideticEngineWebsite = () => {
                         </h3>
                         <p className="text-xs md:text-sm text-gray-300 leading-relaxed text-center">
                           The UMS constructs a strongly-typed knowledge graph through the
-                          <code className="mx-1 px-1.5 md:px-2 py-0.5 md:py-1 bg-gray-700/80 rounded text-blue-200 text-[11px] md:text-xs">memory_links</code>
+                          <CodeTag>memory_links</CodeTag>
                           table, supporting multiple relationship types:
                         </p>
                         {/* Responsive grid for tags */}
@@ -763,6 +741,30 @@ const EideticEngineWebsite = () => {
                       <p className="text-xs md:text-sm text-gray-300">Asynchronous design, optimized SQL, structured data handling, and comprehensive auditing ensure reliability and performance.</p>
                     </div>
                   </div>
+                  
+                  {/* Technical Details Link for UMS */}
+                  <div className="bg-gradient-to-r from-blue-900/30 to-blue-800/20 rounded-xl p-6 border border-blue-700/30 my-8 shadow-lg transform transition-all hover:shadow-xl">
+                    <div className="flex flex-col sm:flex-row items-center justify-between">
+                      <div className="flex items-center mb-4 sm:mb-0">
+                        <div className="bg-blue-900/50 p-3 rounded-full mr-4 flex-shrink-0">
+                          <FileText className="w-6 h-6 text-blue-300" />
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-bold text-blue-300">Technical Deep Dive</h4>
+                          <p className="text-sm text-gray-300 mt-1">Explore the complete technical specification of the UMS system</p>
+                        </div>
+                      </div>
+                      <div>
+                        <a 
+                          href="/ums-technical-analysis" 
+                          className="inline-flex items-center px-4 py-2 bg-blue-700 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-md"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          <span className="font-medium">View Technical Details</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
@@ -783,7 +785,7 @@ const EideticEngineWebsite = () => {
                     While the UMS provides the cognitive substrate, the Agent Master Loop (AML) acts as the central executive,
                     orchestrating the agent's perception-cognition-action cycle to achieve complex goals. It transcends simple
                     reactive loops by implementing structured planning, sophisticated context management, robust error handling,
-                    and, critically, adaptive meta-cognitive control.
+                    and, critically, adaptive meta-cognitive control, leveraging the UMS and an LLM reasoning core (<CodeTag>claude-3-7-sonnet</CodeTag>).
                   </p>
                 </div>
 
@@ -798,14 +800,14 @@ const EideticEngineWebsite = () => {
                       <div>
                         <h4 className="font-semibold text-purple-300 mb-1 md:mb-2 text-sm md:text-base">Plan Management</h4>
                         <p className="text-xs md:text-sm text-gray-300">
-                          The AML manages an explicit, dynamic plan within its state, represented as a list of PlanStep objects
+                          The AML manages an explicit, dynamic plan within its state, represented as a list of <CodeTag>PlanStep</CodeTag> objects
                           with status tracking, tool assignments, and crucially, dependency management.
                         </p>
                       </div>
                     </div>
 
                     {/* Ensure pre block scrolls on mobile */}
-                    <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-[10px] md:text-xs font-mono text-gray-300 mb-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800/50">
+                    <div className="bg-gray-900 rounded-lg p-3 md:p-4 text-[10px] md:text-xs font-mono text-gray-300 mb-4 overflow-x-auto code-scrollbar">
                       <pre className="whitespace-pre">{`PlanStep(
   description="Analyze market sentiment from recent reports",
   status="planned",
@@ -823,11 +825,31 @@ const EideticEngineWebsite = () => {
                     </p>
                   </div>
 
-                  <h3 className="text-lg md:text-2xl font-bold mb-4 text-purple-300">4.2. Multi-Faceted Context Assembly</h3>
+                  <h3 className="text-lg md:text-2xl font-bold mb-4 text-purple-300">4.2. Hierarchical Goal Stack Management</h3>
+
+                  <div className="bg-gray-800/80 rounded-lg p-4 md:p-6 mb-6 border border-gray-700/50">
+                    <div className="flex items-start mb-4">
+                      <div className="p-2 bg-purple-900/40 rounded-lg mr-3 md:mr-4 flex-shrink-0">
+                        <Target className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-purple-300 mb-1 md:mb-2 text-sm md:text-base">Goal Management</h4>
+                        <p className="text-xs md:text-sm text-gray-300">
+                          EideticEngine explicitly manages hierarchical goals for complex objective decomposition. The agent can push sub-goals onto a stack, work on them until completion, and then return to parent goals.
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="text-xs md:text-sm text-gray-300">
+                      <CodeTag>AgentState</CodeTag> maintains a <CodeTag>goal_stack</CodeTag> and <CodeTag>current_goal_id</CodeTag>. The LLM can push sub-goals via <CodeTag>push_sub_goal</CodeTag> and signal completion via <CodeTag>mark_goal_status</CodeTag>. This allows complex task decomposition while maintaining focus.
+                    </p>
+                  </div>
+
+                  <h3 className="text-lg md:text-2xl font-bold mb-4 text-purple-300">4.3. Multi-Faceted Context Assembly</h3>
 
                   <p className="text-sm md:text-base">
                     The AML recognizes that effective LLM reasoning requires rich context beyond simple chat history.
-                    The <code className="text-xs bg-gray-700/80 px-1 py-0.5 rounded">_gather_context</code> function actively probes the UMS to construct a comprehensive snapshot:
+                    The <CodeTag>_gather_context</CodeTag> function actively probes the UMS to construct a comprehensive snapshot:
                   </p>
 
                   <ul className="space-y-2 list-none pl-0 text-sm md:text-base">
@@ -837,6 +859,14 @@ const EideticEngineWebsite = () => {
                       </div>
                       <span>
                         <span className="font-medium text-purple-300">Operational State:</span> Current loop count, error details, workflow ID
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <div className="bg-purple-900/30 p-1 rounded-full mr-2 mt-1 flex-shrink-0">
+                        <Target className="w-4 h-4 text-purple-400" />
+                      </div>
+                      <span>
+                        <span className="font-medium text-purple-300">Goal Context:</span> Current goal details and goal stack summary
                       </span>
                     </li>
                     <li className="flex items-start">
@@ -881,7 +911,7 @@ const EideticEngineWebsite = () => {
                     </li>
                   </ul>
 
-                  <h3 className="text-lg md:text-2xl font-bold mb-4 mt-8 text-purple-300">4.3. Adaptive Meta-Cognitive Control</h3>
+                  <h3 className="text-lg md:text-2xl font-bold mb-4 mt-8 text-purple-300">4.4. Adaptive Meta-Cognitive Control</h3>
 
                   <div className="bg-gray-800/80 rounded-lg p-4 md:p-6 mb-8 border border-gray-700/50">
                     <p className="text-sm md:text-base text-gray-300 mb-4">
@@ -892,7 +922,7 @@ const EideticEngineWebsite = () => {
                     <div className="mb-6">
                       <h4 className="font-semibold text-purple-300 mb-3 text-sm md:text-base">The Meta-Cognitive Cycle</h4>
                       {/* Simpler layout for mobile if needed, but current should adapt */}
-                      <div className="relative py-6 overflow-x-auto">
+                      <div className="relative py-6 overflow-x-auto code-scrollbar">
                         <div className="absolute left-0 w-full h-0.5 bg-gray-700 top-1/2 transform -translate-y-1/2"></div>
 
                         {/* Meta-cognitive steps */}
@@ -934,7 +964,7 @@ const EideticEngineWebsite = () => {
                               <div className="relative w-3 h-3 bg-purple-500 rounded-full z-10"></div>
                             </div>
                             <div className="w-20 sm:w-24 text-center">
-                              <span className="text-[10px] md:text-xs font-medium text-purple-300 leading-tight">Threshold Adapt.</span>
+                              <span className="text-[10px] md:text-xs font-medium text-purple-300 leading-tight">Mental Momentum</span>
                             </div>
                           </div>
                         </div>
@@ -957,15 +987,15 @@ const EideticEngineWebsite = () => {
                       </div>
 
                       <div className="border-l-4 border-purple-500/70 pl-3 md:pl-4">
-                        <h5 className="font-medium text-purple-300 text-sm md:text-base">Adaptive Threshold Adjustment</h5>
+                        <h5 className="font-medium text-purple-300 text-sm md:text-base">Mental Momentum</h5>
                         <p className="text-xs md:text-sm text-gray-300">
-                          The system dynamically adjusts the frequency of reflection and consolidation based on runtime statistics, enabling self-regulation.
+                          The system dynamically adjusts the frequency of reflection based on runtime statistics. When progress is smooth (low failure rate), the threshold for reflection increases, allowing the agent to maintain "flow" without interruption.
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <h3 className="text-lg md:text-2xl font-bold mb-4 text-purple-300">4.4-4.5. Additional AML Features</h3>
+                  <h3 className="text-lg md:text-2xl font-bold mb-4 text-purple-300">4.5. Additional AML Features</h3>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
                     <div className="bg-gray-800/80 rounded-lg p-4 border border-gray-700/50">
@@ -976,6 +1006,30 @@ const EideticEngineWebsite = () => {
                     <div className="bg-gray-800/80 rounded-lg p-4 border border-gray-700/50">
                       <h4 className="font-semibold text-purple-300 mb-2 text-sm md:text-base">Thought Chain Management</h4>
                       <p className="text-xs md:text-sm text-gray-300">Tracks and manages multiple reasoning threads, allowing the agent to switch context and organize complex reasoning paths.</p>
+                    </div>
+                  </div>
+                  
+                  {/* Technical Details Link for AML */}
+                  <div className="bg-gradient-to-r from-purple-900/30 to-purple-800/20 rounded-xl p-6 border border-purple-700/30 my-8 shadow-lg transform transition-all hover:shadow-xl">
+                    <div className="flex flex-col sm:flex-row items-center justify-between">
+                      <div className="flex items-center mb-4 sm:mb-0">
+                        <div className="bg-purple-900/50 p-3 rounded-full mr-4 flex-shrink-0">
+                          <FileText className="w-6 h-6 text-purple-300" />
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-bold text-purple-300">Technical Deep Dive</h4>
+                          <p className="text-sm text-gray-300 mt-1">Explore the complete technical specification of the AML system</p>
+                        </div>
+                      </div>
+                      <div>
+                        <a 
+                          href="/aml-technical-analysis" 
+                          className="inline-flex items-center px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white rounded-lg transition-colors shadow-md"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          <span className="font-medium">View Technical Details</span>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1073,17 +1127,17 @@ const EideticEngineWebsite = () => {
               </div>
             </section>
 
-            {/* LLM Gateway Section */}
-            <section id="llm-gateway" className="mb-12 md:mb-16 scroll-mt-20 md:scroll-mt-24 px-0">
+            {/* Ultimate MCP Server Section */}
+            <section id="ultimate-mcp-server" className="mb-12 md:mb-16 scroll-mt-20 md:scroll-mt-24 px-0">
               <div className="max-w-3xl mx-auto">
                 <h2 className="text-2xl md:text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-                  6. The LLM Gateway Server: An Ecosystem of Tools for Cognitive Agents
+                  6. The Ultimate MCP Gateway Server: An Ecosystem of Tools for Cognitive Agents
                 </h2>
 
                 <div className="prose prose-sm sm:prose-base md:prose-lg prose-invert max-w-none space-y-6 text-gray-300">
                   <p>
                     The EideticEngine architecture relies not only on its internal logic (AML) and its cognitive substrate (UMS) but also
-                    on a rich ecosystem of external capabilities accessible via the Model Context Protocol (MCP). The <a href="https://github.com/Dicklesworthstone/llm_gateway_mcp_server" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:underline"><strong className="font-semibold">LLM Gateway Server</strong></a>
+                    on a rich ecosystem of external capabilities accessible via the Model Context Protocol (MCP). The <a href="https://github.com/Dicklesworthstone/ultimate_mcp_server" target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:underline"><strong className="font-semibold">Ultimate MCP Server</strong></a>
                     hosts the UMS tools alongside a powerful suite of complementary tools, significantly expanding the agent's operational repertoire.
                   </p>
 
@@ -1145,9 +1199,9 @@ const EideticEngineWebsite = () => {
                   </div>
 
                   <p>
-                    It's crucial to understand that the UMS is implemented as a collection of tools within the broader LLM Gateway
+                    It's crucial to understand that the UMS is implemented as a collection of tools within the broader Ultimate
                     MCP Server. The AML, via the Ultimate MCP Client, interacts with the UMS not through direct database calls,
-                    but by invoking specific <code className="text-xs bg-gray-700/80 px-1 py-0.5 rounded">unified_memory:*</code> tools registered on the Gateway server. This modular design offers
+                    but by invoking specific <CodeTag>unified_memory:*</CodeTag> tools registered on the Gateway server. This modular design offers
                     several advantages:
                   </p>
 
@@ -1190,6 +1244,16 @@ const EideticEngineWebsite = () => {
 
                         <div className="flex items-start">
                           <div className="p-1 bg-blue-900/30 rounded-full mr-2 mt-1 flex-shrink-0">
+                            <Target className="w-4 h-4 text-blue-400" />
+                          </div>
+                          <p className="text-xs md:text-sm text-gray-300">
+                            <span className="font-medium text-blue-300">Goal Management:</span> Used Goal Stack for sub-tasks
+                          </p>
+                        </div>
+
+                        {/* Continuation of the Evaluation section - Case Study 1 */}
+                        <div className="flex items-start">
+                          <div className="p-1 bg-blue-900/30 rounded-full mr-2 mt-1 flex-shrink-0">
                             <Layers className="w-4 h-4 text-blue-400" />
                           </div>
                           <p className="text-xs md:text-sm text-gray-300">
@@ -1220,7 +1284,7 @@ const EideticEngineWebsite = () => {
                             <RefreshCw className="w-4 h-4 text-blue-400" />
                           </div>
                           <p className="text-xs md:text-sm text-gray-300">
-                            <span className="font-medium text-blue-300">Reflect & Adapt:</span> Identified gaps and adjusted thresholds based on metrics
+                            <span className="font-medium text-blue-300">Reflect & Adapt:</span> Applied Mental Momentum to adjust reflection frequency during smooth progress
                           </p>
                         </div>
 
@@ -1245,6 +1309,15 @@ const EideticEngineWebsite = () => {
                           </div>
                           <p className="text-xs md:text-sm text-gray-300">
                             <span className="font-medium text-purple-300">Ideate & Structure:</span> Brainstormed concepts, selected one, checked novelty
+                          </p>
+                        </div>
+
+                        <div className="flex items-start">
+                          <div className="p-1 bg-purple-900/30 rounded-full mr-2 mt-1 flex-shrink-0">
+                            <Target className="w-4 h-4 text-purple-400" />
+                          </div>
+                          <p className="text-xs md:text-sm text-gray-300">
+                            <span className="font-medium text-purple-300">Hierarchical Goals:</span> Managed sub-tasks with Goal Stack mechanism
                           </p>
                         </div>
 
@@ -1290,8 +1363,9 @@ const EideticEngineWebsite = () => {
                   <p>
                     Across both studies, the EideticEngine architecture facilitated successful completion of complex, multi-phase tasks.
                     The UMS provided the necessary persistence and structure, while the AML successfully orchestrated the LLM,
-                    managed dependencies, recovered from simulated errors, and utilized meta-cognitive tools. The adaptive
-                    thresholds demonstrated self-regulation of cognitive overhead.
+                    managed dependencies, recovered from simulated errors, and utilized meta-cognitive tools. The Mental Momentum
+                    feature demonstrated self-regulation of cognitive overhead, reducing unnecessary reflection during periods of
+                    smooth progress.
                   </p>
                 </div>
               </div>
@@ -1345,7 +1419,7 @@ const EideticEngineWebsite = () => {
                         <div>
                           <h3 className="text-sm md:text-lg font-bold text-blue-300 mb-1">Emergent Learning & Adaptation</h3>
                           <p className="text-xs md:text-sm text-gray-300">
-                            The combination of reflection, consolidation, memory promotion, and adaptive thresholds allows the
+                            The combination of reflection, consolidation, memory promotion, and Mental Momentum allows the
                             agent to refine its knowledge base and operational strategy over time based on its experience.
                           </p>
                         </div>
@@ -1371,8 +1445,8 @@ const EideticEngineWebsite = () => {
                   <p>
                     EideticEngine still relies heavily on the quality of the core LLM's reasoning, planning, and tool-use abilities.
                     The overhead of UMS interaction could be significant for highly real-time tasks (though optimizations mitigate
-                    this). The heuristics for memory promotion and threshold adaptation are currently rule-based and could be
-                    further refined.
+                    this). The heuristics for memory promotion and Mental Momentum are currently rule-based and could be
+                    further refined through learning approaches in future work.
                   </p>
                 </div>
               </div>
@@ -1389,8 +1463,9 @@ const EideticEngineWebsite = () => {
                   <p>
                     We introduced EideticEngine, an adaptive cognitive architecture enabling LLM agents to manage complex tasks through
                     the tight integration of a Unified Memory System (UMS) and an Agent Master Loop (AML). By incorporating
-                    multi-level memory, structured planning with dependency checking, agent-driven meta-cognition, and adaptive
-                    self-regulation of cognitive processes, EideticEngine demonstrates a significant advance over existing agent paradigms.
+                    multi-level memory, structured planning with dependency checking, hierarchical goal management via a Goal Stack,
+                    agent-driven meta-cognition, and adaptive self-regulation of cognitive processes (including Mental Momentum),
+                    EideticEngine demonstrates a significant advance over existing agent paradigms.
                   </p>
 
                   <p>
@@ -1428,7 +1503,7 @@ const EideticEngineWebsite = () => {
                         <h3 className="text-sm md:text-lg font-bold text-blue-300">Advanced Adaptation & Learning</h3>
                       </div>
                       <p className="text-xs md:text-sm text-gray-300">
-                        Exploring reinforcement learning or other ML techniques to optimize adaptive thresholds, meta-cognitive strategy selection, and procedural skill derivation.
+                        Exploring reinforcement learning to optimize thresholds, meta-cognitive strategy selection, and procedural skill derivation.
                       </p>
                     </div>
 
@@ -1458,7 +1533,7 @@ const EideticEngineWebsite = () => {
                         <h3 className="text-sm md:text-lg font-bold text-blue-300">Theoretical Grounding</h3>
                       </div>
                       <p className="text-xs md:text-sm text-gray-300">
-                        Further formalizing the EideticEngine loop and memory dynamics in relation to established cognitive science models and decision theory.
+                        Further formalizing the EideticEngine loop and memory dynamics in relation to established cognitive science models.
                       </p>
                     </div>
 
@@ -1508,11 +1583,11 @@ const EideticEngineWebsite = () => {
                     </div>
 
                     <div className="bg-gray-800/80 rounded-lg p-4 md:p-5 border border-gray-700/50">
-                      <h3 className="text-base md:text-xl font-bold mb-2 md:mb-3 text-blue-300">3. Micro-Level Decision Handling</h3>
+                      <h3 className="text-base md:text-xl font-bold mb-2 md:mb-3 text-blue-300">3. Mental Momentum Implementation</h3>
                       <p className="text-xs md:text-sm text-gray-300">
-                        Beyond the AML's general flow, these micro-level decision processes provide additional insight: response
-                        parsing strategy, tool selection orchestration, error classification system, conversation management,
-                        and LLM-specific optimizations.
+                        The Mental Momentum feature biases the reflection threshold upward during periods of smooth operational progress, reducing
+                        unnecessary cognitive overhead. When the error rate or failure metrics rise, the momentum bias decreases, allowing
+                        for more frequent reflections and meta-cognitive operations.
                       </p>
                     </div>
 
@@ -1525,10 +1600,11 @@ const EideticEngineWebsite = () => {
                     </div>
 
                     <div className="bg-gray-800/80 rounded-lg p-4 md:p-5 border border-gray-700/50">
-                      <h3 className="text-base md:text-xl font-bold mb-2 md:mb-3 text-blue-300">5. Micro-Task Case Studies</h3>
+                      <h3 className="text-base md:text-xl font-bold mb-2 md:mb-3 text-blue-300">5. Goal Stack Implementation Details</h3>
                       <p className="text-xs md:text-sm text-gray-300">
-                        Detailed micro-task examples revealing EideticEngine's operation at a granular level: knowledge integration
-                        challenge, dynamic planning adaptation, and long-duration task management.
+                        The hierarchical Goal Stack enables disciplined task decomposition while maintaining focus. Parent goals are paused while
+                        sub-goals are active, and resume when sub-goals complete. This matches human executive function patterns and prevents
+                        the common agent failure mode of "goal forgetting" or "goal dilution."
                       </p>
                     </div>
 
@@ -1564,51 +1640,8 @@ const EideticEngineWebsite = () => {
           </div>
         </main>
       </div>
-
-      {/* Optional: Mobile Navigation Overlay */}
-      {/* Adds a dark overlay when mobile nav is open */}
-      {showNavigation && window.innerWidth < 768 && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={() => setShowNavigation(false)}
-          aria-hidden="true"
-        ></div>
-      )}
     </div>
   );
 };
-
-// Simple scrollbar utility classes if not using a plugin
-const scrollbarStyles = `
-  /* Simple scrollbar for webkit browsers */
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent; /* Or gray-800/50 */
-  }
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: rgba(107, 114, 128, 0.7); /* gray-500 */
-    border-radius: 20px;
-    border: 3px solid transparent; /* Creates padding around thumb */
-  }
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(156, 163, 175, 0.8); /* gray-400 */
-  }
-
-  /* For Firefox */
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(107, 114, 128, 0.7) transparent; /* thumb track */
-  }
-`;
-
-// Inject scrollbar styles (alternative to Tailwind plugin if needed)
-const styleSheet = document.createElement("style");
-styleSheet.type = "text/css";
-styleSheet.innerText = scrollbarStyles;
-document.head.appendChild(styleSheet);
-
 
 export default EideticEngineWebsite;
