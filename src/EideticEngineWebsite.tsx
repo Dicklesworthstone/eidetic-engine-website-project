@@ -6,8 +6,6 @@ import Sidebar from './components/Sidebar';
 import MobileNavToggle from './components/MobileNavToggle';
 import FloatingNavigation from './components/FloatingNavigation';
 import Footer from './components/Footer';
-import Analytics from './components/Analytics';
-// Import custom scrollbar styles
 import './styles/scrollbars.css';
 
 // Main App Component
