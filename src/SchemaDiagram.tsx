@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import ReactECharts from 'echarts-for-react';
-import dagre from 'dagre';
-import { Database, GitBranch, Link2, Server, Tag } from 'lucide-react';
+import { Database, GitBranch, Link2, Tag } from 'lucide-react';
 
 /*──────────────── schema ────────────────*/
 const tables = [
@@ -86,146 +85,74 @@ const domainDescriptions: Record<string, string> = {
     Tag: 'Classification and taxonomy system'
 };
 
-/*──────── dagre → echarts data ────────*/
-function buildGraph() {
-    // Create a new graph with increased spacing
-    const g = new (dagre as any).graphlib.Graph()
-        .setGraph({
-            rankdir: 'LR', // Left-to-right layout
-            nodesep: 260,  // Increased from 220
-            ranksep: 240,  // Increased from 200
-            marginx: 100,  // Increased from 80
-            marginy: 100,  // Increased from 70
-            acyclicer: 'greedy',
-            ranker: 'network-simplex'
-        })
-        .setDefaultEdgeLabel(() => ({}));
+/*──────── Build Graph Data (Force Layout) ────────*/
+function buildGraph(nodesWithPositions?: any[]) {
+    const W = 180, H = 50; // Increased node size to reduce overlap
 
-    const W = 170, H = 45;
+    // Use provided positions if available, otherwise build initial structure for force layout
+    const nodes = nodesWithPositions ? nodesWithPositions.map((node: any) => ({ ...node })) // Create copy if positions exist
+        : tables.map(id => {
+            const domainCategory = domain(id);
+            const colors = palette[domainCategory];
 
-    tables.forEach(id => g.setNode(id, { width: W, height: H }));
-    fk.forEach(([s, t]) => g.setEdge(s, t));
-    dagre.layout(g);
+            // Slightly adjust sizes based on role for visual hierarchy in force layout
+            let size = [W, H] as [number, number];
+            if (['workflows', 'actions', 'artifacts', 'memories'].includes(id)) {
+                size = [W * 1.15, H * 1.15]; // Slightly larger for key tables
+            } else if (['tags', 'thought_chains', 'embeddings'].includes(id)) {
+                size = [W * 1.05, H * 1.05]; // Slightly larger for secondary tables
+            }
 
-    // Improved positions with better distribution and hierarchy
-    const manualPositions: Record<string, { x: number, y: number }> = {
-        // Memory domain (blue) - left side, more vertical spread
-        'memory_links': { x: 180, y: 180 },
-        'memories': { x: 180, y: 280 },
-        'embeddings': { x: 180, y: 380 },
-        'memory_operations': { x: 180, y: 480 },
-        'cognitive_states': { x: 180, y: 580 },
-
-        // Thought domain (green) - middle-left, more vertical spread
-        'thought_chains': { x: 460, y: 180 },
-        'thoughts': { x: 460, y: 280 },
-        'reflections': { x: 460, y: 380 },
-        
-        // Workflow domain (purple) - middle
-        'workflows': { x: 690, y: 220 },
-
-        // Action domain (orange) - middle-right
-        'actions': { x: 940, y: 180 },
-        'dependencies': { x: 940, y: 280 },
-        
-        // Artifact domain (pink) - far right
-        'artifacts': { x: 1200, y: 220 },
-        
-        // Tag domain (yellow) - spread horizontally at bottom to prevent overlaps
-        'tags': { x: 690, y: 480 },
-        'workflow_tags': { x: 460, y: 580 },
-        'action_tags': { x: 690, y: 580 },
-        'artifact_tags': { x: 940, y: 580 }
-    };
-
-    const nodes = tables.map(id => {
-        // Use the manual position if available, otherwise use the dagre layout
-        const { x: dagreX, y: dagreY } = g.node(id);
-
-        // Use the manual positions directly
-        const x = manualPositions[id].x;
-        const y = manualPositions[id].y;
-
-        const domainCategory = domain(id);
-        const colors = palette[domainCategory];
-        
-        // Determine node importance/size based on its role in the schema
-        // Make primary tables significantly larger for visual hierarchy
-        let size = [W, H] as [number, number];
-        if (['workflows', 'actions', 'artifacts', 'memories'].includes(id)) {
-            size = [W * 1.25, H * 1.25]; // 25% larger for key tables (increased from 15%)
-        } else if (['tags', 'thought_chains', 'embeddings'].includes(id)) {
-            size = [W * 1.12, H * 1.12]; // 12% larger for secondary tables (increased from 5%)
-        }
-
-        return {
-            id,
-            name: id,
-            x, y,
-            symbol: 'roundRect',
-            symbolSize: size,
-            domainCategory,
-            itemStyle: {
-                color: 'rgba(15, 21, 36, 0.95)',
-                borderColor: colors.primary,
-                borderWidth: 2,
-                shadowBlur: 20,
-                shadowColor: colors.glow,
-                borderRadius: 18,
-            },
-            label: {
-                show: true,
-                position: 'inside',
-                formatter: '{b}',
-                color: '#f8fafc',
-                fontSize: ['workflows', 'actions', 'artifacts', 'memories'].includes(id) ? 15 : 14,
-                fontWeight: 'bold',
-                fontFamily: 'Inter, system-ui, sans-serif',
-                textShadow: '0 1px 3px rgba(0, 0, 0, 0.4)',
-            },
-        };
-    });
+            return {
+                id,
+                name: id,
+                // x, y initially undefined for force layout
+                symbol: 'roundRect',
+                symbolSize: size,
+                category: domainCategory, // Use category for grouping/styling if needed
+                domainCategory, // Keep for tooltips etc.
+                itemStyle: {
+                    color: 'rgba(15, 21, 36, 0.95)',
+                    borderColor: colors.primary,
+                    borderWidth: 2,
+                    shadowBlur: 15, // Slightly reduced blur
+                    shadowColor: colors.glow,
+                    borderRadius: 18,
+                },
+                label: {
+                    show: true,
+                    position: 'inside',
+                    formatter: '{b}',
+                    color: '#f8fafc',
+                    fontSize: ['workflows', 'actions', 'artifacts', 'memories'].includes(id) ? 15 : 14,
+                    fontWeight: 'bold',
+                    fontFamily: 'Inter, system-ui, sans-serif',
+                    textShadow: '0 1px 3px rgba(0, 0, 0, 0.4)',
+                },
+            };
+        });
 
     const edges = fk.map(([s, t]) => {
         const sourceDomain = domain(s);
         const targetDomain = domain(t);
         const isSameDomain = sourceDomain === targetDomain;
-
-        // Calculate a custom curveness value based on node positions
-        const sourcePos = manualPositions[s];
-        const targetPos = manualPositions[t];
-        
-        // Determine if the connection is crossing domains
         const isDomainCrossing = sourceDomain !== targetDomain;
-        
-        // Adjust curveness based on horizontal and vertical distance
-        const dx = Math.abs(sourcePos.x - targetPos.x);
-        const dy = Math.abs(sourcePos.y - targetPos.y);
-        
-        // Higher curveness for longer horizontal distances or domain crossing
-        // Lower curveness for more vertical connections
-        let curveness = 0.2;
-        if (dx > 400) curveness = 0.4;
-        else if (dx > 200) curveness = 0.3;
-        
-        // Increase curveness for domain crossing connections
-        if (isDomainCrossing) curveness += 0.1;
-        
+
         return {
             source: s,
             target: t,
-            sourceDomain,
-            targetDomain,
+            sourceDomain, // Keep for styling/emphasis
+            targetDomain, // Keep for styling/emphasis
             lineStyle: {
                 color: isSameDomain
                     ? palette[sourceDomain].primary
-                    : 'gradient',
+                    : '#94a3b8',            // Neutral gray for cross-domain edges
                 width: 1.5,
-                opacity: isDomainCrossing ? 0.5 : 0.7, // Lower opacity for cross-domain connections
-                curveness: curveness,
-                shadowBlur: isDomainCrossing ? 4 : 6,
-                shadowColor: isSameDomain ? palette[sourceDomain].glow : 'rgba(148, 163, 184, 0.3)',
-                type: isDomainCrossing ? [5, 10] : 'solid'
+                opacity: isDomainCrossing ? 0.4 : 0.7,
+                curveness: 0.12,           // Mild curveness to visually distinguish edges
+                shadowBlur: 2,             // Minimal shadow
+                shadowColor: 'rgba(0, 0, 0, 0.3)',
+                type: isDomainCrossing ? 'dashed' : 'solid' // Solid edges for same domain clarity
             },
             symbol: ['none', 'arrow'],
             symbolSize: 8,
@@ -237,139 +164,160 @@ function buildGraph() {
 
 /*──────────────── component ────────────────*/
 export default function DatabaseSchemaDiagram() {
+    // Store the fixed node positions in localStorage to persist between renders
     const [selectedNode, setSelectedNode] = useState<string | null>(null);
     const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+    const [positionedNodes, setPositionedNodes] = useState<any[] | null>(null);
     const [relatedEdges, setRelatedEdges] = useState<Array<[string, string]>>([]);
     const chartRef = useRef<ReactECharts>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [isAnimating, setIsAnimating] = useState(false);
-    // Add debounce timer ref to reduce flickering
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const [isLayoutFixed, setIsLayoutFixed] = useState(false);
+    
+    // Store whether layout is finished in a ref to avoid re-renders
+    const layoutFinishedRef = useRef(false);
 
-    const { nodes, edges } = useMemo(buildGraph, []);
+    // Initial graph build only once
+    const initialGraph = useMemo(() => buildGraph(), []);
 
-    // Effect to create animated particles in the background
+    // Try to load saved positions from localStorage on mount
     useEffect(() => {
-        if (!containerRef.current) return;
-
-        // Create ambient particles
-        const container = containerRef.current;
-        const particlesCount = Math.min(Math.floor(container.clientWidth / 100), 15);
-
-        for (let i = 0; i < particlesCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'absolute rounded-full bg-white/10 pointer-events-none';
-
-            // Random size between 4px and 12px
-            const size = 4 + Math.random() * 8;
-            particle.style.width = `${size}px`;
-            particle.style.height = `${size}px`;
-
-            // Random position
-            particle.style.left = `${Math.random() * 100}%`;
-            particle.style.top = `${Math.random() * 100}%`;
-
-            // Random opacity
-            particle.style.opacity = `${0.05 + Math.random() * 0.1}`;
-
-            // Animation with random duration and delay
-            particle.style.animation = `float ${15 + Math.random() * 15}s ease-in-out infinite`;
-            particle.style.animationDelay = `${-Math.random() * 10}s`;
-
-            container.appendChild(particle);
-        }
-
-        return () => {
-            // Clean up particles
-            const particles = container.querySelectorAll('.bg-white\\/10');
-            particles.forEach(p => p.remove());
-        };
+        // Clear any existing saved positions to ensure a fresh start every time
+        localStorage.removeItem('databaseSchemaNodePositions');
+        setPositionedNodes(null);
+        layoutFinishedRef.current = false;
     }, []);
 
-    // Calculate relationships for the selected node
+    // Capture node positions after force layout and store in localStorage
+    const capturePositions = useCallback(() => {
+        const chartInstance = chartRef.current?.getEchartsInstance();
+        if (!chartInstance) return;
+        
+        console.log('Capturing node positions...');
+        
+        try {
+            const model = chartInstance['getModel']();
+            const series = model.getSeriesByIndex(0);
+            const nodeData = series.getData();
+            
+            const currentNodes = initialGraph.nodes.map((node: any, index: number) => {
+                const layout = nodeData.getItemLayout(index);
+                if (!layout) return node; // Skip if layout not available
+                
+                return {
+                    ...node,
+                    x: layout[0],
+                    y: layout[1],
+                    // Don't set fixed to true so force layout can still move nodes
+                    // but initialize with these positions
+                };
+            });
+            
+            // Save nodes with positions to localStorage
+            localStorage.setItem('databaseSchemaNodePositions', JSON.stringify(currentNodes));
+            
+            setPositionedNodes(currentNodes);
+            layoutFinishedRef.current = true; // Mark that initial positioning is done
+            
+            console.log('Node positions captured and saved.');
+        } catch (e) {
+            console.error('Error capturing positions:', e);
+        }
+    }, [initialGraph.nodes]);
+
+    // Effect to capture initial layout
+    useEffect(() => {
+        if (layoutFinishedRef.current || positionedNodes) return; // Skip if already initialized
+        
+        const chartInstance = chartRef.current?.getEchartsInstance();
+        if (!chartInstance) return;
+        
+        console.log('Attaching force layout finished listener');
+        
+        const onFinished = () => {
+            console.log('Force layout finished event fired');
+            // Use setTimeout to ensure layout is truly complete
+            setTimeout(() => {
+                // Capture initial positions but keep force layout active
+                capturePositions();
+            }, 500);
+        };
+        
+        chartInstance.on('finished', onFinished);
+        
+        // Also set a backup timer in case 'finished' event doesn't fire
+        const backupTimer = setTimeout(() => {
+            console.log('Backup timer fired to capture positions');
+            if (!layoutFinishedRef.current) {
+                capturePositions();
+            }
+        }, 5000);
+        
+        return () => {
+            chartInstance.off('finished', onFinished);
+            clearTimeout(backupTimer);
+        };
+    }, [capturePositions, positionedNodes]);
+
+    // Calculate relationships for the selected node (memoized to avoid recalculation)
     useEffect(() => {
         if (!selectedNode) {
             setRelatedEdges([]);
             return;
         }
 
-        const related = edges.filter(edge =>
+        const related = initialGraph.edges.filter(edge =>
             edge.source === selectedNode || edge.target === selectedNode
         ).map(edge => [edge.source, edge.target] as [string, string]);
 
         setRelatedEdges(related);
-    }, [selectedNode, edges]);
+    }, [selectedNode, initialGraph.edges]);
 
-    // Play animation effect when node is clicked
+    // Animation effect when node is clicked
     useEffect(() => {
-        if (!selectedNode || !chartRef.current) return;
+        if (!selectedNode) return;
 
         setIsAnimating(true);
-
-        const timer = setTimeout(() => {
-            setIsAnimating(false);
-            
-            // After animation completes, ensure the selected node is centered
-            if (chartRef.current) {
-                const echartsInstance = chartRef.current.getEchartsInstance();
-                
-                // Find the selected node to center it
-                const selectedNodeData = nodes.find(node => node.id === selectedNode);
-                if (selectedNodeData) {
-                    echartsInstance.dispatchAction({
-                        type: 'graphRoam',
-                        zoom: 1.1,
-                        center: [selectedNodeData.x, selectedNodeData.y]
-                    });
-                }
-            }
-        }, 800);
+        const timer = setTimeout(() => setIsAnimating(false), 800);
 
         return () => clearTimeout(timer);
-    }, [selectedNode, nodes]);
+    }, [selectedNode]);
 
-    const handleNodeClick = (nodeId: string) => {
+    // Improve debounced node hover handling
+    const handleNodeHover = useCallback((nodeId: string | null) => {
+        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = setTimeout(() => setHoveredNode(nodeId), 100);
+    }, []);
+
+    // Node click handler
+    const handleNodeClick = useCallback((nodeId: string) => {
         setSelectedNode(prev => prev === nodeId ? null : nodeId);
-    };
+    }, []);
 
-    const handleNodeHover = (nodeId: string | null) => {
-        // Clear any existing timer
-        if (debounceTimerRef.current) {
-            clearTimeout(debounceTimerRef.current);
-        }
-
-        // Set a debounce timer to prevent rapid state changes (flickering)
-        debounceTimerRef.current = setTimeout(() => {
-            setHoveredNode(nodeId);
-        }, 50);
-    };
-
-    const option = {
-        backgroundColor: 'transparent',
-        graphic: [
-            {
-                type: 'group',
-                draggable: false,
-                top: 'center',
-                left: 'center',
-                width: '100%',
-                height: '100%',
-                children: [
-                    {
-                        type: 'rect',
-                        left: 0,
-                        top: 0,
-                        shape: { width: '100%', height: '100%' },
-                        style: {
-                            fill: 'transparent',
-                            stroke: 'rgba(148, 163, 184, 0.05)', // Reduced visibility of background grid
-                            strokeWidth: 1,
-                            lineWidth: 1,
-                        }
-                    }
-                ]
+    // Reset button to clear saved layout
+    const resetLayout = useCallback(() => {
+        // Clear localStorage
+        localStorage.removeItem('databaseSchemaNodePositions');
+        // Reset state
+        setPositionedNodes(null);
+        layoutFinishedRef.current = false;
+        
+        // Force a re-render of the chart with fresh layout
+        if (chartRef.current) {
+            const instance = chartRef.current.getEchartsInstance();
+            if (instance) {
+                instance.clear();
+                instance.setOption(option, true);
             }
-        ],
+        }
+        
+        console.log('Layout reset, will generate new force layout');
+    }, []);  // Removed option from dependency array to avoid circular reference
+
+    // Memoize chart options to prevent unnecessary updates
+    const option = useMemo(() => ({
+        backgroundColor: 'transparent',
         tooltip: {
             show: true,
             formatter: (params: any) => {
@@ -410,20 +358,20 @@ export default function DatabaseSchemaDiagram() {
         },
         legend: {
             show: true,
-            top: 25,  // Higher up
+            top: 15,
             left: 'center',
             orient: 'horizontal',
-            itemGap: 20, // Reduced from 30
-            itemWidth: 20, // Reduced from 28
-            itemHeight: 12, // Reduced from 16
-            borderRadius: 6, // Reduced from 8
-            padding: [6, 15, 6, 15], // Reduced padding
+            itemGap: 20,
+            itemWidth: 20,
+            itemHeight: 12,
+            borderRadius: 6,
+            padding: [6, 15, 6, 15],
             backgroundColor: 'rgba(15, 23, 42, 0.8)',
             borderWidth: 1,
             borderColor: 'rgba(148, 163, 184, 0.2)',
             textStyle: {
                 color: '#f8fafc',
-                fontSize: 12, // Reduced from 14
+                fontSize: 12,
                 fontFamily: 'Inter, system-ui, sans-serif',
             },
             data: Object.keys(domainDescriptions).map(domain => ({
@@ -439,23 +387,47 @@ export default function DatabaseSchemaDiagram() {
         },
         series: [{
             type: 'graph',
-            layout: 'none',
-            data: nodes,
-            edges,
+            // Always use force layout, even with positioned nodes
+            layout: 'force',
+            // Use positioned nodes when available, otherwise use initial nodes
+            data: positionedNodes || initialGraph.nodes,
+            edges: initialGraph.edges,
+            categories: Object.keys(palette).map(domain => ({
+                name: domain,
+                itemStyle: {
+                    borderColor: palette[domain].primary,
+                    color: 'rgba(15, 23, 42, 0.9)',
+                }
+            })),
+            force: {
+                repulsion: 2500,      // Dramatically increased repulsion to push nodes apart
+                edgeLength: [350, 400], // Much longer edges for better spacing
+                gravity: 0.005,       // Minimal gravity to prevent center clustering
+                friction: 0.7,        // Lower friction to allow nodes to move more freely
+                layoutAnimation: true,
+                initLayout: positionedNodes ? false : true,
+                damping: 0.5,         // Less damping to allow nodes to move more freely
+            },
             roam: true,
-            zoom: 0.4,      // Further reduced zoom to use more of the canvas
-            center: [690, 390],  // Centered in available space
-            nodeScaleRatio: 0.5,
+            progressiveThreshold: 5,
+            // Increased zoom level for a wider initial view
+            zoom: 0.5,
+            center: undefined,
+            nodeScaleRatio: 0.6,
             focusNodeAdjacency: true,
-            draggable: false,
+            draggable: true,
             label: {
                 show: true,
                 position: 'inside',
+                fontSize: 13,
+                fontWeight: '600',
+                color: '#ffffff',
+                textShadowColor: 'rgba(0,0,0,0.8)',
+                textShadowBlur: 3,
                 formatter: '{b}',
-                fontSize: 14,
-                color: '#f8fafc',
-                fontWeight: 'bold',
-                fontFamily: 'Inter, system-ui, sans-serif',
+                // Add label overlap avoidance
+                overflow: 'truncate',  // Truncate text if needed
+                avoidLabelOverlap: true, // Try to avoid label overlap
             },
             edgeLabel: {
                 show: false,
@@ -465,35 +437,30 @@ export default function DatabaseSchemaDiagram() {
             lineStyle: {
                 width: 1.5,
                 opacity: 0.6,
-                curveness: 0.5, // Increased from 0.4 to reduce edge crossings
+                curveness: 0.15,
             },
-            categories: Object.keys(palette).map(domain => ({
-                name: domain,
-                itemStyle: {
-                    borderColor: palette[domain].primary,
-                    color: 'rgba(15, 23, 42, 0.9)',
-                }
-            })),
             blur: {
                 itemStyle: { opacity: selectedNode ? 0.15 : 0.8 },
                 lineStyle: { opacity: selectedNode ? 0.06 : 0.4 },
             },
+            // Animation configuration - slower, smoother animations
             animation: true,
-            animationDuration: 400,  // Faster animation to reduce flickering
-            animationEasingUpdate: 'cubicOut', // Changed from elasticOut to reduce bounce
-            animationThreshold: 50,  // Higher threshold to avoid animating small changes
-            hoverAnimation: false,   // Disable hover animation that can cause flickering
+            animationDuration: 500,      // Increased from 300 for smoother transitions
+            animationEasingUpdate: 'cubicInOut', // Changed from cubicOut for smoother transitions
+            animationThreshold: 200,     // Higher threshold to avoid animating small changes
+            animationDurationUpdate: 500, // Match the duration for consistency
+            hoverAnimation: false,       // Disable hover animation for stability
             selectedMode: 'single',
+            progressive: 0,
             select: {
                 disabled: false,
                 itemStyle: {
-                    shadowBlur: 25,
-                    borderWidth: 3,
-                    borderColor: (params: any) => {
-                        const domain = params.data.domainCategory;
-                        return palette[domain].primary;
-                    },
-                    color: 'rgba(17, 24, 39, 0.95)',
+                    color: 'rgba(20, 30, 50, 0.9)',
+                    borderWidth: 2,
+                    borderRadius: 12,
+                    borderColor: (params: any) => palette[params.data.domainCategory].primary,
+                    shadowBlur: 10,
+                    shadowColor: (params: any) => palette[params.data.domainCategory].glow,
                 },
                 label: {
                     color: '#ffffff',
@@ -504,47 +471,46 @@ export default function DatabaseSchemaDiagram() {
             },
             emphasis: {
                 focus: 'adjacency',
-                scale: false,
+                scale: 1.02,           // Reduced scale effect (was 1.05)
                 blurScope: 'global',
                 itemStyle: {
-                    borderWidth: 3,
-                    shadowBlur: 25,
+                    borderWidth: 2.5,  // Reduced from 3
+                    shadowBlur: 18,    // Reduced from 25
                     shadowColor: (params: any) => {
                         const domain = params.data.domainCategory;
                         return palette[domain].glow;
                     },
                 },
                 lineStyle: {
-                    width: 3, // Increased from 2.5
+                    width: 2.5,        // Reduced from 3
                     color: (params: any) => {
                         // Get source and target domains
                         const sourceDomain = params.data.sourceDomain;
                         const targetDomain = params.data.targetDomain;
-                        
+
                         // If same domain, use domain color, otherwise use white
-                        return sourceDomain === targetDomain ? 
+                        return sourceDomain === targetDomain ?
                             palette[sourceDomain].primary : '#f1f5f9';
                     },
-                    opacity: 0.9, // Increased from 0.8
-                    shadowBlur: 15, // Increased from 12
-                    shadowColor: 'rgba(255, 255, 255, 0.4)', // Brighter shadow
-                    type: 'solid', // Always solid for emphasized edges
+                    opacity: 0.8,      // Reduced from 0.9
+                    shadowBlur: 10,    // Reduced from 15
+                    shadowColor: 'rgba(255, 255, 255, 0.3)', // Reduced brightness
+                    type: 'solid',     // Always solid for emphasized edges
                 },
             },
         }],
-        // Enhanced visual mapping for edges
         visualMap: {
             show: false,
-            dimension: 2, // apply to the third dimension (which contains custom data)
+            dimension: 2,
             seriesIndex: 0,
             inRange: {
                 color: ['#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#22c55e', '#eab308'],
             }
         },
-    };
+    }), [positionedNodes, initialGraph.nodes, initialGraph.edges, selectedNode, hoveredNode]);
 
-    // Event handlers for the ECharts instance
-    const onEvents = {
+    // Event handlers for the ECharts instance - memoized to prevent recreating on every render
+    const onEvents = useMemo(() => ({
         'click': (params: any) => {
             if (params.dataType === 'node') {
                 handleNodeClick(params.data.id);
@@ -556,15 +522,63 @@ export default function DatabaseSchemaDiagram() {
             }
         },
         'mouseout': () => {
-            // Use debounce for mouseout too
             if (debounceTimerRef.current) {
                 clearTimeout(debounceTimerRef.current);
             }
             debounceTimerRef.current = setTimeout(() => {
                 handleNodeHover(null);
             }, 50);
+        },
+        // Periodically save node positions during force layout
+        'graphroam': () => {
+            if (layoutFinishedRef.current) { // Only save after initial layout is done
+                if (debounceTimerRef.current !== null) {
+                    clearTimeout(debounceTimerRef.current);
+                }
+                debounceTimerRef.current = setTimeout(() => {
+                    capturePositions();
+                }, 1000);
+            }
         }
-    };
+    }), [handleNodeClick, handleNodeHover, capturePositions]);
+
+    // Effect to create animated particles in the background
+    useEffect(() => {
+        if (!containerRef.current) return;
+
+        // Create ambient particles
+        const container = containerRef.current;
+        const particlesCount = Math.min(Math.floor(container.clientWidth / 100), 15);
+
+        for (let i = 0; i < particlesCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'absolute rounded-full bg-white/10 pointer-events-none';
+
+            // Random size between 4px and 12px
+            const size = 4 + Math.random() * 8;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+
+            // Random position
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+
+            // Random opacity
+            particle.style.opacity = `${0.05 + Math.random() * 0.1}`;
+
+            // Animation with random duration and delay
+            particle.style.animation = `float ${15 + Math.random() * 15}s ease-in-out infinite`;
+            particle.style.animationDelay = `${-Math.random() * 10}s`;
+
+            container.appendChild(particle);
+        }
+
+        return () => {
+            // Clean up particles
+            const particles = container.querySelectorAll('.bg-white\\/10');
+            particles.forEach(p => p.remove());
+        };
+    }, []);
 
     return (
         <div
@@ -577,30 +591,8 @@ export default function DatabaseSchemaDiagram() {
                 <div className="w-full h-full bg-grid-white/5 bg-[size:20px_20px]"></div>
             </div>
 
-            {/* Visual cues for better navigation */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/2 left-[180px] h-[600px] w-[1px] bg-blue-500/15 transform -translate-y-1/2"></div>
-                <div className="absolute top-1/2 left-[460px] h-[600px] w-[1px] bg-green-500/15 transform -translate-y-1/2"></div>
-                <div className="absolute top-1/2 left-[690px] h-[600px] w-[1px] bg-purple-500/15 transform -translate-y-1/2"></div>
-                <div className="absolute top-1/2 left-[940px] h-[600px] w-[1px] bg-orange-500/15 transform -translate-y-1/2"></div>
-                <div className="absolute top-1/2 left-[1200px] h-[600px] w-[1px] bg-pink-500/15 transform -translate-y-1/2"></div>
-                
-                {/* Domain group labels */}
-                <div className="absolute top-[130px] left-[180px] text-blue-400/90 text-sm font-semibold transform -translate-x-1/2">Memory</div>
-                <div className="absolute top-[130px] left-[460px] text-green-400/90 text-sm font-semibold transform -translate-x-1/2">Thought</div>
-                <div className="absolute top-[130px] left-[690px] text-purple-400/90 text-sm font-semibold transform -translate-x-1/2">Workflow</div>
-                <div className="absolute top-[130px] left-[940px] text-orange-400/90 text-sm font-semibold transform -translate-x-1/2">Action</div>
-                <div className="absolute top-[130px] left-[1200px] text-pink-400/90 text-sm font-semibold transform -translate-x-1/2">Artifact</div>
-            </div>
-
-            {/* Ambient particles - Reduced opacity to decrease visual competition */}
-            
             {/* Title */}
             <div className="absolute top-0 left-0 p-4 z-20">
-                <h2 className="text-xl font-bold text-blue-300 flex items-center">
-                    <Server className="w-5 h-5 mr-2 text-blue-400" />
-                    <span>Database Schema Diagram</span>
-                </h2>
                 <p className="text-sm text-slate-400 mt-1 max-w-md">
                     Interactive visualization of the Unified Memory System database schema with relational links
                 </p>
@@ -613,17 +605,29 @@ export default function DatabaseSchemaDiagram() {
                 onEvents={onEvents}
                 style={{
                     width: '100%',
-                    height: '100%', 
+                    height: '100%',
                     minHeight: '750px',
-                    paddingTop: '70px',  // Reduced to use more vertical space
+                    paddingTop: '70px',
                     paddingBottom: '80px',
                     transition: 'all 0.3s ease-out',
                     filter: isAnimating ? 'brightness(1.1)' : 'none',
+                    position: 'relative',
+                    zIndex: 10,
+                    pointerEvents: selectedNode ? 'none' : 'auto', // Disable pointer events when node is selected
                 }}
-                notMerge={true}
-                lazyUpdate={false}
+                lazyUpdate={true}
+                notMerge={false}
                 className={`${isAnimating ? 'animate-pulse' : ''}`}
             />
+
+            {/* Overlay div to handle click-away from selected node */}
+            {selectedNode && (
+                <div
+                    onClick={() => setSelectedNode(null)}
+                    className="absolute inset-0 cursor-pointer z-20"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.01)' }} // Nearly invisible but still clickable
+                />
+            )}
 
             {/* Move stats panel back to bottom and center */}
             <div className="absolute bottom-5 left-0 right-0 flex justify-center">
@@ -635,7 +639,7 @@ export default function DatabaseSchemaDiagram() {
                         </div>
                         <div className="flex items-center">
                             <Link2 className="w-5 h-5 text-purple-400 mr-2" />
-                            <span className="text-sm text-slate-200 whitespace-nowrap">{edges.length} Relationships</span>
+                            <span className="text-sm text-slate-200 whitespace-nowrap">{initialGraph.edges.length} Relationships</span>
                         </div>
                         <div className="flex items-center">
                             <GitBranch className="w-5 h-5 text-green-400 mr-2" />
@@ -651,7 +655,7 @@ export default function DatabaseSchemaDiagram() {
 
             {/* Selected Node Info Panel - Enhanced with more information */}
             {selectedNode && (
-                <div className="absolute bottom-24 right-5 bg-slate-900/90 backdrop-blur-sm p-5 rounded-lg border border-slate-700/50 z-10 shadow-xl max-w-sm transform transition-all duration-300 ease-in-out">
+                <div className="absolute bottom-24 right-5 bg-slate-900/90 backdrop-blur-sm p-5 rounded-lg border border-slate-700/50 z-30 shadow-xl max-w-sm transform transition-all duration-300 ease-in-out">
                     <div className="flex items-center justify-between mb-3">
                         <h3 className="font-bold text-white text-lg flex items-center">
                             {(() => {
@@ -702,7 +706,7 @@ export default function DatabaseSchemaDiagram() {
                                         const relationLabel = isParent ? "References →" : "← Referenced by";
                                         const relatedNode = isParent ? target : source;
                                         const relatedDomain = domain(relatedNode);
-                                        
+
                                         // Get appropriate color for the related domain
                                         let dotColor = '#3b82f6'; // Default blue
                                         switch (relatedDomain) {
@@ -712,11 +716,11 @@ export default function DatabaseSchemaDiagram() {
                                             case 'Thought': dotColor = '#22c55e'; break;
                                             case 'Tag': dotColor = '#eab308'; break;
                                         }
-                                        
+
                                         return (
                                             <li key={idx} className="text-sm flex items-center justify-between px-1 py-1 hover:bg-slate-800/30 rounded">
                                                 <span className="flex items-center">
-                                                    <span 
+                                                    <span
                                                         className="inline-block w-3 h-3 rounded-full mr-2"
                                                         style={{ backgroundColor: dotColor }}
                                                     ></span>
@@ -730,9 +734,14 @@ export default function DatabaseSchemaDiagram() {
                             </div>
                         </div>
                     )}
-                    
+
                     <div className="mt-4 pt-2 border-t border-slate-800/70 flex items-center justify-between">
-                        <span className="text-xs text-slate-500">Click anywhere to deselect</span>
+                        <button 
+                            onClick={() => setSelectedNode(null)}
+                            className="text-xs text-slate-400 hover:text-white hover:bg-slate-800 px-2 py-1 rounded transition-colors"
+                        >
+                            Click to close
+                        </button>
                         <span className="text-xs text-slate-400">Table ID: <span className="text-slate-300 font-mono">{selectedNode}</span></span>
                     </div>
                 </div>

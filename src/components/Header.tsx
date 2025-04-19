@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Brain, Map } from 'lucide-react';
 import '../styles/scrollbars.css';
 
@@ -9,9 +9,13 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ showNavigation, setShowNavigation, scrollProgress }) => {
-    const toggleNavFromHeader = () => {
+    const toggleNavWithHaptic = useCallback(() => {
+        // Add haptic feedback if supported
+        if (navigator.vibrate) {
+            navigator.vibrate(50);
+        }
         setShowNavigation(!showNavigation);
-    };
+    }, [showNavigation, setShowNavigation]);
 
     return (
         <header className="fixed top-0 left-0 right-0 bg-gray-900/90 backdrop-blur-sm z-40 shadow-xl border-b border-gray-800">
@@ -36,10 +40,10 @@ const Header: React.FC<HeaderProps> = ({ showNavigation, setShowNavigation, scro
                 </a>
                 <div className="flex">
                     <button
-                        onClick={toggleNavFromHeader}
-                        className="px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors flex items-center text-sm"
+                        onClick={toggleNavWithHaptic}
+                        className="min-h-[44px] px-4 py-2.5 md:px-4 md:py-2 rounded-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 transition-colors flex items-center text-sm touch-manipulation"
                     >
-                        {showNavigation ? 'Hide' : 'Show'} <span className="hidden sm:inline ml-1">Nav</span> <Map className="ml-1.5 w-4 h-4" />
+                        {showNavigation ? 'Hide' : 'Show'} <span className="hidden xs:inline ml-1">Nav</span> <Map className="ml-1.5 w-4 h-4" />
                     </button>
                 </div>
             </div>

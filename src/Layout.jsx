@@ -27,19 +27,26 @@ export default function Layout() {
 
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 bg-gray-900/90 backdrop-blur-sm z-40 shadow-xl border-b border-gray-800">
-        <div className="container mx-auto px-4 py-3 flex items-center">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center">
           <Link to="/" className="flex items-center">
-            <Brain className="w-8 h-8 text-blue-500 mr-2" />
-            <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 whitespace-nowrap">
+            <Brain className="w-7 sm:w-8 h-7 sm:h-8 text-blue-500 mr-2" />
+            <h1 className="text-lg sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 whitespace-nowrap">
               EideticEngine
             </h1>
           </Link>
         </div>
       </header>
 
+      {/* Mobile Overlay - only visible when sidebar is open on mobile */}
+      <div 
+        className="fixed inset-0 bg-black/50 z-30 md:hidden transition-opacity duration-300"
+        style={{ opacity: window.innerWidth < 768 ? 1 : 0, pointerEvents: window.innerWidth < 768 ? 'auto' : 'none' }}
+        onClick={() => document.dispatchEvent(new CustomEvent('toggle-sidebar', { detail: { show: false } }))}
+      ></div>
+
       {/* Main Content */}
       <main className="pt-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <Outlet />
         </div>
       </main>

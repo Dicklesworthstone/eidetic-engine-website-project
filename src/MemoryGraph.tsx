@@ -473,7 +473,7 @@ const MemoryGraph = () => {
                     <text x={actionX} y={actionY + 52} textAnchor="middle" dominantBaseline="middle" className="label-text fill-yellow-300 font-semibold text-sm" filter="url(#textShadow)">SOURCE</text>
 
                     {/* ABOUT label  */}
-                    <rect x={profileX - 70} y={profileY + 28 } width="70" height="24" rx="12" className="label-bg" fill="rgba(17, 24, 39, 0.85)" />
+                    <rect x={profileX - 70} y={profileY + 28} width="70" height="24" rx="12" className="label-bg" fill="rgba(17, 24, 39, 0.85)" />
                     <text x={profileX - 35} y={profileY + 45} textAnchor="middle" dominantBaseline="middle" className="label-text fill-red-300 font-semibold text-sm" filter="url(#textShadow)">ABOUT</text>
                 </g>
             </svg>

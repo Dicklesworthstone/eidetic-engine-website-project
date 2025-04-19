@@ -17,4 +17,43 @@
 .code-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: rgba(100, 116, 139, 0.2) transparent;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS devices */
+}
+
+/* Larger scrollbars on touch devices for easier touch control */
+@media (pointer: coarse) {
+    .code-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .code-scrollbar::-webkit-scrollbar-thumb {
+        background-color: rgba(100, 116, 139, 0.4);
+    }
+    
+    /* Slightly more visible on touch */
+    .code-scrollbar {
+        scrollbar-width: auto;
+        scrollbar-color: rgba(100, 116, 139, 0.4) transparent;
+    }
+}
+
+/* Horizontal scrolling container for mobile */
+.mobile-scroll-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    white-space: nowrap;
+    width: 100%;
+}
+
+.mobile-scroll-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome/Safari */
+}
+
+/* Touch optimization helper classes */
+.touch-manipulation {
+    touch-action: manipulation; /* Disable double-tap to zoom */
 } 

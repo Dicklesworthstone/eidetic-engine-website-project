@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Aperture, Brain, Cpu, Database, GitBranch, GitMerge, Layers, MessageCircle, Server, UserPlus, Zap, Clock, FileText, RefreshCw, GitCommit, Eye, Award, Bookmark, BarChart2, Map, Code, X, Target, CheckCircle, AlertTriangle, Telescope } from 'lucide-react';
 import MemoryGraph from './MemoryGraph';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import MobileNavToggle from './components/MobileNavToggle';
+import FloatingNavigation from './components/FloatingNavigation';
+import MobileFAB from './components/MobileFAB';
 // Import custom scrollbar styles
 import './styles/scrollbars.css';
 
@@ -13,11 +15,53 @@ const EideticEngineWebsite = () => {
   // Default navigation state: hidden on mobile, shown on desktop
   const [showNavigation, setShowNavigation] = useState(window.innerWidth >= 768);
   const [scrollProgress, setScrollProgress] = useState(0);
-
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const mainContentRef = useRef<HTMLDivElement>(null);
+  
+  // Define navigation items
+  const navItems = [
+    // Added Architecture Visual to nav
+    { id: 'architecture-visual', name: 'Architecture', icon: <Eye className="w-4 h-4" /> },
+    { id: 'abstract', name: 'Abstract', icon: <FileText className="w-4 h-4" /> },
+    { id: 'introduction', name: 'Introduction', icon: <MessageCircle className="w-4 h-4" /> },
+    { id: 'related-work', name: 'Related Work', icon: <GitBranch className="w-4 h-4" /> },
+    { id: 'ums', name: 'Unified Memory System', icon: <Database className="w-4 h-4" /> },
+    { id: 'aml', name: 'Agent Master Loop', icon: <RefreshCw className="w-4 h-4" /> },
+    { id: 'mcp-client', name: 'Ultimate MCP Client', icon: <UserPlus className="w-4 h-4" /> },
+    { id: 'llm-gateway', name: 'Ultimate MCP Server', icon: <Server className="w-4 h-4" /> },
+    { id: 'evaluation', name: 'Evaluation & Cases', icon: <BarChart2 className="w-4 h-4" /> },
+    { id: 'discussion', name: 'Discussion', icon: <GitCommit className="w-4 h-4" /> },
+    { id: 'conclusion', name: 'Conclusion', icon: <Award className="w-4 h-4" /> },
+    { id: 'future-work', name: 'Future Work', icon: <Zap className="w-4 h-4" /> },
+    { id: 'addendum', name: 'Addendum', icon: <Bookmark className="w-4 h-4" /> },
+  ];
+  
+  // Define technical doc links
+  const docLinks = [
+    {
+      href: "/ums-technical-analysis",
+      title: "UMS Technical Analysis",
+      description: "Unified Memory System Deep Dive",
+      icon: <Database className="w-5 h-5 text-blue-300" />,
+      bgColorClass: "from-blue-900/50 to-blue-800/30 hover:from-blue-800/60 hover:to-blue-700/40",
+      textColorClass: "text-blue-300"
+    },
+    {
+      href: "/aml-technical-analysis",
+      title: "AML Technical Analysis",
+      description: "Agent Master Loop Architecture",
+      icon: <RefreshCw className="w-5 h-5 text-purple-300" />,
+      bgColorClass: "from-purple-900/50 to-purple-800/30 hover:from-purple-800/60 hover:to-purple-700/40",
+      textColorClass: "text-purple-300"
+    }
+  ];
+  
   // Effect to handle initial navigation state based on window size and resize events
   useEffect(() => {
     const handleResize = () => {
       // Show nav if window is medium size or larger, hide otherwise unless explicitly shown
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
       if (window.innerWidth >= 768) {
         setShowNavigation(true); // Always show on desktop unless user hides it manually via header button
       }
@@ -90,48 +134,61 @@ const EideticEngineWebsite = () => {
     }
   };
 
+  // Setup swipe detection for section navigation on main content
+  useEffect(() => {
+    const content = mainContentRef.current;
+    if (!content || !isMobile) return;
+    
+    let touchStartX = 0;
+    let touchStartY = 0;
+    
+    const handleTouchStart = (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    };
+    
+    const handleTouchMove = (e) => {
+      if (e.touches.length > 1) return; // Ignore multi-touch
+      
+      const touchEndX = e.touches[0].clientX;
+      const touchEndY = e.touches[0].clientY;
+      const diffX = touchStartX - touchEndX;
+      const diffY = touchStartY - touchEndY;
+      
+      // Only handle horizontal swipes that are more horizontal than vertical
+      if (Math.abs(diffX) > Math.abs(diffY) * 2 && Math.abs(diffX) > 100) {
+        e.preventDefault();
+        
+        // Find current index
+        const sectionIds = navItems.map(item => item.id);
+        const currentIndex = sectionIds.indexOf(activeSection);
+        
+        // Swipe left (next section)
+        if (diffX > 0 && currentIndex < sectionIds.length - 1) {
+          scrollToSection(sectionIds[currentIndex + 1]);
+          if (navigator.vibrate) navigator.vibrate(50);
+        }
+        // Swipe right (previous section)
+        else if (diffX < 0 && currentIndex > 0) {
+          scrollToSection(sectionIds[currentIndex - 1]);
+          if (navigator.vibrate) navigator.vibrate(50);
+        }
+      }
+    };
+    
+    content.addEventListener('touchstart', handleTouchStart, { passive: false });
+    content.addEventListener('touchmove', handleTouchMove, { passive: false });
+    
+    return () => {
+      content.removeEventListener('touchstart', handleTouchStart);
+      content.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [isMobile, activeSection, navItems, scrollToSection]);
+
   // Helper for code styling
   const CodeTag = ({ children }) => (
     <code className="mx-1 px-1.5 md:px-2 py-0.5 md:py-1 bg-gray-700/80 rounded text-blue-200 text-[11px] md:text-xs">{children}</code>
   );
-
-  // Define navigation items
-  const navItems = [
-    // Added Architecture Visual to nav
-    { id: 'architecture-visual', name: 'Architecture', icon: <Eye className="w-4 h-4" /> },
-    { id: 'abstract', name: 'Abstract', icon: <FileText className="w-4 h-4" /> },
-    { id: 'introduction', name: 'Introduction', icon: <MessageCircle className="w-4 h-4" /> },
-    { id: 'related-work', name: 'Related Work', icon: <GitBranch className="w-4 h-4" /> },
-    { id: 'ums', name: 'Unified Memory System', icon: <Database className="w-4 h-4" /> },
-    { id: 'aml', name: 'Agent Master Loop', icon: <RefreshCw className="w-4 h-4" /> },
-    { id: 'mcp-client', name: 'Ultimate MCP Client', icon: <UserPlus className="w-4 h-4" /> },
-    { id: 'llm-gateway', name: 'Ultimate MCP Server', icon: <Server className="w-4 h-4" /> },
-    { id: 'evaluation', name: 'Evaluation & Cases', icon: <BarChart2 className="w-4 h-4" /> },
-    { id: 'discussion', name: 'Discussion', icon: <GitCommit className="w-4 h-4" /> },
-    { id: 'conclusion', name: 'Conclusion', icon: <Award className="w-4 h-4" /> },
-    { id: 'future-work', name: 'Future Work', icon: <Zap className="w-4 h-4" /> },
-    { id: 'addendum', name: 'Addendum', icon: <Bookmark className="w-4 h-4" /> },
-  ];
-
-  // Define technical doc links
-  const docLinks = [
-    {
-      href: "/ums-technical-analysis",
-      title: "UMS Technical Analysis",
-      description: "Unified Memory System Deep Dive",
-      icon: <Database className="w-5 h-5 text-blue-300" />,
-      bgColorClass: "from-blue-900/50 to-blue-800/30 hover:from-blue-800/60 hover:to-blue-700/40",
-      textColorClass: "text-blue-300"
-    },
-    {
-      href: "/aml-technical-analysis",
-      title: "AML Technical Analysis",
-      description: "Agent Master Loop Architecture",
-      icon: <RefreshCw className="w-5 h-5 text-purple-300" />,
-      bgColorClass: "from-purple-900/50 to-purple-800/30 hover:from-purple-800/60 hover:to-purple-700/40",
-      textColorClass: "text-purple-300"
-    }
-  ];
 
   return (
     // Added overflow-x-hidden to body/html equivalent if needed, but tailwind handles it mostly
@@ -155,15 +212,36 @@ const EideticEngineWebsite = () => {
           scrollToSection={scrollToSection}
         />
 
+        {/* Mobile Sidebar Overlay - only visible when sidebar is open on mobile */}
+        {showNavigation && isMobile && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-20 md:hidden"
+            onClick={() => setShowNavigation(false)}
+          ></div>
+        )}
+
         {/* Mobile Navigation Toggle */}
         <MobileNavToggle 
           showNavigation={showNavigation} 
           setShowNavigation={setShowNavigation} 
         />
 
+        {/* Floating Navigation Dots (mobile only) */}
+        <FloatingNavigation 
+          activeSection={activeSection}
+          navItems={navItems}
+          scrollToSection={scrollToSection}
+        />
+
+        {/* Mobile FAB (Floating Action Button) */}
+        <MobileFAB />
+
         {/* Main content */}
         {/* Adjusted margin logic to be simpler: only apply margin on md+ when nav is shown */}
-        <main className={`flex-1 transition-margin duration-300 ease-in-out ${showNavigation ? 'md:ml-64' : 'ml-0'} overflow-x-hidden`}>
+        <main 
+          ref={mainContentRef}
+          className={`flex-1 transition-margin duration-300 ease-in-out ${showNavigation ? 'md:ml-64' : 'ml-0'} overflow-x-hidden`}
+        >
           {/* Added container-fluid equivalent for padding, adjust max-width inside sections */}
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
@@ -180,6 +258,7 @@ const EideticEngineWebsite = () => {
                     <div className="absolute -bottom-1 -left-1 w-3 h-3 md:w-6 md:h-6 bg-blue-500 rounded-full animate-pulse delay-100"></div>
                   </div>
                 </div>
+
                 {/* Adjusted text sizes */}
                 <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 md:mb-6 leading-tight">
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">

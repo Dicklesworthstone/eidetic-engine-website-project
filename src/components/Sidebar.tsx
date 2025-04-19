@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import '../styles/scrollbars.css';
 
@@ -34,17 +34,60 @@ const Sidebar: React.FC<SidebarProps> = ({
     docLinks = [],
     scrollToSection
 }) => {
+    const sidebarRef = useRef<HTMLElement>(null);
+    let touchStartX = 0;
+
+    useEffect(() => {
+        const sidebar = sidebarRef.current;
+        if (!sidebar) return;
+
+        // Handle swipe to close
+        const handleTouchStart = (e: TouchEvent) => {
+            touchStartX = e.touches[0].clientX;
+        };
+
+        const handleTouchMove = (e: TouchEvent) => {
+            if (!showNavigation) return;
+            
+            const touchEndX = e.touches[0].clientX;
+            const diffX = touchStartX - touchEndX;
+            
+            // If swiping left more than 50px, close the sidebar
+            if (diffX > 50) {
+                setShowNavigation(false);
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+            }
+        };
+
+        sidebar.addEventListener('touchstart', handleTouchStart);
+        sidebar.addEventListener('touchmove', handleTouchMove);
+
+        return () => {
+            sidebar.removeEventListener('touchstart', handleTouchStart);
+            sidebar.removeEventListener('touchmove', handleTouchMove);
+        };
+    }, [showNavigation, setShowNavigation]);
+
     return (
         <aside
-            className={`fixed top-16 h-[calc(100vh-4rem)] overflow-y-auto code-scrollbar bg-gray-900 border-r border-gray-800 w-64 transition-transform duration-300 ease-in-out z-30 md:translate-x-0 ${showNavigation ? 'translate-x-0 shadow-xl' : '-translate-x-full'} md:left-0`}
+            ref={sidebarRef}
+            className={`fixed top-16 h-[calc(100vh-4rem)] overflow-y-auto code-scrollbar bg-gray-900 border-r border-gray-800 w-64 md:w-64 transition-transform duration-300 ease-in-out z-30 md:translate-x-0 ${showNavigation ? 'translate-x-0 shadow-xl' : '-translate-x-full'} md:left-0`}
             aria-hidden={!showNavigation}
             tabIndex={showNavigation ? 0 : -1}
+            style={{ WebkitOverflowScrolling: 'touch' }}
         >
             {/* Mobile close button inside aside */}
             <div className="absolute top-4 right-4 md:hidden">
                 <button
-                    onClick={() => setShowNavigation(false)}
-                    className="p-1.5 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
+                    onClick={() => {
+                        setShowNavigation(false);
+                        if (navigator.vibrate) {
+                            navigator.vibrate(50);
+                        }
+                    }}
+                    className="p-2 min-h-[44px] min-w-[44px] rounded-full bg-gray-800 hover:bg-gray-700 transition-colors touch-manipulation"
                     aria-label="Close navigation menu"
                 >
                     <X className="h-5 w-5 text-gray-400" />
@@ -57,10 +100,15 @@ const Sidebar: React.FC<SidebarProps> = ({
                     {navItems.map(item => (
                         <button
                             key={item.id}
-                            onClick={() => scrollToSection(item.id)}
-                            className={`flex items-center space-x-3 w-full text-left px-4 py-3 md:py-2.5 rounded-lg mb-1 hover:bg-gray-800 transition-colors duration-150 ${activeSection === item.id ? 'bg-blue-900 bg-opacity-50 text-blue-300 font-medium' : 'text-gray-300 hover:text-gray-100'}`}
+                            onClick={() => {
+                                scrollToSection(item.id);
+                                if (navigator.vibrate) {
+                                    navigator.vibrate(30);
+                                }
+                            }}
+                            className={`flex items-center space-x-3 w-full text-left px-4 py-3.5 md:py-2.5 rounded-lg mb-1.5 hover:bg-gray-800 transition-colors duration-150 touch-manipulation ${activeSection === item.id ? 'bg-blue-900 bg-opacity-50 text-blue-300 font-medium' : 'text-gray-300 hover:text-gray-100'}`}
                         >
-                            <span className="flex-shrink-0 w-4">{item.icon}</span>
+                            <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center">{item.icon}</span>
                             <span className="text-sm">{item.name}</span>
                         </button>
                     ))}
@@ -74,9 +122,14 @@ const Sidebar: React.FC<SidebarProps> = ({
                             <a
                                 key={index}
                                 href={link.href}
-                                className={`flex items-center w-full text-left px-4 py-3 md:py-2.5 rounded-lg mb-4 
+                                className={`flex items-center w-full text-left px-4 py-4 md:py-2.5 rounded-lg mb-4 
                 bg-gradient-to-r ${link.bgColorClass} hover:from-opacity-60 hover:to-opacity-40 
-                border border-opacity-30 shadow-md hover:shadow-lg transition-all duration-300`}
+                border border-opacity-30 shadow-md hover:shadow-lg transition-all duration-300 touch-manipulation`}
+                                onClick={() => {
+                                    if (navigator.vibrate) {
+                                        navigator.vibrate(30);
+                                    }
+                                }}
                             >
                                 <div className={`mr-3 p-2 ${link.bgColorClass} rounded-lg`}>
                                     {link.icon}
