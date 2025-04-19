@@ -16,21 +16,6 @@ export default function Layout() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Add Vercel Analytics script
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.defer = true;
-    script.src = '/_vercel/insights/script.js';
-    document.body.appendChild(script);
-    
-    return () => {
-      // Clean up script when component unmounts
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-gray-100 font-sans relative overflow-x-hidden">
       {/* Progress Bar */}
