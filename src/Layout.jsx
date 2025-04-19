@@ -8,13 +8,27 @@ export default function Layout() {
   const [scrollProg, setScrollProg] = useState(0);
   
   useEffect(() => {
-    const onScroll = () => {
-      const total = document.documentElement.scrollHeight - window.innerHeight;
-      setScrollProg(total > 0 ? window.scrollY / total : 0);
-    };
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
+    // Only run in browser environment
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+      const onScroll = () => {
+        const total = document.documentElement.scrollHeight - window.innerHeight;
+        setScrollProg(total > 0 ? window.scrollY / total : 0);
+      };
+      
+      // Initial call to set initial position
+      onScroll();
+      
+      window.addEventListener('scroll', onScroll);
+      return () => window.removeEventListener('scroll', onScroll);
+    }
   }, []);
+
+  const handleOverlayClick = () => {
+    // Only dispatch event in browser environment
+    if (typeof document !== 'undefined') {
+      document.dispatchEvent(new CustomEvent('toggle-sidebar', { detail: { show: false } }));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-gray-100 font-sans relative overflow-x-hidden">
@@ -42,7 +56,7 @@ export default function Layout() {
       <div 
         className="fixed inset-0 bg-black/50 z-30 md:hidden transition-opacity duration-300 opacity-0 pointer-events-none"
         id="mobile-overlay"
-        onClick={() => document.dispatchEvent(new CustomEvent('toggle-sidebar', { detail: { show: false } }))}
+        onClick={handleOverlayClick}
       ></div>
 
       {/* Main Content */}

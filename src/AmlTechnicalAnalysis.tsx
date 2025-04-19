@@ -1,9 +1,10 @@
 // AmlTechnicalAnalysis.jsx - Redesigned to match EideticEngine main page aesthetic
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import MobileNavToggle from './components/MobileNavToggle';
 import FloatingNavigation from './components/FloatingNavigation';
+import MobileFAB from './components/MobileFAB';
 import {
     RefreshCw,
     List,
@@ -35,6 +36,8 @@ import {
     Share2,
     FlaskConical,
     Scale,
+    BookOpen,
+    ChevronDown,
 } from 'lucide-react';
 import Prism from 'prismjs';
 // Import Prism languages
@@ -45,8 +48,10 @@ import 'prismjs/components/prism-bash';
 import 'prismjs/components/prism-json';
 // Import Monokai theme
 import './prism-monokai.css'; // We'll create this file next
-import AgentLoopFlow from './AgentLoopFlow';
 import Footer from './components/Footer';
+
+// Lazy load the component
+const AgentLoopFlow = lazy(() => import('./AgentLoopFlow'));
 
 // Helper components for consistent styling
 const InlineCode = ({ children }) => (
@@ -1764,7 +1769,11 @@ const ArchitecturalOverviewSection = () => (
                         {/* Provide more horizontal space for the flow diagram on mobile */}
                         <div className="overflow-hidden -mx-4 sm:mx-0">
                             <div className="px-1 sm:px-0">
-                                <AgentLoopFlow />
+                                <Suspense fallback={<div className="w-full h-120 bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-4 shadow-xl flex items-center justify-center">
+  <div className="text-white">Loading Visualization...</div>
+</div>}>
+  <AgentLoopFlow />
+</Suspense>
                             </div>
                         </div>
                     </div>

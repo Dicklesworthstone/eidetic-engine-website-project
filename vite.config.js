@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 8777,
+    port: 3000,
     hmr: {
       overlay: false
     }
@@ -14,17 +14,21 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
+          'agent-loop': ['./src/AgentLoopFlow.tsx'],
+          'agent-architecture': ['./src/AgentArchitectureDiagram.tsx'],
+          'schema-diagram': ['./src/SchemaDiagram.tsx'],
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'aml-analysis': ['./src/AmlTechnicalAnalysis.tsx'],
           'ums-analysis': ['./src/UmsTechnicalAnalysis.tsx'],
           'eidetic-engine': ['./src/EideticEngineWebsite.tsx'],
-          'agent-loop': ['./src/AgentLoopFlow.tsx'],
-          'agent-architecture': ['./src/AgentArchitectureDiagram.tsx'],
-          'schema-diagram': ['./src/SchemaDiagram.tsx'],
           'memory-graph': ['./src/MemoryGraph.tsx']
         }
       }
     },
-    chunkSizeWarningLimit: 1100
+    chunkSizeWarningLimit: 2000,
+    minify: process.env.NODE_ENV === 'development' ? false : 'esbuild'
+  },
+  ssr: {
+    noExternal: ['animejs', 'lucide-react'],
   }
 })
