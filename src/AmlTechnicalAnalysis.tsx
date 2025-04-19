@@ -2572,6 +2572,56 @@ const AmlTechnicalAnalysis = () => {
         }
     ];
 
+    // Add swipe-to-open useEffect hook
+    useEffect(() => {
+        const content = mainContentRef.current;
+        if (!content || !isMobile) return;
+        
+        let touchStartX = 0;
+        let touchStartY = 0;
+        const swipeThreshold = 30; // Pixels from left edge to trigger sidebar open
+        const minSwipeDistance = 50; // Minimum horizontal distance for swipe
+        
+        const handleTouchStart = (e) => {
+            // Only care about the first touch point
+            if (e.touches.length === 1) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }
+        };
+        
+        const handleTouchMove = (e) => {
+            if (e.touches.length > 1) return; // Ignore multi-touch
+            
+            const touchEndX = e.touches[0].clientX;
+            const touchEndY = e.touches[0].clientY;
+            const diffX = touchStartX - touchEndX;
+            const diffY = touchStartY - touchEndY;
+
+            // --- Swipe to Open Sidebar --- 
+            // Check if swipe starts near the left edge, moves right, and sidebar is closed
+            if (touchStartX < swipeThreshold && diffX < -minSwipeDistance && Math.abs(diffX) > Math.abs(diffY) * 1.5 && !showNavigation) {
+                setShowNavigation(true);
+                if (navigator.vibrate) navigator.vibrate(30); // Haptic feedback
+                // Reset start coordinates to prevent immediate re-trigger or other swipes
+                touchStartX = -1; 
+                touchStartY = -1;
+                return; // Don't process section swipes if we opened the sidebar
+            }
+            
+            // NOTE: No section swipe logic in this component, so we don't need the second part
+        };
+        
+        // Attach event listeners
+        content.addEventListener('touchstart', handleTouchStart, { passive: true });
+        content.addEventListener('touchmove', handleTouchMove, { passive: false }); // Keep false in case other move logic is added
+        
+        return () => {
+          content.removeEventListener('touchstart', handleTouchStart);
+          content.removeEventListener('touchmove', handleTouchMove);
+        };
+    }, [isMobile, showNavigation, setShowNavigation]); // Dependencies for the swipe logic
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-gray-100 font-sans relative overflow-x-hidden">
             {/* Header Component */}

@@ -140,10 +140,15 @@ const EideticEngineWebsite = () => {
     
     let touchStartX = 0;
     let touchStartY = 0;
+    const swipeThreshold = 30; // Pixels from left edge to trigger sidebar open
+    const minSwipeDistance = 50; // Minimum horizontal distance for swipe
     
     const handleTouchStart = (e) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
+      // Only care about the first touch point
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
     };
     
     const handleTouchMove = (e) => {
@@ -153,9 +158,23 @@ const EideticEngineWebsite = () => {
       const touchEndY = e.touches[0].clientY;
       const diffX = touchStartX - touchEndX;
       const diffY = touchStartY - touchEndY;
+
+      // --- Swipe to Open Sidebar --- 
+      // Check if swipe starts near the left edge, moves right, and sidebar is closed
+      if (touchStartX < swipeThreshold && diffX < -minSwipeDistance && Math.abs(diffX) > Math.abs(diffY) * 1.5 && !showNavigation) {
+        setShowNavigation(true);
+        if (navigator.vibrate) navigator.vibrate(30); // Haptic feedback
+        // Reset start coordinates to prevent immediate re-trigger or other swipes
+        touchStartX = -1; 
+        touchStartY = -1;
+        return; // Don't process section swipes if we opened the sidebar
+      }
       
+      // --- Existing Section Navigation Swipe --- 
       // Only handle horizontal swipes that are more horizontal than vertical
-      if (Math.abs(diffX) > Math.abs(diffY) * 2 && Math.abs(diffX) > 100) {
+      // and don't conflict with the sidebar open gesture (e.g., don't trigger if started near edge)
+      if (touchStartX >= swipeThreshold && Math.abs(diffX) > Math.abs(diffY) * 2 && Math.abs(diffX) > 100) {
+        // Prevent default scrolling only if it's a section swipe
         e.preventDefault();
         
         // Find current index
@@ -172,17 +191,22 @@ const EideticEngineWebsite = () => {
           scrollToSection(sectionIds[currentIndex - 1]);
           if (navigator.vibrate) navigator.vibrate(50);
         }
+        // Reset start coordinates after a successful section swipe
+        touchStartX = -1;
+        touchStartY = -1;
       }
     };
     
-    content.addEventListener('touchstart', handleTouchStart, { passive: false });
-    content.addEventListener('touchmove', handleTouchMove, { passive: false });
+    // Attach event listeners (use capture phase for touchstart to potentially intercept early)
+    content.addEventListener('touchstart', handleTouchStart, { passive: true }); // Can be passive if we don't preventDefault here
+    content.addEventListener('touchmove', handleTouchMove, { passive: false }); // Needs to be active to preventDefault for section swipes
     
     return () => {
       content.removeEventListener('touchstart', handleTouchStart);
       content.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [isMobile, activeSection, navItems, scrollToSection]);
+    // Add showNavigation to dependencies as the open swipe logic depends on it
+  }, [isMobile, activeSection, navItems, scrollToSection, showNavigation, setShowNavigation]);
 
   // Helper for code styling
   const CodeTag = ({ children }) => (

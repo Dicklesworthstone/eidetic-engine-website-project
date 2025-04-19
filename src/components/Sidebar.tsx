@@ -87,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     return (
         <aside
             ref={sidebarRef}
-            className={`fixed top-16 bottom-0 left-0 overflow-y-auto code-scrollbar bg-gray-900 border-r border-gray-800 w-64 transition-transform duration-300 ease-in-out z-30 ${showNavigation ? 'translate-x-0 shadow-xl md:shadow-none' : '-translate-x-full'} md:translate-x-0`}
+            className={`fixed top-16 bottom-0 left-0 bg-gray-900 border-r border-gray-800 w-64 transition-transform duration-300 ease-in-out z-30 ${showNavigation ? 'translate-x-0 shadow-xl md:shadow-none' : '-translate-x-full'} md:translate-x-0`}
             aria-hidden={!showNavigation}
             tabIndex={showNavigation ? 0 : -1}
             style={{ WebkitOverflowScrolling: 'touch' }}
@@ -108,7 +108,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </button>
             </div>
             {/* Adjusted padding for nav content */}
-            <nav className="p-4 pt-6">
+            <nav className="p-4 pt-6 h-full overflow-y-auto code-scrollbar">
                 <div className="mb-8">
                     <h2 className="text-gray-400 text-xs uppercase tracking-wider mb-4 px-4">Navigation</h2>
                     {navItems.map(item => (

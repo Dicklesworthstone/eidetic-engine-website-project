@@ -52,6 +52,7 @@ import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
 import MobileNavToggle from './components/MobileNavToggle';
 // import MermaidDiagram from './components/MermaidDiagram'; // Comment out import
+import FloatingNavigation from './components/FloatingNavigation'; // Import FloatingNavigation
 
 // Lazy load SchemaDiagram component
 const DatabaseSchema = lazy(() => import('./SchemaDiagram'));
@@ -2438,6 +2439,9 @@ const UmsTechnicalAnalysis = () => {
     const [scrollProgress, setScrollProgress] = useState(0);
     const [showNavigation, setShowNavigation] = useState(true);
     const sqlCodeRef = useRef<HTMLElement | null>(null); // Keep sqlCodeRef
+    // Add isMobile state and mainContentRef
+    const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' && window.innerWidth < 768);
+    const mainContentRef = useRef<HTMLDivElement>(null);
     // Remove previous refs for scroll handling
     // const previousActiveSectionRef = useRef<string>(SECTION_ORDER[0]);
     // const previousScrollProgressRef = useRef<number>(0);
@@ -2445,15 +2449,22 @@ const UmsTechnicalAnalysis = () => {
     // Handle initial navigation state and resize events
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth >= 768) {
-                setShowNavigation(true);
+            if (typeof window !== 'undefined') {
+                const mobile = window.innerWidth < 768;
+                setIsMobile(mobile); // Update isMobile state
+                // Adjust navigation visibility based on resize
+                if (window.innerWidth >= 768) {
+                    setShowNavigation(true);
+                } else {
+                    // Keep the current state on mobile resize unless explicitly toggled
+                }
             }
         };
 
-        handleResize();
+        handleResize(); // Call on initial mount
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    }, []); // Empty dependency array ensures this runs once on mount and cleans up on unmount
 
     // Handle scroll for progress bar and active section
     useEffect(() => {
@@ -2482,6 +2493,57 @@ const UmsTechnicalAnalysis = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     // Revert dependency array back to empty (or original dependencies if known, likely empty)
     }, []); 
+
+    // Add swipe-to-open useEffect hook
+    useEffect(() => {
+        const content = mainContentRef.current;
+        if (!content || !isMobile) return;
+        
+        let touchStartX = 0;
+        let touchStartY = 0;
+        const swipeThreshold = 30; // Pixels from left edge to trigger sidebar open
+        const minSwipeDistance = 50; // Minimum horizontal distance for swipe
+        
+        const handleTouchStart = (e) => {
+            // Only care about the first touch point
+            if (e.touches.length === 1) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }
+        };
+        
+        const handleTouchMove = (e) => {
+            if (e.touches.length > 1) return; // Ignore multi-touch
+            
+            const touchEndX = e.touches[0].clientX;
+            const touchEndY = e.touches[0].clientY;
+            const diffX = touchStartX - touchEndX;
+            const diffY = touchStartY - touchEndY;
+
+            // --- Swipe to Open Sidebar --- 
+            // Check if swipe starts near the left edge, moves right, and sidebar is closed
+            if (touchStartX < swipeThreshold && diffX < -minSwipeDistance && Math.abs(diffX) > Math.abs(diffY) * 1.5 && !showNavigation) {
+                setShowNavigation(true);
+                if (navigator.vibrate) navigator.vibrate(30); // Haptic feedback
+                // Reset start coordinates to prevent immediate re-trigger or other swipes
+                touchStartX = -1; 
+                touchStartY = -1;
+                return; // Don't process section swipes if we opened the sidebar
+            }
+            
+            // NOTE: No section swipe logic in this component, so we don't need the second part
+        };
+        
+        // Attach event listeners
+        content.addEventListener('touchstart', handleTouchStart, { passive: true });
+        content.addEventListener('touchmove', handleTouchMove, { passive: false }); // Keep false in case other move logic is added
+        
+        return () => {
+          content.removeEventListener('touchstart', handleTouchStart);
+          content.removeEventListener('touchmove', handleTouchMove);
+        };
+    }, [isMobile, showNavigation, setShowNavigation]); // Dependencies for the swipe logic
+
 
     // Scroll to section helper
     const scrollToSection = (sectionId) => {
@@ -3275,7 +3337,10 @@ CREATE TABLE IF NOT EXISTS ${tableName} (
                 />
 
                 {/* Main content */}
-                <main className={`flex-1 transition-margin duration-300 ease-in-out ${showNavigation ? 'md:ml-64' : 'ml-0'} overflow-x-hidden`}>
+                <main 
+                    ref={mainContentRef} // Add ref here
+                    className={`flex-1 transition-margin duration-300 ease-in-out ${showNavigation ? 'md:ml-64' : 'ml-0'} overflow-x-hidden`}
+                >
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
                         {/* Title Section */}
