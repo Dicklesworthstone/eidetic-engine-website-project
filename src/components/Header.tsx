@@ -42,9 +42,10 @@ const Header: React.FC<HeaderProps> = ({ showNavigation, setShowNavigation, scro
                 <div className="flex md:hidden">
                     <button
                         onClick={toggleNav}
-                        className="min-h-[44px] px-4 py-2.5 md:px-4 md:py-2 rounded-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 transition-colors flex items-center text-sm touch-manipulation"
+                        className="min-h-[38px] min-w-[80px] px-3 py-1.5 rounded-full bg-gray-800 hover:bg-gray-700 active:bg-gray-600 transition-colors flex items-center justify-center text-sm touch-manipulation"
+                        aria-label={showNavigation ? "Hide navigation" : "Show navigation"}
                     >
-                        {showNavigation ? 'Hide' : 'Show'} <span className="hidden xs:inline ml-1">Nav</span> <Map className="ml-1.5 w-4 h-4" />
+                        <span className="whitespace-nowrap">{showNavigation ? 'Hide' : 'Show'}</span> <Map className="ml-1.5 w-4 h-4 flex-shrink-0" />
                     </button>
                 </div>
             </div>

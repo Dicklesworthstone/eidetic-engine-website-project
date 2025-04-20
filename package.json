@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@luxonauta/use-vibration": "^1.0.1",
+    "@types/dagre": "^0.7.52",
     "@types/echarts": "^5.0.0",
     "@types/mermaid": "^9.2.0",
     "@types/prismjs": "^1.26.5",

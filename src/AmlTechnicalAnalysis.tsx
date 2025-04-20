@@ -2456,7 +2456,7 @@ const sections = [
 const AmlTechnicalAnalysis = () => {
     const [activeSection, setActiveSection] = useState<string>('overview');
     const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' && window.innerWidth < 768);
-    const [showNavigation, setShowNavigation] = useState<boolean>(typeof window !== 'undefined' && window.innerWidth >= 768);
+    const [showNavigation, setShowNavigation] = useState<boolean>(window.innerWidth >= 768);
     const [scrollProgress, setScrollProgress] = useState<number>(0);
     const mainContentRef = useRef<HTMLDivElement>(null);
 

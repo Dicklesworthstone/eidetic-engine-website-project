@@ -2416,7 +2416,7 @@ const UmsTechnicalAnalysis = () => {
     // State for navigation
     const [activeSection, setActiveSection] = useState<string>(SECTION_ORDER[0]);
     const [scrollProgress, setScrollProgress] = useState(0);
-    const [showNavigation, setShowNavigation] = useState(true); // Keep initial value
+    const [showNavigation, setShowNavigation] = useState(window.innerWidth >= 768); // Hide on mobile by default
     const sqlCodeRef = useRef<HTMLElement | null>(null);
     const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' && window.innerWidth < 768);
     const mainContentRef = useRef<HTMLDivElement>(null);

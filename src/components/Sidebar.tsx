@@ -112,6 +112,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                 border border-opacity-30 shadow-md hover:shadow-lg transition-all duration-300 touch-manipulation`}
                                 onClick={() => {
                                     selectionFeedback();
+                                    // Close navigation on mobile when navigating between pages
+                                    if (window.innerWidth < 768) {
+                                        setShowNavigation(false);
+                                    }
                                 }}
                             >
                                 <div className={`mr-3 p-2 ${link.bgColorClass} rounded-lg`}>
