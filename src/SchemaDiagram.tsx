@@ -104,10 +104,10 @@ function calculateDagreLayout(direction: LayoutDirection = 'TB', focusNodeId?: s
         rankdir: direction, 
         ranker: 'network-simplex',
         align: 'UL',
-        nodesep: 180, // Much more space between nodes horizontally
-        ranksep: 180, // Much more space between nodes vertically
-        marginx: 60,
-        marginy: 60,
+        nodesep: 250, // Increased from 180 for better horizontal spacing
+        ranksep: 250, // Increased from 180 for better vertical spacing
+        marginx: 80,  // Slightly more padding
+        marginy: 80,
     });
 
     // Add nodes to dagre
@@ -304,7 +304,7 @@ function determineBestLayoutDirection(containerWidth: number, containerHeight: n
 }
 
 /*──────── Build Graph Data (for ECharts) ────────*/
-function buildGraph(containerWidth: number, containerHeight: number, focusNodeId?: string) {
+function buildGraph(containerWidth: number, containerHeight: number, focusNodeId?: string, selectedNode?: string | null) {
     // Base node dimensions
     const W = 200, H = 55;
     const padding = 80;
@@ -345,10 +345,11 @@ function buildGraph(containerWidth: number, containerHeight: number, focusNodeId
             const colors = palette[domainCategory];
         const isFocusNode = posNode.isFocusNode;
         const isDirectConnection = posNode.isDirectConnection;
+        const isSelected = selectedNode === id && !isFocusNode;
 
         // More modest size adjustments
         const nameLength = id.length;
-        const sizeMultiplier = Math.min(1 + (nameLength / 40), 1.3); // Less aggressive size increase
+        const sizeMultiplier = Math.min(1 + (nameLength / 30), 1.5); // Less aggressive size increase, but increased max multiplier
         
         // Increase size for focus node and its connections
         let sizeW = W * scaleFactor * sizeMultiplier;
@@ -372,6 +373,13 @@ function buildGraph(containerWidth: number, containerHeight: number, focusNodeId
             borderWidth = 2.5;
             shadowBlur = 20;
             fontSize = Math.max(13, 15 * scaleFactor);
+        } else if (isSelected) {
+            // Style for selected but not pinned nodes
+            sizeW *= 1.2;
+            sizeH *= 1.2;
+            borderWidth = 2.5;
+            shadowBlur = 22;
+            fontSize = Math.max(13, 15 * scaleFactor);
         } else if (['workflows', 'actions', 'artifacts', 'memories'].includes(id)) {
             sizeW *= 1.1;
             sizeH *= 1.1;
@@ -391,9 +399,10 @@ function buildGraph(containerWidth: number, containerHeight: number, focusNodeId
             domainCategory,
             isFocusNode,
             isDirectConnection,
+            isSelected,
                 itemStyle: {
                     color: 'rgba(15, 21, 36, 0.95)',
-                    borderColor: colors.primary,
+                    borderColor: isSelected ? colors.secondary : colors.primary,
                 borderWidth: borderWidth,
                 shadowBlur: shadowBlur,
                     shadowColor: colors.glow,
@@ -405,11 +414,12 @@ function buildGraph(containerWidth: number, containerHeight: number, focusNodeId
                     formatter: '{b}',
                     color: '#f8fafc',
                 fontSize: fontSize,
-                fontWeight: isFocusNode ? 'bolder' : 'bold',
+                fontWeight: isFocusNode || isSelected ? 'bolder' : 'bold',
                     fontFamily: 'Inter, system-ui, sans-serif',
                     textShadow: '0 1px 3px rgba(0, 0, 0, 0.4)',
                 overflow: 'break', // Allow breaking long names instead of truncating
                 width: sizeW * 0.9, // Use more of the node width for text
+                ellipsis: '...', // Fallback for very long names
                 },
             // Add fixed:true to prevent force layout from moving the nodes
             fixed: true
@@ -431,22 +441,45 @@ function buildGraph(containerWidth: number, containerHeight: number, focusNodeId
             )
         );
         
+        // Check if edge connects to the selected node
+        const isSelectedEdge = selectedNode && (s === selectedNode || t === selectedNode) && !isDirectFocusEdge;
+        
         // Compute line style based on focus
         let lineWidth = 2;
         let lineOpacity = isDomainCrossing ? 0.5 : 0.8;
         let curveness = 0.15;
         let shadowBlur = 3;
+        let lineType = isDomainCrossing ? 'dashed' : 'solid';
         
         if (isDirectFocusEdge) {
             lineWidth = 3.5;
             lineOpacity = 1;
             curveness = 0.25;
             shadowBlur = 8;
+            lineType = 'solid';
         } else if (isSecondaryFocusEdge) {
             lineWidth = 2.5;
             lineOpacity = 0.9;
             curveness = 0.2;
             shadowBlur = 5;
+        } else if (isSelectedEdge) {
+            lineWidth = 3;
+            lineOpacity = 0.9;
+            curveness = 0.2;
+            shadowBlur = 6;
+            lineType = 'solid';
+        }
+
+        // Determine edge color
+        let lineColor = isSameDomain
+            ? palette[sourceDomain].primary
+            : '#94a3b8';
+        
+        // Highlight selected edges more prominently
+        if (isSelectedEdge) {
+            lineColor = isSameDomain
+                ? palette[sourceDomain].secondary
+                : '#cbd5e1';
         }
 
         return {
@@ -455,15 +488,13 @@ function buildGraph(containerWidth: number, containerHeight: number, focusNodeId
             sourceDomain,
             targetDomain,
             lineStyle: {
-                color: isSameDomain
-                    ? palette[sourceDomain].primary
-                    : '#94a3b8',
+                color: lineColor,
                 width: lineWidth,
                 opacity: lineOpacity,
                 curveness: curveness,
                 shadowBlur: shadowBlur,
                 shadowColor: 'rgba(0, 0, 0, 0.3)',
-                type: isDomainCrossing ? 'dashed' : 'solid'
+                type: lineType
             },
             symbol: ['none', 'arrow'],
             symbolSize: 8 * scaleFactor,
@@ -564,7 +595,8 @@ export default function DatabaseSchemaDiagram() {
         const graph = buildGraph(
             containerSize.width,
             containerSize.height,
-            isPinned && selectedNode ? selectedNode : undefined
+            isPinned && selectedNode ? selectedNode : undefined,
+            selectedNode
         );
 
         return {
@@ -574,12 +606,22 @@ export default function DatabaseSchemaDiagram() {
             formatter: (params: any) => {
                 if (params.dataType === 'node') {
                     const domainType = params.data.domainCategory;
-                        let colorClass = palette[domainType].primary;
+                    let colorClass = palette[domainType].primary;
+                    
+                    // Calculate incoming and outgoing relationships
+                    const incoming = fk.filter(([_, target]) => target === params.name).length;
+                    const outgoing = fk.filter(([source, _]) => source === params.name).length;
+                    const total = incoming + outgoing;
 
                     return [
                         '<div class="tooltip-container">',
                         `<div class="tooltip-title"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${colorClass};margin-right:6px;"></span>${params.name}</div>`,
                         `<div class="tooltip-content">${domainDescriptions[domainType]}</div>`,
+                        `<div class="tooltip-stats">`,
+                        `<div><span style="color:#94a3b8">Relationships:</span> <span style="color:#f1f5f9;font-weight:600">${total}</span></div>`,
+                        `<div><span style="color:#94a3b8;margin-right:5px">↓</span><span style="color:#f1f5f9">${incoming} incoming</span></div>`,
+                        `<div><span style="color:#94a3b8;margin-right:5px">↑</span><span style="color:#f1f5f9">${outgoing} outgoing</span></div>`,
+                        `</div>`,
                         '</div>'
                     ].join('');
                 }
@@ -628,21 +670,21 @@ export default function DatabaseSchemaDiagram() {
         },
         series: [{
             type: 'graph',
-                layout: 'none',  // No force layout - use pre-calculated positions
-                data: graph.nodes,
-                edges: graph.edges,
+            layout: 'none',  // No force layout - use pre-calculated positions
+            data: graph.nodes,
+            edges: graph.edges,
             categories: Object.keys(palette).map(domain => ({
                 name: domain,
                 itemStyle: {
                     borderColor: palette[domain].primary,
-                        color: 'rgba(15, 21, 36, 0.95)',
+                    color: 'rgba(15, 21, 36, 0.95)',
                 }
             })),
-                roam: false,  // Disable pan/zoom functionality
-                zoom: 0.9,    // Balanced initial zoom level
+            roam: 'scale',  // Enable zooming functionality
+            zoom: 0.8,     // Start slightly zoomed out for better overview
             nodeScaleRatio: 0.6,
             focusNodeAdjacency: true,
-                draggable: false, // Disable node dragging
+            draggable: false, // Disable node dragging
             label: {
                 show: true,
                 position: 'inside',
@@ -652,8 +694,9 @@ export default function DatabaseSchemaDiagram() {
                 textShadowColor: 'rgba(0,0,0,0.8)',
                 textShadowBlur: 3,
                 formatter: '{b}',
-                    overflow: 'truncate',
-                    avoidLabelOverlap: true,
+                overflow: 'break', // Changed from 'truncate' for consistency
+                width: nodeWidth * 0.9 * graph.scaleFactor,
+                avoidLabelOverlap: true,
             },
             edgeLabel: {
                 show: false,
@@ -670,11 +713,11 @@ export default function DatabaseSchemaDiagram() {
                 lineStyle: { opacity: selectedNode ? 0.06 : 0.4 },
             },
             animation: true,
-                animationDuration: 500,
-                animationEasingUpdate: 'cubicInOut',
-                animationThreshold: 200,
-                animationDurationUpdate: 500,
-                hoverAnimation: false,
+            animationDuration: 500,
+            animationEasingUpdate: 'cubicInOut',
+            animationThreshold: 200,
+            animationDurationUpdate: 500,
+            hoverAnimation: false,
             selectedMode: 'single',
             progressive: 0,
             select: {
@@ -696,28 +739,28 @@ export default function DatabaseSchemaDiagram() {
             },
             emphasis: {
                 focus: 'adjacency',
-                    scale: 1.02,
+                scale: 1.02,
                 blurScope: 'global',
                 itemStyle: {
-                        borderWidth: 2.5,
-                        shadowBlur: 18,
+                    borderWidth: 2.5,
+                    shadowBlur: 18,
                     shadowColor: (params: any) => {
                         const domain = params.data.domainCategory;
                         return palette[domain].glow;
                     },
                 },
                 lineStyle: {
-                        width: 2.5,
+                    width: 2.5,
                     color: (params: any) => {
                         const sourceDomain = params.data.sourceDomain;
                         const targetDomain = params.data.targetDomain;
                         return sourceDomain === targetDomain ?
                             palette[sourceDomain].primary : '#f1f5f9';
                     },
-                        opacity: 0.8,
-                        shadowBlur: 10,
-                        shadowColor: 'rgba(255, 255, 255, 0.3)',
-                        type: 'solid',
+                    opacity: 0.8,
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(255, 255, 255, 0.3)',
+                    type: 'solid',
                 },
             },
         }],
@@ -1029,6 +1072,72 @@ export default function DatabaseSchemaDiagram() {
                 </div>
             )}
 
+            {/* Zoom Controls */}
+            <div className="absolute bottom-24 left-5 z-30">
+                <div className="bg-slate-900/90 backdrop-blur-sm p-2 rounded-lg border border-slate-700/50 flex flex-col gap-2">
+                    <button 
+                        onClick={() => {
+                            if (chartRef.current) {
+                                const instance = chartRef.current.getEchartsInstance();
+                                instance.dispatchAction({
+                                    type: 'dataZoom',
+                                    start: 0,
+                                    end: 100,
+                                    zoomSize: 10
+                                });
+                            }
+                        }}
+                        className="p-2 rounded bg-slate-800 text-white hover:bg-slate-700 transition-colors"
+                        title="Zoom In"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            <line x1="11" y1="8" x2="11" y2="14"></line>
+                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                        </svg>
+                    </button>
+                    <button 
+                        onClick={() => {
+                            if (chartRef.current) {
+                                const instance = chartRef.current.getEchartsInstance();
+                                instance.dispatchAction({
+                                    type: 'dataZoom',
+                                    start: 0,
+                                    end: 100,
+                                    zoomSize: -10
+                                });
+                            }
+                        }}
+                        className="p-2 rounded bg-slate-800 text-white hover:bg-slate-700 transition-colors"
+                        title="Zoom Out"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                        </svg>
+                    </button>
+                    <button 
+                        onClick={() => {
+                            if (chartRef.current) {
+                                const instance = chartRef.current.getEchartsInstance();
+                                instance.dispatchAction({
+                                    type: 'restore'
+                                });
+                            }
+                        }}
+                        className="p-2 rounded bg-slate-800 text-white hover:bg-slate-700 transition-colors"
+                        title="Reset View"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                            <path d="M3 3v5h5"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
             {/* Add CSS for animations */}
             <style dangerouslySetInnerHTML={{
                 __html: `
@@ -1076,6 +1185,19 @@ export default function DatabaseSchemaDiagram() {
           color: #cbd5e1;
           font-size: 13px;
           line-height: 1.4;
+          margin-bottom: 8px;
+        }
+        .tooltip-stats {
+          border-top: 1px solid rgba(148, 163, 184, 0.2);
+          padding-top: 6px;
+          font-size: 12px;
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 4px;
+        }
+        .tooltip-stats div {
+          display: flex;
+          align-items: center;
         }
         
         /* Reduced opacity for ambient particles */

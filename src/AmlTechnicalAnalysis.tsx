@@ -2719,8 +2719,8 @@ const AmlTechnicalAnalysis = () => {
                                     <a 
                                         key={item.id}
                                         href={`#${item.id}`}
-                                        ref={React.createRef()}
-                                        className="w-2 h-2 rounded-full bg-gray-500 transition-all duration-200"
+                                        ref={React.createRef<HTMLAnchorElement>()}
+                                        className="w-2 h-2 rounded-full bg-gray-500 transition-all duration-200 touch-manipulation relative"
                                         style={{ 
                                             opacity: 0.3, 
                                             display: 'block', 
@@ -2729,7 +2729,10 @@ const AmlTechnicalAnalysis = () => {
                                             backgroundColor: activeSection === item.id ? '#3b82f6' : '#6b7280' 
                                         }}
                                         aria-label={`Scroll to ${item.name} section`}
-                                    />
+                                    >
+                                        {/* Invisible touch target that doesn't affect visual appearance */}
+                                        <span className="absolute inset-0 w-8 h-8 -m-3 block" aria-hidden="true"></span>
+                                    </a>
                                 ))}
                             </div>
                         </ScrollSpy>
