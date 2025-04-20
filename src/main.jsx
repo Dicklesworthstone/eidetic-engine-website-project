@@ -3,6 +3,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'; // <-- Import
 import { GoogleAnalyticsProvider } from './contexts/GoogleAnalyticsContext';
+import { HapticProvider } from './contexts/HapticContext';
 import './index.css'
 import App from './App.jsx'
 
@@ -14,7 +15,9 @@ if (typeof document !== 'undefined') {
       <StrictMode>
         <BrowserRouter> {/* <-- Wrap App */}
           <GoogleAnalyticsProvider>
-            <App />
+            <HapticProvider>
+              <App />
+            </HapticProvider>
           </GoogleAnalyticsProvider>
         </BrowserRouter>
       </StrictMode>,

@@ -1,5 +1,6 @@
 import { useEffect, RefObject } from 'react';
 import React from 'react';
+import useHapticFeedback from './useHapticFeedback';
 
 /**
  * Custom hook to handle sidebar swipe detection on mobile
@@ -30,6 +31,8 @@ const useSidebarSwipe = ({
   navItems: Array<{id: string; name: string; icon?: React.ReactNode}>;
   scrollToSection: (sectionId: string) => void;
 }) => {
+  const { navigationFeedback, selectionFeedback } = useHapticFeedback();
+  
   // Setup swipe detection for section navigation on main content
   useEffect(() => {
     const content = mainContentRef.current;
@@ -62,7 +65,7 @@ const useSidebarSwipe = ({
         console.log(`[Swipe Open] touchStartX: ${touchStartX}, diffX: ${diffX}`); // Debugging log
         console.log('[Swipe Open] Opening sidebar...'); // Debugging log
         setShowNavigation(true);
-        if (navigator.vibrate) navigator.vibrate(30); // Haptic feedback
+        navigationFeedback(); // Haptic feedback for navigation action
         // Reset start coordinates to prevent immediate re-trigger or other swipes
         touchStartX = -1; 
         touchStartY = -1;
@@ -83,13 +86,13 @@ const useSidebarSwipe = ({
         // Swipe left (next section)
         if (diffX > 0 && currentIndex < sectionIds.length - 1) {
           scrollToSection(sectionIds[currentIndex + 1]);
-          if (navigator.vibrate) navigator.vibrate(50);
+          selectionFeedback(); // More distinct feedback for section navigation
         }
         // Swipe right (previous section)
         else if (diffX < 0 && currentIndex > 0) {
           scrollToSection(sectionIds[currentIndex - 1]);
           console.log(`[Section Swipe] Swipe Right. Active: ${activeSection}`); // Debugging log
-          if (navigator.vibrate) navigator.vibrate(50);
+          selectionFeedback(); // More distinct feedback for section navigation
         }
         // Reset start coordinates after a successful section swipe
         touchStartX = -1;
@@ -105,8 +108,18 @@ const useSidebarSwipe = ({
       content.removeEventListener('touchstart', handleTouchStart as EventListener);
       content.removeEventListener('touchmove', handleTouchMove as EventListener);
     };
-    // Add showNavigation to dependencies as the open swipe logic depends on it
-  }, [isMobile, activeSection, navItems, scrollToSection, showNavigation, setShowNavigation, mainContentRef]);
+    // Add showNavigation and haptic functions to dependencies
+  }, [
+    isMobile, 
+    activeSection, 
+    navItems, 
+    scrollToSection, 
+    showNavigation, 
+    setShowNavigation, 
+    mainContentRef,
+    navigationFeedback,
+    selectionFeedback
+  ]);
 };
 
 export default useSidebarSwipe; 

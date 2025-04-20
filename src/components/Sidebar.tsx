@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import '../styles/scrollbars.css';
+import useHapticFeedback from '../hooks/useHapticFeedback';
 
 interface NavItem {
     id: string;
@@ -36,6 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
     const sidebarRef = useRef<HTMLElement>(null);
     let touchStartX = 0;
+    const { navigationFeedback, selectionFeedback } = useHapticFeedback();
 
     useEffect(() => {
         const sidebar = sidebarRef.current;
@@ -57,9 +59,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             if (diffX > 50) {
                 console.log('[Sidebar Swipe Close] Closing sidebar...');
                 setShowNavigation(false);
-                if (navigator.vibrate) {
-                    navigator.vibrate(50);
-                }
+                navigationFeedback();
             }
         };
 
@@ -70,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             sidebar.removeEventListener('touchstart', handleTouchStart);
             sidebar.removeEventListener('touchmove', handleTouchMove);
         };
-    }, [showNavigation, setShowNavigation]);
+    }, [showNavigation, setShowNavigation, navigationFeedback]);
 
     return (
         <aside
@@ -89,9 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             key={item.id}
                             onClick={() => {
                                 scrollToSection(item.id);
-                                if (navigator.vibrate) {
-                                    navigator.vibrate(30);
-                                }
+                                selectionFeedback();
                             }}
                             className={`flex items-center space-x-3 w-full text-left px-4 py-3.5 md:py-2.5 rounded-lg mb-1.5 hover:bg-gray-800 transition-colors duration-150 touch-manipulation ${activeSection === item.id ? 'bg-blue-900 bg-opacity-50 text-blue-300 font-medium' : 'text-gray-300 hover:text-gray-100'}`}
                         >
@@ -113,9 +111,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 bg-gradient-to-r ${link.bgColorClass} hover:from-opacity-60 hover:to-opacity-40 
                 border border-opacity-30 shadow-md hover:shadow-lg transition-all duration-300 touch-manipulation`}
                                 onClick={() => {
-                                    if (navigator.vibrate) {
-                                        navigator.vibrate(30);
-                                    }
+                                    selectionFeedback();
                                 }}
                             >
                                 <div className={`mr-3 p-2 ${link.bgColorClass} rounded-lg`}>
