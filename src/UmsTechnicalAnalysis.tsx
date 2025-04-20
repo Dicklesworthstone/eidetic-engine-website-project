@@ -34,6 +34,7 @@ import {
     FlaskConical,
 } from 'lucide-react';
 import Prism from 'prismjs';
+import ScrollSpy from 'react-scrollspy-navigation';
 // Import Prism languages
 import 'prismjs/components/prism-python';
 import 'prismjs/components/prism-typescript';
@@ -51,8 +52,8 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
 import MobileNavToggle from './components/MobileNavToggle';
+import useSidebarSwipe from './hooks/useSidebarSwipe';
 // import MermaidDiagram from './components/MermaidDiagram'; // Comment out import
-import FloatingNavigation from './components/FloatingNavigation'; // Import FloatingNavigation
 
 // Lazy load SchemaDiagram component
 const DatabaseSchema = lazy(() => import('./SchemaDiagram'));
@@ -2411,28 +2412,6 @@ const SECTION_ORDER = [
 // --- End Canonical Section Definition ---
 
 
-// Main component to display the UMS Technical Analysis
-// Define the sections in the desired order
-// REMOVED OLD HARDCODED sections array
-// const sections = [
-//     { id: 'overview', component: SystemOverviewSection },
-//     { id: 'schema', component: DatabaseSchemaSection, requiresProps: true }, // Mark that this needs props
-//     { id: 'relevance', component: MemoryRelevanceSection },
-//     { id: 'core-ops', component: CoreMemoryOperationsSection },
-//     { id: 'thoughts', component: ThoughtChainsSection },
-//     { id: 'working-memory', component: WorkingMemorySection },
-//     { id: 'cog-state', component: CognitiveStateSection },
-//     { id: 'metacognition', component: MetaCognitiveSection },
-//     { id: 'embeddings', component: VectorEmbeddingsSection },
-//     { id: 'tracking', component: ActionTrackingSection },
-//     { id: 'reporting', component: ReportingSection },
-//     { id: 'types', component: TypeSystemSection },
-//     { id: 'connection', component: ConnectionManagementSection },
-//     { id: 'utilities', component: UtilityFunctionsSection },
-//     { id: 'addendum-details', component: AddendumSection },
-//     { id: 'summary', component: ArchitecturalOverviewSection },
-// ];
-
 const UmsTechnicalAnalysis = () => {
     // State for navigation
     const [activeSection, setActiveSection] = useState<string>(SECTION_ORDER[0]);
@@ -2441,6 +2420,8 @@ const UmsTechnicalAnalysis = () => {
     const sqlCodeRef = useRef<HTMLElement | null>(null);
     const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' && window.innerWidth < 768);
     const mainContentRef = useRef<HTMLDivElement>(null);
+    // Move sectionsRef to component level to fix hooks error
+    const sectionsRef = useRef(SECTION_ORDER);
 
     // Effect to handle initial navigation state and resize events
     useEffect(() => {
@@ -2467,7 +2448,7 @@ const UmsTechnicalAnalysis = () => {
         };
         window.addEventListener('scroll', handleScroll, { passive: true }); // Use passive listener
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []); // Empty dependency array
+    }, []);
 
     // Effect for Active Section using Intersection Observer
     useEffect(() => {
@@ -2477,8 +2458,8 @@ const UmsTechnicalAnalysis = () => {
             threshold: 0 // Trigger as soon as any part enters/leaves the target area
         };
 
-        // Store section IDs in a ref to avoid dependency issues
-        const sectionsRef = useRef(SECTION_ORDER);
+        // Remove this line - we've moved it to component level
+        // const sectionsRef = useRef(SECTION_ORDER);
 
         const observerCallback = (entries: IntersectionObserverEntry[]) => {
             const intersectingEntries = entries.filter(entry => entry.isIntersecting);
@@ -3336,7 +3317,18 @@ CREATE TABLE IF NOT EXISTS ${tableName} (
         }
     ];
 
-    // Replace the original header and sidebar with our components
+    // Use our custom hook for sidebar swipe detection
+    useSidebarSwipe({
+        mainContentRef,
+        showNavigation,
+        setShowNavigation,
+        isMobile,
+        activeSection,
+        navItems,
+        scrollToSection
+    });
+
+    // Make sure main content has the ref
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-gray-100 font-sans relative overflow-x-hidden">
             {/* Header Component */}
@@ -3349,20 +3341,55 @@ CREATE TABLE IF NOT EXISTS ${tableName} (
             {/* Main Content Wrapper */}
             <div className="flex pt-16">
                 {/* Sidebar Component */}
-                <Sidebar
-                    showNavigation={showNavigation}
-                    setShowNavigation={setShowNavigation}
-                    activeSection={activeSection}
-                    navItems={navItems}
-                    docLinks={docLinks}
-                    scrollToSection={scrollToSection}
+                <Sidebar 
+                  showNavigation={showNavigation} 
+                  setShowNavigation={setShowNavigation} 
+                  activeSection={activeSection} 
+                  navItems={navItems}
+                  docLinks={docLinks}
+                  scrollToSection={scrollToSection}
                 />
 
+                {/* Mobile Sidebar Overlay - only visible when sidebar is open on mobile */}
+                {showNavigation && isMobile && (
+                  <div 
+                    className="fixed inset-0 bg-black/50 z-20 md:hidden"
+                    onClick={() => setShowNavigation(false)}
+                    aria-hidden="true"
+                  ></div>
+                )}
+                
                 {/* Mobile Navigation Toggle */}
                 <MobileNavToggle
                     showNavigation={showNavigation}
                     setShowNavigation={setShowNavigation}
                 />
+
+                {/* Add ScrollSpy floating navigation for mobile */}
+                {isMobile && (
+                    <div className="fixed right-1 top-1/2 transform -translate-y-1/2 z-30">
+                        <ScrollSpy activeClass="active" rootMargin="0px">
+                            <div className="flex flex-col items-center gap-1.5">
+                                {SECTION_ORDER.map((id) => (
+                                    <a 
+                                        key={id}
+                                        href={`#${id}`}
+                                        ref={React.createRef()}
+                                        className="w-2 h-2 rounded-full bg-gray-500 transition-all duration-200"
+                                        style={{ 
+                                            opacity: 0.3, 
+                                            display: 'block', 
+                                            marginBottom: '6px',
+                                            transform: activeSection === id ? 'scale(1.25)' : 'scale(1)',
+                                            backgroundColor: activeSection === id ? '#3b82f6' : '#6b7280'
+                                        }}
+                                        aria-label={`Scroll to ${SECTION_DETAILS[id]?.name || id} section`}
+                                    />
+                                ))}
+                            </div>
+                        </ScrollSpy>
+                    </div>
+                )}
 
                 {/* Main content */}
                 <main 

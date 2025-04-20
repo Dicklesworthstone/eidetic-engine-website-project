@@ -80,21 +80,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             tabIndex={showNavigation ? 0 : -1}
             style={{ WebkitOverflowScrolling: 'touch' }}
         >
-            {/* Mobile close button inside aside - Added z-40 */}
-            <div className="absolute top-4 right-4 md:hidden z-40">
-                <button
-                    onClick={() => {
-                        setShowNavigation(false);
-                        if (navigator.vibrate) {
-                            navigator.vibrate(50);
-                        }
-                    }}
-                    className="p-2 min-h-[44px] min-w-[44px] rounded-full bg-gray-800 hover:bg-gray-700 transition-colors touch-manipulation"
-                    aria-label="Close navigation menu"
-                >
-                    <X className="h-5 w-5 text-gray-400" />
-                </button>
-            </div>
             {/* Adjusted padding for nav content */}
             <nav className="p-4 pt-6 h-full overflow-y-auto code-scrollbar">
                 <div className="mb-8">

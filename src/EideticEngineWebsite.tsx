@@ -4,8 +4,9 @@ import MemoryGraph from './MemoryGraph';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import MobileNavToggle from './components/MobileNavToggle';
-import FloatingNavigation from './components/FloatingNavigation';
+import ScrollSpy from 'react-scrollspy-navigation';
 import Footer from './components/Footer';
+import useSidebarSwipe from './hooks/useSidebarSwipe';
 import './styles/scrollbars.css';
 
 // Main App Component
@@ -16,6 +17,8 @@ const EideticEngineWebsite = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const mainContentRef = useRef<HTMLDivElement>(null);
+  // Move the sectionsRef hook outside of useEffect to the component level
+  const sectionsRef = useRef<string[]>([]);
   
   // Define navigation items
   const navItems = [
@@ -34,7 +37,7 @@ const EideticEngineWebsite = () => {
     { id: 'future-work', name: 'Future Work', icon: <Zap className="w-4 h-4" /> },
     { id: 'addendum', name: 'Addendum', icon: <Bookmark className="w-4 h-4" /> },
   ];
-  
+
   // Define technical doc links
   const docLinks = [
     {
@@ -54,7 +57,12 @@ const EideticEngineWebsite = () => {
       textColorClass: "text-purple-300"
     }
   ];
-  
+
+  // Update sectionsRef when navItems changes
+  useEffect(() => {
+    sectionsRef.current = navItems.map(item => item.id);
+  }, [navItems]);
+
   // Effect to handle initial navigation state based on window size and resize events
   useEffect(() => {
     const handleResize = () => {
@@ -90,8 +98,8 @@ const EideticEngineWebsite = () => {
       threshold: 0 // Trigger as soon as any part enters/leaves the target area
     };
 
-    // Store section IDs in a ref to avoid dependency issues
-    const sectionsRef = useRef(navItems.map(item => item.id));
+    // Use the sectionsRef from the component level instead of creating a new one
+    // Remove this line: const sectionsRef = useRef(navItems.map(item => item.id));
 
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach(entry => {
@@ -181,83 +189,16 @@ const EideticEngineWebsite = () => {
     }
   };
 
-  // Setup swipe detection for section navigation on main content
-  useEffect(() => {
-    const content = mainContentRef.current;
-    if (!content || !isMobile) return;
-    
-    let touchStartX = 0;
-    let touchStartY = 0;
-    const swipeThreshold = 30; // Pixels from left edge to trigger sidebar open
-    const minSwipeDistance = 30; // Minimum horizontal distance for swipe - REDUCED from 50
-    
-    const handleTouchStart = (e: TouchEvent) => { // Added Type Annotation
-      // Only care about the first touch point
-      if (e.touches.length === 1) {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-      }
-    };
-    
-    const handleTouchMove = (e) => {
-      if (e.touches.length > 1) return; // Ignore multi-touch
-      
-      const touchEndX = e.touches[0].clientX;
-      const touchEndY = e.touches[0].clientY;
-      const diffX = touchStartX - touchEndX;
-      const diffY = touchStartY - touchEndY;
-
-      // --- Swipe to Open Sidebar --- 
-      // Check if swipe starts near the left edge, moves right, and sidebar is closed
-      if (touchStartX < swipeThreshold && diffX < -minSwipeDistance && Math.abs(diffX) > Math.abs(diffY) * 1.5 && !showNavigation) {
-        console.log(`[Swipe Open] touchStartX: ${touchStartX}, diffX: ${diffX}`); // LOGGING ADDED
-        console.log('[Swipe Open] Opening sidebar...'); // LOGGING ADDED
-        setShowNavigation(true);
-        if (navigator.vibrate) navigator.vibrate(30); // Haptic feedback
-        // Reset start coordinates to prevent immediate re-trigger or other swipes
-        touchStartX = -1; 
-        touchStartY = -1;
-        return; // Don't process section swipes if we opened the sidebar
-      }
-      
-      // --- Existing Section Navigation Swipe --- 
-      // Only handle horizontal swipes that are more horizontal than vertical
-      // and don't conflict with the sidebar open gesture (e.g., don't trigger if started near edge)
-      if (touchStartX >= swipeThreshold && Math.abs(diffX) > Math.abs(diffY) * 2 && Math.abs(diffX) > 100) {
-        // Prevent default scrolling only if it's a section swipe
-        e.preventDefault();
-        
-        // Find current index
-        const sectionIds = navItems.map(item => item.id);
-        const currentIndex = sectionIds.indexOf(activeSection);
-        
-        // Swipe left (next section)
-        if (diffX > 0 && currentIndex < sectionIds.length - 1) {
-          scrollToSection(sectionIds[currentIndex + 1]);
-          if (navigator.vibrate) navigator.vibrate(50);
-        }
-        // Swipe right (previous section)
-        else if (diffX < 0 && currentIndex > 0) {
-          scrollToSection(sectionIds[currentIndex - 1]);
-          console.log(`[Section Swipe] Swipe Right. Active: ${activeSection}`); // LOGGING ADDED
-          if (navigator.vibrate) navigator.vibrate(50);
-        }
-        // Reset start coordinates after a successful section swipe
-        touchStartX = -1;
-        touchStartY = -1;
-      }
-    };
-    
-    // Attach event listeners (use capture phase for touchstart to potentially intercept early)
-    content.addEventListener('touchstart', handleTouchStart, { passive: true }); // Can be passive if we don't preventDefault here
-    content.addEventListener('touchmove', handleTouchMove, { passive: false }); // Needs to be active to preventDefault for section swipes
-    
-    return () => {
-      content.removeEventListener('touchstart', handleTouchStart);
-      content.removeEventListener('touchmove', handleTouchMove);
-    };
-    // Add showNavigation to dependencies as the open swipe logic depends on it
-  }, [isMobile, activeSection, navItems, scrollToSection, showNavigation, setShowNavigation]);
+  // Instead of the existing useEffect for swipe detection, use our hook
+  useSidebarSwipe({
+    mainContentRef,
+    showNavigation,
+    setShowNavigation,
+    isMobile,
+    activeSection,
+    navItems,
+    scrollToSection
+  });
 
   // LOGGING STATE CHANGE
   useEffect(() => {
@@ -291,13 +232,14 @@ const EideticEngineWebsite = () => {
           scrollToSection={scrollToSection}
         />
 
-        {/* Mobile Sidebar Overlay - TEMPORARILY REMOVED FOR DEBUGGING */}
-        {/* {showNavigation && isMobile && (
+        {/* Mobile Sidebar Overlay - only visible when sidebar is open on mobile */}
+        {showNavigation && isMobile && (
           <div 
             className="fixed inset-0 bg-black/50 z-20 md:hidden"
             onClick={() => setShowNavigation(false)}
+            aria-hidden="true"
           ></div>
-        )} */}
+        )}
 
         {/* Mobile Navigation Toggle */}
         <MobileNavToggle 
@@ -305,13 +247,23 @@ const EideticEngineWebsite = () => {
           setShowNavigation={setShowNavigation} 
         />
 
-        {/* Floating Navigation Dots (mobile only) */}
+        {/* Use ScrollSpy correctly by wrapping anchor tags directly */}
         {isMobile && (
-          <FloatingNavigation 
-            activeSection={activeSection}
-            navItems={navItems}
-            scrollToSection={scrollToSection}
-          />
+          <div className="fixed right-1 top-1/2 transform -translate-y-1/2 z-30">
+            <ScrollSpy activeClass="active" rootMargin="0px">
+              <div className="flex flex-col items-center gap-1.5">
+                {navItems.map((item) => (
+                  <a 
+                    key={item.id}
+                    href={`#${item.id}`}
+                    ref={React.createRef()}
+                    className="w-2 h-2 rounded-full bg-gray-500 transition-all duration-200"
+                    style={{ opacity: 0.3, display: 'block', marginBottom: '6px' }}
+                  />
+                ))}
+              </div>
+            </ScrollSpy>
+          </div>
         )}
 
         {/* Main content */}

@@ -3,8 +3,7 @@ import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import MobileNavToggle from './components/MobileNavToggle';
-import FloatingNavigation from './components/FloatingNavigation';
-import MobileFAB from './components/MobileFAB';
+import ScrollSpy from 'react-scrollspy-navigation';
 import {
     RefreshCw,
     List,
@@ -38,6 +37,12 @@ import {
     Scale,
     BookOpen,
     ChevronDown,
+    Aperture,
+    ArrowRight,
+    Command,
+    Sliders,
+    X,
+    ChevronRight
 } from 'lucide-react';
 import Prism from 'prismjs';
 // Import Prism languages
@@ -49,6 +54,7 @@ import 'prismjs/components/prism-json';
 // Import Monokai theme
 import './prism-monokai.css'; // We'll create this file next
 import Footer from './components/Footer';
+import useSidebarSwipe from './hooks/useSidebarSwipe';
 
 // Lazy load the component
 const AgentLoopFlow = lazy(() => import('./AgentLoopFlow'));
@@ -1465,7 +1471,7 @@ const LimitationsAndFuture = () => (
                                     <li>Improved cross-model integration</li>
                                     <li>Expanded feedback mechanisms</li>
                                 </ul>
-                </div>
+                            </div>
 
                             <div className="bg-gray-800/50 p-3 rounded-lg border border-purple-700/20">
                                 <h4 className="font-bold text-purple-300 mb-2 text-sm">Medium Term (3-4 Versions)</h4>
@@ -1753,8 +1759,8 @@ const ArchitecturalOverviewSection = () => (
                                 Uses advanced prompt engineering (<InlineCode>_construct_agent_prompt</InlineCode>) as cognitive scaffolding,
                                 guiding analysis, providing recovery frameworks, and structuring decisions.
                             </p>
-                            </div>
                         </div>
+                    </div>
 
                     <div className="mt-6">
                         <h3 className="text-xl font-bold mb-4 text-indigo-300 flex items-center">
@@ -2657,55 +2663,16 @@ const AmlTechnicalAnalysis = () => {
         }
     ];
 
-    // Add swipe-to-open useEffect hook
-    useEffect(() => {
-        const content = mainContentRef.current;
-        if (!content || !isMobile) return;
-        
-        let touchStartX = 0;
-        let touchStartY = 0;
-        const swipeThreshold = 25; // Pixels from left edge to trigger sidebar open
-        const minSwipeDistance = 30; // Minimum horizontal distance for swipe - REDUCED from 50
-        
-        const handleTouchStart = (e: TouchEvent) => { // Added Type Annotation
-            // Only care about the first touch point
-            if (e.touches.length === 1) {
-                touchStartX = e.touches[0].clientX;
-                touchStartY = e.touches[0].clientY;
-            }
-        };
-        
-        const handleTouchMove = (e: TouchEvent) => { // Added Type Annotation
-            if (e.touches.length > 1) return; // Ignore multi-touch
-            
-            const touchEndX = e.touches[0].clientX;
-            const touchEndY = e.touches[0].clientY;
-            const diffX = touchStartX - touchEndX;
-            const diffY = touchStartY - touchEndY;
-
-            // --- Swipe to Open Sidebar --- 
-            // Check if swipe starts near the left edge, moves right, and sidebar is closed
-            if (touchStartX < swipeThreshold && diffX < -minSwipeDistance && Math.abs(diffX) > Math.abs(diffY) * 1.5 && !showNavigation) {
-                setShowNavigation(true);
-                if (navigator.vibrate) navigator.vibrate(30); // Haptic feedback
-                // Reset start coordinates to prevent immediate re-trigger or other swipes
-                touchStartX = -1; 
-                touchStartY = -1;
-                return; // Don't process section swipes if we opened the sidebar
-            }
-            
-            // NOTE: No section swipe logic in this component, so we don't need the second part
-        };
-        
-        // Attach event listeners
-        content.addEventListener('touchstart', handleTouchStart, { passive: true });
-        content.addEventListener('touchmove', handleTouchMove, { passive: false }); // Keep false in case other move logic is added
-        
-        return () => {
-          content.removeEventListener('touchstart', handleTouchStart);
-          content.removeEventListener('touchmove', handleTouchMove);
-        };
-    }, [isMobile, showNavigation, setShowNavigation]); // Dependencies for the swipe logic
+    // Use our hook instead of the existing swipe detection code
+    useSidebarSwipe({
+        mainContentRef,
+        showNavigation,
+        setShowNavigation,
+        isMobile,
+        activeSection,
+        navItems,
+        scrollToSection
+    });
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-gray-100 font-sans relative overflow-x-hidden">
@@ -2724,6 +2691,7 @@ const AmlTechnicalAnalysis = () => {
                     setShowNavigation={setShowNavigation} 
                     activeSection={activeSection} 
                     navItems={navItems}
+                    docLinks={docLinks}
                     scrollToSection={scrollToSection}
                 />
 
@@ -2732,14 +2700,7 @@ const AmlTechnicalAnalysis = () => {
                     <div 
                         className="fixed inset-0 bg-black/50 z-20 md:hidden"
                         onClick={() => setShowNavigation(false)}
-                    ></div>
-                )}
-
-                {/* Mobile Sidebar Overlay - only visible when sidebar is open on mobile */}
-                {showNavigation && isMobile && (
-                    <div
-                        className="fixed inset-0 bg-black/50 z-20 md:hidden"
-                        onClick={() => setShowNavigation(false)}
+                        aria-hidden="true"
                     ></div>
                 )}
                 
@@ -2749,13 +2710,30 @@ const AmlTechnicalAnalysis = () => {
                     setShowNavigation={setShowNavigation} 
                 />
 
-                {/* Floating Navigation Dots (mobile only) */}
+                {/* Use ScrollSpy correctly by wrapping anchor tags directly */}
                 {isMobile && (
-                    <FloatingNavigation 
-                        activeSection={activeSection}
-                        navItems={navItems}
-                        scrollToSection={scrollToSection}
-                    />
+                    <div className="fixed right-1 top-1/2 transform -translate-y-1/2 z-30">
+                        <ScrollSpy activeClass="active" rootMargin="0px">
+                            <div className="flex flex-col items-center gap-1.5">
+                                {navItems.map((item) => (
+                                    <a 
+                                        key={item.id}
+                                        href={`#${item.id}`}
+                                        ref={React.createRef()}
+                                        className="w-2 h-2 rounded-full bg-gray-500 transition-all duration-200"
+                                        style={{ 
+                                            opacity: 0.3, 
+                                            display: 'block', 
+                                            marginBottom: '6px',
+                                            transform: activeSection === item.id ? 'scale(1.25)' : 'scale(1)',
+                                            backgroundColor: activeSection === item.id ? '#3b82f6' : '#6b7280' 
+                                        }}
+                                        aria-label={`Scroll to ${item.name} section`}
+                                    />
+                                ))}
+                            </div>
+                        </ScrollSpy>
+                    </div>
                 )}
 
                 {/* Main content */}
