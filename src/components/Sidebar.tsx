@@ -51,9 +51,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             
             const touchEndX = e.touches[0].clientX;
             const diffX = touchStartX - touchEndX;
+            console.log(`[Sidebar Swipe Close] diffX: ${diffX}`);
             
             // If swiping left more than 50px, close the sidebar
             if (diffX > 50) {
+                console.log('[Sidebar Swipe Close] Closing sidebar...');
                 setShowNavigation(false);
                 if (navigator.vibrate) {
                     navigator.vibrate(50);
@@ -62,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         };
 
         sidebar.addEventListener('touchstart', handleTouchStart, { passive: true });
-        sidebar.addEventListener('touchmove', handleTouchMove, { passive: true });
+        sidebar.addEventListener('touchmove', handleTouchMove, { passive: false });
 
         return () => {
             sidebar.removeEventListener('touchstart', handleTouchStart);
@@ -73,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     return (
         <aside
             ref={sidebarRef}
-            className={`fixed top-16 bottom-0 left-0 bg-gray-900 border-r border-gray-800 w-64 transition-transform duration-300 ease-in-out z-30 ${showNavigation ? 'translate-x-0 shadow-xl md:shadow-none' : '-translate-x-full'} md:translate-x-0`}
+            className={`fixed top-16 bottom-0 left-0 bg-gray-900 border-r border-gray-800 w-64 transition-transform duration-300 ease-in-out z-30 -translate-x-full md:translate-x-0 ${showNavigation ? 'translate-x-0 shadow-xl md:shadow-none' : ''}`}
             aria-hidden={!showNavigation}
             tabIndex={showNavigation ? 0 : -1}
             style={{ WebkitOverflowScrolling: 'touch' }}

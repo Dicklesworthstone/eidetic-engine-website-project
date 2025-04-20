@@ -151,7 +151,7 @@ const ArchitecturalOverviewSection = () => (
 
 
 const MemoryGraphVisualization = () => (
-    <div className="relative w-full h-64 md:h-80 bg-gray-900/80 rounded-xl border border-blue-700/30 p-4">
+    <div className="relative w-full h-64 md:h-80 bg-gray-900/80 rounded-xl border border-blue-700/30 p-4 overflow-hidden">
         {/* Central node */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div className="relative">
@@ -170,7 +170,7 @@ const MemoryGraphVisualization = () => (
                     <FileText className="w-5 h-5 text-green-300" />
                 </div>
             </div>
-            <div className="absolute mt-1 ml-5 bg-gray-900/90 px-2 py-1 rounded text-[10px] xs:text-xs text-green-300 whitespace-nowrap">
+            <div className="absolute mt-1 -ml-10 xs:ml-2 sm:ml-5 bg-gray-900/90 px-2 py-1 rounded text-[9px] xs:text-[10px] text-green-300 w-max max-w-[70px] xs:max-w-none text-center xs:text-left">
                 Episodic Memory
             </div>
         </div>
@@ -182,7 +182,7 @@ const MemoryGraphVisualization = () => (
                     <Brain className="w-5 h-5 text-yellow-300" />
                 </div>
             </div>
-            <div className="absolute mt-1 ml-5 bg-gray-900/90 px-2 py-1 rounded text-[10px] xs:text-xs text-yellow-300 whitespace-nowrap">
+            <div className="absolute mt-1 -mr-10 xs:mr-2 sm:mr-5 right-0 bg-gray-900/90 px-2 py-1 rounded text-[9px] xs:text-[10px] text-yellow-300 w-max max-w-[70px] xs:max-w-none text-center xs:text-left">
                 Semantic Memory
             </div>
         </div>
@@ -194,7 +194,7 @@ const MemoryGraphVisualization = () => (
                     <Clock className="w-5 h-5 text-blue-300" />
                 </div>
             </div>
-            <div className="absolute mt-1 ml-5 bg-gray-900/90 px-2 py-1 rounded text-[10px] xs:text-xs text-blue-300 whitespace-nowrap">
+            <div className="absolute mt-1 -ml-10 xs:ml-2 sm:ml-5 bg-gray-900/90 px-2 py-1 rounded text-[9px] xs:text-[10px] text-blue-300 w-max max-w-[70px] xs:max-w-none text-center xs:text-left">
                 Working Memory
             </div>
         </div>
@@ -206,7 +206,7 @@ const MemoryGraphVisualization = () => (
                     <Code className="w-5 h-5 text-purple-300" />
                 </div>
             </div>
-            <div className="absolute mt-1 ml-5 bg-gray-900/90 px-2 py-1 rounded text-[10px] xs:text-xs text-purple-300 whitespace-nowrap">
+            <div className="absolute mt-1 -mr-10 xs:mr-2 sm:mr-5 right-0 bg-gray-900/90 px-2 py-1 rounded text-[9px] xs:text-[10px] text-purple-300 w-max max-w-[70px] xs:max-w-none text-center xs:text-left">
                 Procedural Memory
             </div>
         </div>
@@ -2437,128 +2437,147 @@ const UmsTechnicalAnalysis = () => {
     // State for navigation
     const [activeSection, setActiveSection] = useState<string>(SECTION_ORDER[0]);
     const [scrollProgress, setScrollProgress] = useState(0);
-    const [showNavigation, setShowNavigation] = useState(true);
-    const sqlCodeRef = useRef<HTMLElement | null>(null); // Keep sqlCodeRef
-    // Add isMobile state and mainContentRef
+    const [showNavigation, setShowNavigation] = useState(true); // Keep initial value
+    const sqlCodeRef = useRef<HTMLElement | null>(null);
     const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' && window.innerWidth < 768);
     const mainContentRef = useRef<HTMLDivElement>(null);
-    // Remove previous refs for scroll handling
-    // const previousActiveSectionRef = useRef<string>(SECTION_ORDER[0]);
-    // const previousScrollProgressRef = useRef<number>(0);
 
-    // Handle initial navigation state and resize events
+    // Effect to handle initial navigation state and resize events
     useEffect(() => {
         const handleResize = () => {
             if (typeof window !== 'undefined') {
                 const mobile = window.innerWidth < 768;
-                setIsMobile(mobile); // Update isMobile state
-                // Adjust navigation visibility based on resize
+                setIsMobile(mobile);
                 if (window.innerWidth >= 768) {
                     setShowNavigation(true);
-                } else {
-                    // Keep the current state on mobile resize unless explicitly toggled
-                }
+                } // Keep current state on mobile resize
             }
         };
-
-        handleResize(); // Call on initial mount
+        handleResize();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, []); // Empty dependency array ensures this runs once on mount and cleans up on unmount
+    }, []);
 
-    // Handle scroll for progress bar and active section
+    // Effect for Scroll Progress ONLY
     useEffect(() => {
         const handleScroll = () => {
             const totalScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const currentProgress = totalScroll > 0 ? window.scrollY / totalScroll : 0;
-            setScrollProgress(currentProgress); // Revert to direct update
+            setScrollProgress(currentProgress);
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true }); // Use passive listener
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []); // Empty dependency array
 
-            // Update active section based on scroll position
-            const scrollOffset = window.innerHeight * 0.4;
-            let currentActive = SECTION_ORDER[0]; 
-            for (const sectionId of SECTION_ORDER) {
-                const element = document.getElementById(sectionId);
-                if (element && element.offsetTop <= window.scrollY + scrollOffset) {
-                    currentActive = sectionId;
-                } else {
-                    break;
+    // Effect for Active Section using Intersection Observer
+    useEffect(() => {
+        const observerOptions = {
+            root: null, // Use the viewport as the root
+            rootMargin: '-40% 0px -40% 0px', // Target the middle 20% of the viewport vertically
+            threshold: 0 // Trigger as soon as any part enters/leaves the target area
+        };
+
+        // Store section IDs in a ref to avoid dependency issues
+        const sectionsRef = useRef(SECTION_ORDER);
+
+        const observerCallback = (entries: IntersectionObserverEntry[]) => {
+            const intersectingEntries = entries.filter(entry => entry.isIntersecting);
+
+            if (intersectingEntries.length > 0) {
+                // Process entries that are intersecting
+                for (const entry of intersectingEntries) {
+                    const currentActiveElement = document.getElementById(activeSection);
+                    const entryTargetElement = entry.target as HTMLElement; // Type assertion
+
+                    // Skip if we can't get references
+                    if (!entryTargetElement) continue;
+
+                    // If the active element doesn't exist, just set to the current intersecting one
+                    if (!currentActiveElement) {
+                        setActiveSection(entryTargetElement.id);
+                        continue;
+                    }
+
+                    // Check if the intersecting element is higher up than the current active section
+                    // This explicit type assertion ensures we can use offsetTop safely
+                    const currentActiveOffset = (currentActiveElement as HTMLElement).offsetTop;
+                    
+                    // Prioritize sections coming into view from the top
+                    if (entryTargetElement.offsetTop < currentActiveOffset) {
+                        setActiveSection(entryTargetElement.id);
+                    } 
+                    // If it's not higher, only update if it's the one intersecting or higher than current
+                    else if (entry.target.id === currentActiveElement.id || 
+                             entry.boundingClientRect.top < currentActiveElement.getBoundingClientRect().top) {
+                        setActiveSection(entryTargetElement.id);
+                    }
+                }
+            } else {
+                // Fallback logic: Determine the topmost section visible if nothing is intersecting the target zone
+                const visibleSections = sectionsRef.current
+                    .map(id => document.getElementById(id))
+                    .filter((el): el is HTMLElement => el !== null && el.getBoundingClientRect().bottom > 0)
+                    .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+                
+                // Check if the current active section is still visible
+                const activeElementStillVisible = visibleSections.some(el => el.id === activeSection);
+
+                // Only apply fallback if the current active section isn't visible in the main area
+                if (visibleSections.length > 0 && !activeElementStillVisible) {
+                    // Find the last section whose top is above the 60% mark (bottom of our rootMargin)
+                    let fallbackSectionId = activeSection; // Default to current active section
+                    const thresholdY = window.innerHeight * 0.6;
+                    
+                    for(const section of visibleSections) {
+                        if (section.getBoundingClientRect().top < thresholdY) {
+                            fallbackSectionId = section.id;
+                        } else {
+                            break; // Stop once we pass the threshold
+                        }
+                    }
+                    
+                    if (activeSection !== fallbackSectionId) {
+                        setActiveSection(fallbackSectionId);
+                    }
                 }
             }
-            setActiveSection(currentActive); // Revert to direct update
         };
 
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll(); 
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-        return () => window.removeEventListener('scroll', handleScroll);
-    // Revert dependency array back to empty (or original dependencies if known, likely empty)
-    }, []); 
-
-    // Add swipe-to-open useEffect hook
-    useEffect(() => {
-        const content = mainContentRef.current;
-        if (!content || !isMobile) return;
-        
-        let touchStartX = 0;
-        let touchStartY = 0;
-        const swipeThreshold = 30; // Pixels from left edge to trigger sidebar open
-        const minSwipeDistance = 50; // Minimum horizontal distance for swipe
-        
-        const handleTouchStart = (e) => {
-            // Only care about the first touch point
-            if (e.touches.length === 1) {
-                touchStartX = e.touches[0].clientX;
-                touchStartY = e.touches[0].clientY;
+        sectionsRef.current.forEach(sectionId => {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                observer.observe(element);
             }
-        };
-        
-        const handleTouchMove = (e) => {
-            if (e.touches.length > 1) return; // Ignore multi-touch
-            
-            const touchEndX = e.touches[0].clientX;
-            const touchEndY = e.touches[0].clientY;
-            const diffX = touchStartX - touchEndX;
-            const diffY = touchStartY - touchEndY;
+        });
 
-            // --- Swipe to Open Sidebar --- 
-            // Check if swipe starts near the left edge, moves right, and sidebar is closed
-            if (touchStartX < swipeThreshold && diffX < -minSwipeDistance && Math.abs(diffX) > Math.abs(diffY) * 1.5 && !showNavigation) {
-                setShowNavigation(true);
-                if (navigator.vibrate) navigator.vibrate(30); // Haptic feedback
-                // Reset start coordinates to prevent immediate re-trigger or other swipes
-                touchStartX = -1; 
-                touchStartY = -1;
-                return; // Don't process section swipes if we opened the sidebar
-            }
-            
-            // NOTE: No section swipe logic in this component, so we don't need the second part
-        };
-        
-        // Attach event listeners
-        content.addEventListener('touchstart', handleTouchStart, { passive: true });
-        content.addEventListener('touchmove', handleTouchMove, { passive: false }); // Keep false in case other move logic is added
-        
+        // Cleanup function
         return () => {
-          content.removeEventListener('touchstart', handleTouchStart);
-          content.removeEventListener('touchmove', handleTouchMove);
+            sectionsRef.current.forEach(sectionId => {
+                const element = document.getElementById(sectionId);
+                if (element) {
+                    observer.unobserve(element);
+                }
+            });
+            observer.disconnect();
         };
-    }, [isMobile, showNavigation, setShowNavigation]); // Dependencies for the swipe logic
+        // Rerun observer setup if section order changes, include activeSection to use its latest value in callback
+    }, [activeSection]);
 
-
-    // Scroll to section helper
-    const scrollToSection = (sectionId) => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-            const headerHeight = 60;
-            const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-            const offsetPosition = elementPosition - headerHeight - 20;
+    const scrollToSection = (sectionId: string) => {
+        const targetElement = document.getElementById(sectionId);
+        if (targetElement) {
+            // Adjust offset based on header height
+            const headerHeight = 60; // Approximate height of the fixed header, adjust if needed
+            const elementPosition = targetElement.getBoundingClientRect().top + window.scrollY;
+            const offsetPosition = elementPosition - headerHeight - 20; // Extra 20px spacing
 
             window.scrollTo({
                 top: offsetPosition,
                 behavior: 'smooth'
             });
-
-            // Close navigation on mobile after clicking
+            // Close navigation on mobile after clicking a link
             if (window.innerWidth < 768) {
                 setShowNavigation(false);
             }
@@ -3243,7 +3262,12 @@ CREATE TABLE IF NOT EXISTS ${tableName} (
     // Add this effect to highlight SQL code when the selected table changes - Restored
     useEffect(() => {
         if (sqlCodeRef.current && selectedTable) {
-            Prism.highlightElement(sqlCodeRef.current);
+            // Using try-catch to handle any potential Prism errors
+            try {
+                Prism.highlightElement(sqlCodeRef.current);
+            } catch (error) {
+                console.error('Error highlighting SQL code:', error);
+            }
         }
     }, [selectedTable]);
 
@@ -3252,10 +3276,14 @@ CREATE TABLE IF NOT EXISTS ${tableName} (
         // Use a longer timeout to ensure the DOM is fully rendered
         const timer = setTimeout(() => {
             if (sqlCodeRef.current && selectedTable) {
-                console.log('Initial SQL highlighting applied');
-                Prism.highlightElement(sqlCodeRef.current);
+                try {
+                    console.log('Initial SQL highlighting applied');
+                    Prism.highlightElement(sqlCodeRef.current);
+                } catch (error) {
+                    console.error('Error during initial SQL highlighting:', error);
+                }
             } else {
-                console.log('SQL highlighting failed - DOM not ready:', {
+                console.log('SQL highlighting not ready yet:', {
                     sqlCodeRef: !!sqlCodeRef.current,
                     selectedTable
                 });

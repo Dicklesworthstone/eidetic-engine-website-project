@@ -446,7 +446,7 @@ const PromptEngineering = () => (
                                 </div>
                                 <div className="p-2 bg-gray-900/70 rounded-lg text-xs text-center">
                                     <span className="text-indigo-300 font-bold">Highlighting</span>
-                                    <div className="mt-1 text-[10px]">CRITICAL/ATTENTION labels for key issues</div>
+                                    <div className="mt-1 text-[10px]">CRITICAL / ATTENTION labels for key issues</div>
                                 </div>
                             </div>
                         </div>
@@ -2473,9 +2473,22 @@ const AmlTechnicalAnalysis = () => {
             const totalScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const currentProgress = totalScroll > 0 ? window.scrollY / totalScroll : 0;
             setScrollProgress(currentProgress);
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []); // Only for scroll progress
 
-            // Update active section based on scroll position
-            const sections = [
+    // Effect for Active Section using Intersection Observer
+    useEffect(() => {
+        const observerOptions = {
+            root: null, // Use the viewport as the root
+            rootMargin: '-40% 0px -40% 0px', // Target the middle 20% of the viewport vertically
+            threshold: 0 // Trigger as soon as any part enters/leaves the target area
+        };
+
+        // Store section IDs in a ref to avoid dependency issues
+        const sectionsRef = {
+            current: [
                 'overview',
                 'cognitive-engine',
                 'summary',
@@ -2494,21 +2507,93 @@ const AmlTechnicalAnalysis = () => {
                 'shutdown',
                 'driver',
                 'limitations-future'
-            ];
+            ]
+        };
 
-            const scrollOffset = window.innerHeight * 0.4;
+        const observerCallback = (entries: IntersectionObserverEntry[]) => {
+            const intersectingEntries = entries.filter(entry => entry.isIntersecting);
 
-            for (const sectionId of sections) {
-                const element = document.getElementById(sectionId);
-                if (element && element.offsetTop <= window.scrollY + scrollOffset) {
-                    setActiveSection(sectionId);
+            if (intersectingEntries.length > 0) {
+                // Process entries that are intersecting
+                for (const entry of intersectingEntries) {
+                    const currentActiveElement = document.getElementById(activeSection);
+                    const entryTargetElement = entry.target as HTMLElement; // Type assertion
+
+                    // Skip if we can't get references
+                    if (!entryTargetElement) continue;
+
+                    // If the active element doesn't exist, just set to the current intersecting one
+                    if (!currentActiveElement) {
+                        setActiveSection(entryTargetElement.id);
+                        continue;
+                    }
+
+                    // Check if the intersecting element is higher up than the current active section
+                    // This explicit type assertion ensures we can use offsetTop safely
+                    const currentActiveOffset = (currentActiveElement as HTMLElement).offsetTop;
+                    
+                    // Prioritize sections coming into view from the top
+                    if (entryTargetElement.offsetTop < currentActiveOffset) {
+                        setActiveSection(entryTargetElement.id);
+                    } 
+                    // If it's not higher, only update if it's the one intersecting or higher than current
+                    else if (entry.target.id === currentActiveElement.id || 
+                             entry.boundingClientRect.top < currentActiveElement.getBoundingClientRect().top) {
+                        setActiveSection(entryTargetElement.id);
+                    }
+                }
+            } else {
+                // Fallback logic: Determine the topmost section visible if nothing is intersecting the target zone
+                const visibleSections = sectionsRef.current
+                    .map(id => document.getElementById(id))
+                    .filter((el): el is HTMLElement => el !== null && el.getBoundingClientRect().bottom > 0)
+                    .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+                
+                // Check if the current active section is still visible
+                const activeElementStillVisible = visibleSections.some(el => el.id === activeSection);
+
+                // Only apply fallback if the current active section isn't visible in the main area
+                if (visibleSections.length > 0 && !activeElementStillVisible) {
+                    // Find the last section whose top is above the 60% mark (bottom of our rootMargin)
+                    let fallbackSectionId = activeSection; // Default to current active section
+                    const thresholdY = window.innerHeight * 0.6;
+                    
+                    for(const section of visibleSections) {
+                        if (section.getBoundingClientRect().top < thresholdY) {
+                            fallbackSectionId = section.id;
+                        } else {
+                            break; // Stop once we pass the threshold
+                        }
+                    }
+                    
+                    if (activeSection !== fallbackSectionId) {
+                        setActiveSection(fallbackSectionId);
+                    }
                 }
             }
         };
 
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+        sectionsRef.current.forEach(sectionId => {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                observer.observe(element);
+            }
+        });
+
+        // Cleanup function
+        return () => {
+            sectionsRef.current.forEach(sectionId => {
+                const element = document.getElementById(sectionId);
+                if (element) {
+                    observer.unobserve(element);
+                }
+            });
+            observer.disconnect();
+        };
+        // Rerun observer setup if section order changes, include activeSection to use its latest value in callback
+    }, [activeSection]);
 
     // Scroll to section helper
     const scrollToSection = (sectionId) => {
@@ -2579,10 +2664,10 @@ const AmlTechnicalAnalysis = () => {
         
         let touchStartX = 0;
         let touchStartY = 0;
-        const swipeThreshold = 30; // Pixels from left edge to trigger sidebar open
-        const minSwipeDistance = 50; // Minimum horizontal distance for swipe
+        const swipeThreshold = 25; // Pixels from left edge to trigger sidebar open
+        const minSwipeDistance = 30; // Minimum horizontal distance for swipe - REDUCED from 50
         
-        const handleTouchStart = (e) => {
+        const handleTouchStart = (e: TouchEvent) => { // Added Type Annotation
             // Only care about the first touch point
             if (e.touches.length === 1) {
                 touchStartX = e.touches[0].clientX;
@@ -2590,7 +2675,7 @@ const AmlTechnicalAnalysis = () => {
             }
         };
         
-        const handleTouchMove = (e) => {
+        const handleTouchMove = (e: TouchEvent) => { // Added Type Annotation
             if (e.touches.length > 1) return; // Ignore multi-touch
             
             const touchEndX = e.touches[0].clientX;
@@ -2621,57 +2706,6 @@ const AmlTechnicalAnalysis = () => {
           content.removeEventListener('touchmove', handleTouchMove);
         };
     }, [isMobile, showNavigation, setShowNavigation]); // Dependencies for the swipe logic
-
-
-        // Add swipe-to-open useEffect hook
-        useEffect(() => {
-            const content = mainContentRef.current;
-            if (!content || !isMobile) return;
-    
-            let touchStartX = 0;
-            let touchStartY = 0;
-            const swipeThreshold = 30; // Pixels from left edge to trigger sidebar open
-            const minSwipeDistance = 50; // Minimum horizontal distance for swipe
-    
-            const handleTouchStart = (e: TouchEvent) => { // Added Type Annotation
-                // Only care about the first touch point
-                if (e.touches.length === 1) {
-                    touchStartX = e.touches[0].clientX;
-                    touchStartY = e.touches[0].clientY;
-                }
-            };
-    
-            const handleTouchMove = (e: TouchEvent) => { // Added Type Annotation
-                if (e.touches.length > 1) return; // Ignore multi-touch
-    
-                const touchEndX = e.touches[0].clientX;
-                const touchEndY = e.touches[0].clientY;
-                const diffX = touchStartX - touchEndX;
-                const diffY = touchStartY - touchEndY;
-    
-                // --- Swipe to Open Sidebar ---
-                // Check if swipe starts near the left edge, moves right, and sidebar is closed
-                if (touchStartX < swipeThreshold && diffX < -minSwipeDistance && Math.abs(diffX) > Math.abs(diffY) * 1.5 && !showNavigation) {
-                    setShowNavigation(true);
-                    if (navigator.vibrate) navigator.vibrate(30); // Haptic feedback
-                    // Reset start coordinates to prevent immediate re-trigger or other swipes
-                    touchStartX = -1;
-                    touchStartY = -1;
-                    return; // Don't process section swipes if we opened the sidebar
-                }
-    
-                // NOTE: No section swipe logic in this component, so we don't need the second part
-            };
-    
-            // Attach event listeners
-            content.addEventListener('touchstart', handleTouchStart, { passive: true });
-            content.addEventListener('touchmove', handleTouchMove, { passive: false }); // Keep false in case other move logic is added
-    
-            return () => {
-              content.removeEventListener('touchstart', handleTouchStart);
-              content.removeEventListener('touchmove', handleTouchMove);
-            };
-        }, [isMobile, showNavigation, setShowNavigation]); // Dependencies for the swipe logic
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-gray-100 font-sans relative overflow-x-hidden">

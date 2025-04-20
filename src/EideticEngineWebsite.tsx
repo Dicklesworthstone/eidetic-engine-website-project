@@ -71,48 +71,96 @@ const EideticEngineWebsite = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []); // Removed showNavigation dependency to avoid loop, relies on manual toggles
 
+  // Effect for Scroll Progress ONLY
   useEffect(() => {
     const handleScroll = () => {
       const totalScroll = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      // Prevent division by zero if totalScroll is 0
       const currentProgress = totalScroll > 0 ? window.scrollY / totalScroll : 0;
       setScrollProgress(currentProgress);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true }); // Use passive listener
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []); // Empty dependency array
 
-      // Update active section based on scroll position
-      const sections = ['abstract', 'introduction', 'related-work', 'ums', 'aml', 'mcp-client', 'llm-gateway', 'evaluation', 'discussion', 'conclusion', 'future-work', 'addendum', 'architecture-visual'];
-      let currentSection = 'abstract'; // Default
-      const scrollOffset = window.innerHeight * 0.4; // Trigger point higher up the screen
-
-      for (const sectionId of sections) {
-        const element = document.getElementById(sectionId);
-        if (element && element.offsetTop <= window.scrollY + scrollOffset) {
-          currentSection = sectionId;
-        } else {
-          // If we've scrolled past the first section that meets the criteria, break
-          // This makes the section active when its top part enters the trigger zone
-          break;
-        }
-      }
-      // Special case for top of page
-      if (window.scrollY < 200) {
-        currentSection = 'abstract'; // Or consider a 'hero' section if needed
-      }
-      // Special case for architecture visual (if it's higher up)
-      const archVisualEl = document.getElementById('architecture-visual');
-      const abstractEl = document.getElementById('abstract');
-      if (archVisualEl && abstractEl && archVisualEl.offsetTop <= window.scrollY + scrollOffset && archVisualEl.offsetTop > abstractEl.offsetTop) {
-        // Check if it's above the abstract section's trigger point but still visible
-        if (abstractEl && window.scrollY + scrollOffset < abstractEl.offsetTop) {
-          currentSection = 'architecture-visual';
-        }
-      }
-
-      setActiveSection(currentSection);
+  // Effect for Active Section using Intersection Observer
+  useEffect(() => {
+    const observerOptions = {
+      root: null, // Use the viewport as the root
+      rootMargin: '-40% 0px -40% 0px', // Target the middle 20% of the viewport vertically
+      threshold: 0 // Trigger as soon as any part enters/leaves the target area
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []); // Empty dependency array means this effect runs once on mount and cleans up on unmount
+    // Store section IDs in a ref to avoid dependency issues
+    const sectionsRef = useRef(navItems.map(item => item.id));
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const currentActiveElement = document.getElementById(activeSection);
+            const entryTargetElement = entry.target as HTMLElement; // Type assertion
+            // Check if the intersecting element is higher up than the current active section
+            // Prioritize sections coming into view from the top
+            if (currentActiveElement && entryTargetElement.offsetTop < (currentActiveElement as HTMLElement).offsetTop) { // Type assertion
+                 setActiveSection(entry.target.id);
+            } 
+             // If it's not higher, only update if it's the one intersecting or higher than current
+             else if (!currentActiveElement || entry.target.id === currentActiveElement.id || entry.boundingClientRect.top < currentActiveElement.getBoundingClientRect().top) {
+                 setActiveSection(entry.target.id);
+             }
+        }
+      });
+
+      // Fallback logic: Determine the topmost section visible if nothing is intersecting the target zone
+      const visibleSections = sectionsRef.current
+          .map(id => document.getElementById(id))
+          .filter((el): el is HTMLElement => el !== null && el.getBoundingClientRect().bottom > 0) // Filter out nulls and ensure bottom is below viewport top
+          .sort((a, b) => {
+              // Explicit null checks removed by filter type guard
+              return a.getBoundingClientRect().top - b.getBoundingClientRect().top;
+           });
+      
+      const activeElementStillVisible = visibleSections.some(el => el.id === activeSection);
+
+      // Only apply fallback if the current active section isn't visible in the main area
+      if (visibleSections.length > 0 && !activeElementStillVisible) {
+          // Find the last section whose top is above the 60% mark (bottom of our rootMargin)
+          let fallbackSectionId = activeSection; // Default to current active section
+          const thresholdY = window.innerHeight * 0.6;
+          for(const section of visibleSections) {
+              // section is guaranteed HTMLElement by filter
+              if (section.getBoundingClientRect().top < thresholdY) {
+                  fallbackSectionId = section.id;
+              } else {
+                  break; // Stop once we pass the threshold
+              }
+          }
+           if (activeSection !== fallbackSectionId) {
+               setActiveSection(fallbackSectionId);
+           }
+      }
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    sectionsRef.current.forEach(sectionId => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    // Cleanup function
+    return () => {
+       sectionsRef.current.forEach(sectionId => {
+         const element = document.getElementById(sectionId);
+         if (element) {
+           observer.unobserve(element);
+         }
+       });
+       observer.disconnect();
+    };
+  // Rerun observer setup if navItems change, include activeSection to use its latest value in callback
+  }, [navItems, activeSection]); 
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
@@ -141,9 +189,9 @@ const EideticEngineWebsite = () => {
     let touchStartX = 0;
     let touchStartY = 0;
     const swipeThreshold = 30; // Pixels from left edge to trigger sidebar open
-    const minSwipeDistance = 50; // Minimum horizontal distance for swipe
+    const minSwipeDistance = 30; // Minimum horizontal distance for swipe - REDUCED from 50
     
-    const handleTouchStart = (e) => {
+    const handleTouchStart = (e: TouchEvent) => { // Added Type Annotation
       // Only care about the first touch point
       if (e.touches.length === 1) {
         touchStartX = e.touches[0].clientX;
@@ -162,6 +210,8 @@ const EideticEngineWebsite = () => {
       // --- Swipe to Open Sidebar --- 
       // Check if swipe starts near the left edge, moves right, and sidebar is closed
       if (touchStartX < swipeThreshold && diffX < -minSwipeDistance && Math.abs(diffX) > Math.abs(diffY) * 1.5 && !showNavigation) {
+        console.log(`[Swipe Open] touchStartX: ${touchStartX}, diffX: ${diffX}`); // LOGGING ADDED
+        console.log('[Swipe Open] Opening sidebar...'); // LOGGING ADDED
         setShowNavigation(true);
         if (navigator.vibrate) navigator.vibrate(30); // Haptic feedback
         // Reset start coordinates to prevent immediate re-trigger or other swipes
@@ -189,6 +239,7 @@ const EideticEngineWebsite = () => {
         // Swipe right (previous section)
         else if (diffX < 0 && currentIndex > 0) {
           scrollToSection(sectionIds[currentIndex - 1]);
+          console.log(`[Section Swipe] Swipe Right. Active: ${activeSection}`); // LOGGING ADDED
           if (navigator.vibrate) navigator.vibrate(50);
         }
         // Reset start coordinates after a successful section swipe
@@ -207,6 +258,11 @@ const EideticEngineWebsite = () => {
     };
     // Add showNavigation to dependencies as the open swipe logic depends on it
   }, [isMobile, activeSection, navItems, scrollToSection, showNavigation, setShowNavigation]);
+
+  // LOGGING STATE CHANGE
+  useEffect(() => {
+    console.log(`[State Update] showNavigation changed to: ${showNavigation}`);
+  }, [showNavigation]);
 
   // Helper for code styling
   const CodeTag = ({ children }) => (

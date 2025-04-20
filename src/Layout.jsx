@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Brain } from 'lucide-react';
 import { Analytics } from '@vercel/analytics/react';
+import ReactGA from 'react-ga4';
 import useGoogleAnalytics from './hooks/useGoogleAnalytics';
 import './index.css';
 
@@ -16,11 +17,9 @@ export default function Layout() {
   // Track page views on route change
   useEffect(() => {
     // This will track page views in Google Analytics when the route changes
-    import('react-ga4').then((ReactGA) => {
-      ReactGA.default.send({ 
-        hitType: "pageview", 
-        page: location.pathname + location.search 
-      });
+    ReactGA.send({ 
+      hitType: "pageview", 
+      page: location.pathname + location.search 
     });
   }, [location]);
   
